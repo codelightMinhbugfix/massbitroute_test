@@ -88,6 +88,8 @@ public class Decentralized_API_Steps {
 
 
     public Response createApi(String name, String blockchain, String network){
+
+        Log.info("Create API");
         String body = "{\n" +
                 "    \"name\":\"" + name + "\",\n" +
                 "    \"blockchain\":\"" + blockchain + "\",\n" +
@@ -95,7 +97,7 @@ public class Decentralized_API_Steps {
                 "    \"sid\":\"" + sid + "\"\n" +
                 "}";
 
-        Log.info(body);
+        Log.info("Body of create api: " + body);
 
         Response response = SerenityRest.rest()
                 .given()
@@ -112,6 +114,9 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_create_api(String name, String blockchain, String network){
 
+        name.replaceAll(" ","");
+        blockchain.replaceAll(" ","");
+        network.replaceAll(" ","");
         Response response = createApi(name, blockchain, network);
         String response_body = response.getBody().asString();
         Log.info("response of create api of " + blockchain + " is: " + response_body);
@@ -273,11 +278,14 @@ public class Decentralized_API_Steps {
 
     public Response add_entrypoint(String type){
 
+        Log.info("ADD ENTRYPOINT");
+
         JsonArray arr = api_info.getAsJsonArray("entrypoints");
 
         switch (type){
             case "MASSBIT":
                 arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_MASSBIT).getObject("",JsonObject.class));
+                Log.highlight("config: " + Massbit_Route_Config.ENTRYPOINT_MASSBIT);
                 break;
             case "INFURA":
                 arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_INFURA).getObject("",JsonObject.class));
@@ -350,6 +358,7 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_edit_entrypoint(String type){
 
+        type.replaceAll(" ","");
         Response response = add_entrypoint(type);
         String response_body = response.getBody().asString();
         Log.info("response is " + response_body);
@@ -371,7 +380,7 @@ public class Decentralized_API_Steps {
         return this;
     }
 
-    public Response send_api_request(String blockchain){
+    public Response send_api_request(String blockchain) throws InterruptedException {
 
         Log.info("Start to call API");
         String body ="";
@@ -409,6 +418,7 @@ public class Decentralized_API_Steps {
 
         Log.highlight("url: " + JsonPath.from(api_info.toString()).getString("gateway_http"));
         Log.highlight("body: " + body);
+        Thread.sleep(30000);
 
         Response response = SerenityRest.rest()
                 .given()
@@ -422,7 +432,7 @@ public class Decentralized_API_Steps {
     }
 
     @Step
-    public Decentralized_API_Steps should_be_able_to_send_api_request(String blockchain){
+    public Decentralized_API_Steps should_be_able_to_send_api_request(String blockchain) throws InterruptedException {
 
         Response response = send_api_request(blockchain);
         String response_body = response.getBody().asString();

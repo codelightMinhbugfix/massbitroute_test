@@ -1,5 +1,5 @@
 name,blockchain,network
-,eth, mainnet
+,eth,mainnet
 test_without_blockchain,,mainnet
 test_auto_eth_01,eth,mainnet
 test_auto_near_01,near,mainnet

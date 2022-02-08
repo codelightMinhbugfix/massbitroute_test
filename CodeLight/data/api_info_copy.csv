@@ -1,0 +1,4 @@
+name,blockchain,network
+test_auto_harmony_01,hmny,mainnet
+test_auto_polkadot_01,dot,mainnet
+test_auto_avalanche_01,avax,mainnet

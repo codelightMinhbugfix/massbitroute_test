@@ -3,7 +3,7 @@ package constants;
 public interface Massbit_Route_Config {
 
     // Body of request to add entrypoint
-    String ENTRYPOINT_MASSBIT = "{\"id\":1642751098000,\"type\":\"MASSBIT\",\"priority\":2,\"status\":0,\"backup\":1}";
+    String ENTRYPOINT_MASSBIT = "{\"id\":1642751098000,\"type\":\"MASSBIT\",\"priority\":2,\"status\":1,\"backup\":0}";
     String ENTRYPOINT_INFURA = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":1,\"status\":1,\"project_id\":\"project id Infura fake\",\"project_secret\":\"project secret Infura fake\"}";
     String ENTRYPOINT_GETBLOCK = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":2,\"status\":1,\"api_key\":\"API key Getblock fake\"}";
     String ENTRYPOINT_QUICKNODE = "{\"id\":1642996777000,\"type\":\"QUICKNODE\",\"priority\":1,\"status\":0,\"api_uri\":\"API_URI_Quicknode_fake\"}";

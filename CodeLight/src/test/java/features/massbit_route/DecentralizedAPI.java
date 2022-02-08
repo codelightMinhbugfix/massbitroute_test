@@ -23,7 +23,7 @@ public class DecentralizedAPI {
 
     @TestData
     public static Collection<Object[]> testData() throws Exception {
-        Object[][] data = DataCSV.getAllDataCSV("data/api_info.csv");
+        Object[][] data = DataCSV.getAllDataCSV("data/api_info_copy.csv");
         return Arrays.asList(data);
     }
 
@@ -52,34 +52,34 @@ public class DecentralizedAPI {
         decentralized_api_steps.should_be_able_to_say_hello()
                                .should_be_able_to_login()
                                .should_be_able_to_create_api(name, blockchain, network)
-//                               .should_be_able_to_update_api_request_limit_per_day_to_unlimited()
-//                               .should_be_able_to_update_api_request_limit_per_day()
-//                               .should_be_able_to_update_api_request_limit_per_day_to_negative_number()
-//                               .should_be_able_to_update_api_request_limit_per_sec()
-//                               .should_be_able_to_update_api_request_limit_per_sec_to_zero()
-//                               .should_be_able_to_update_api_request_limit_per_sec_to_negative_number()
+                               .should_be_able_to_update_api_request_limit_per_day_to_unlimited()
+                               .should_be_able_to_update_api_request_limit_per_day()
+                               .should_be_able_to_update_api_request_limit_per_day_to_negative_number()
+                               .should_be_able_to_update_api_request_limit_per_sec()
+                               .should_be_able_to_update_api_request_limit_per_sec_to_zero()
+                               .should_be_able_to_update_api_request_limit_per_sec_to_negative_number()
 //                               .should_be_able_to_update_allowlist_api_request_method()
-//                               .should_be_able_to_get_api_list()
+                               .should_be_able_to_get_api_list()
                                .should_be_able_to_add_entrypoint("MASSBIT")
-                               .should_be_able_to_send_api_request(blockchain);
-//                               .should_be_able_to_edit_entrypoint("MASSBIT_EDIT")
-//                               .should_be_able_to_delete_entrypoint("DELETE")
-//                               .should_be_able_to_add_entrypoint("INFURA")
-//                               .should_be_able_to_send_api_request(blockchain)
-//                               .should_be_able_to_edit_entrypoint("INFURA_EDIT")
-//                               .should_be_able_to_delete_entrypoint("DELETE")
-//                               .should_be_able_to_add_entrypoint("GETBLOCK")
-//                               .should_be_able_to_send_api_request(blockchain)
-//                               .should_be_able_to_edit_entrypoint("GETBLOCK_EDIT")
-//                               .should_be_able_to_delete_entrypoint("DELETE")
-//                               .should_be_able_to_add_entrypoint("QUICKNODE")
-//                               .should_be_able_to_send_api_request(blockchain)
-//                               .should_be_able_to_edit_entrypoint("QUICKNODE_EDIT")
-//                               .should_be_able_to_delete_entrypoint("DELETE")
-//                               .should_be_able_to_add_entrypoint("CUSTOM")
-//                               .should_be_able_to_send_api_request(blockchain)
-//                               .should_be_able_to_edit_entrypoint("CUSTOM_EDIT")
-//                               .should_be_able_to_delete_entrypoint("DELETE");
+                               .should_be_able_to_send_api_request(blockchain)
+                               .should_be_able_to_edit_entrypoint("MASSBIT_EDIT")
+                               .should_be_able_to_delete_entrypoint("DELETE")
+                               .should_be_able_to_add_entrypoint("INFURA")
+                               .should_be_able_to_send_api_request(blockchain)
+                               .should_be_able_to_edit_entrypoint("INFURA_EDIT")
+                               .should_be_able_to_delete_entrypoint("DELETE")
+                               .should_be_able_to_add_entrypoint("GETBLOCK")
+                               .should_be_able_to_send_api_request(blockchain)
+                               .should_be_able_to_edit_entrypoint("GETBLOCK_EDIT")
+                               .should_be_able_to_delete_entrypoint("DELETE")
+                               .should_be_able_to_add_entrypoint("QUICKNODE")
+                               .should_be_able_to_send_api_request(blockchain)
+                               .should_be_able_to_edit_entrypoint("QUICKNODE_EDIT")
+                               .should_be_able_to_delete_entrypoint("DELETE")
+                               .should_be_able_to_add_entrypoint("CUSTOM")
+                               .should_be_able_to_send_api_request(blockchain)
+                               .should_be_able_to_edit_entrypoint("CUSTOM_EDIT")
+                               .should_be_able_to_delete_entrypoint("DELETE");
 
     }
 
