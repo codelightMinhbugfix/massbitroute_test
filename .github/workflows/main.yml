@@ -27,7 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
           
       - name: pull image
-        run: docker pull ghcr.io/duongvu124/automation-test:latest
+        run: docker run -p 9000:80 duongvu124/automation-test:latest
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
