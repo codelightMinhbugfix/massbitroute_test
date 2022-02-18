@@ -57,7 +57,7 @@ public class DecentralizedAPI {
         decentralized_api_steps.should_be_able_to_add_entrypoint("GETBLOCK");
 
         for(int i = 0; i < 3; i++){
-            Thread.sleep(5000);
+            Thread.sleep(7000);
             decentralized_api_steps.should_be_able_to_send_api_request(blockchain);
         }
 
