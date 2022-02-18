@@ -54,7 +54,7 @@ public class DecentralizedAPI {
         decentralized_api_steps.should_be_able_to_say_hello();
         decentralized_api_steps .should_be_able_to_login();
         decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
-        decentralized_api_steps.should_be_able_to_add_entrypoint("GETBLOCK");
+        decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
 
         for(int i = 0; i < 3; i++){
             Thread.sleep(5000);

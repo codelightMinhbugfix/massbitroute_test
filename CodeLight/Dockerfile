@@ -9,4 +9,4 @@ RUN ./mvnw dependency:go-offline
 
 COPY . .
 
-CMD ["./mvnw", "-Dit.test=features.massbit_route.*", "-Dskip-test=true", "clean", "verify"]
+CMD ["./mvnw", "-Dit.test=features.massbit_route.DecentralizedAPI", "-Dskip-test=true", "-Denvironment=dev", "clean", "verify"]
