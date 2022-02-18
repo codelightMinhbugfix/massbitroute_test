@@ -51,12 +51,12 @@ public class DecentralizedAPI {
     @Test
     public void massbit_route_call_api() throws IOException, InterruptedException {
 
-        
         decentralized_api_steps.should_be_able_to_say_hello();
         decentralized_api_steps .should_be_able_to_login();
         decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
         decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
-        for(int i = 0; i < 2; i++){
+
+        for(int i = 0; i < 3; i++){
             Thread.sleep(5000);
             decentralized_api_steps.should_be_able_to_send_api_request(blockchain);
         }
