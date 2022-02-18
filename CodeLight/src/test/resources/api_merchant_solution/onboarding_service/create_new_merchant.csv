@@ -1,7 +1,0 @@
-userId,phone,businessCategoryId,businessModelId,businessRegistrationId,numberOfStoresId,companyName,companyAddress,viceGerent,openTime,closeTime
-0909090020,0929090020,9,534,3,537,Pho24,1 Quang Trung,Thuy,7,22
-0909090021,0929090021,63,535,8,538,Highland,2 Nguyen Hue,Phuong,8,21
-0909090022abc,0929090022,83,536,9,539,Vinamilk,3 Linh,Ngoc,9,20
-0909090023,0929090020,9,534,3,537,Tan Hiep Phat,Ha Noi,Trinh,10,19
-0909090024,0929090024,9,535,8,538,Pho24,Long An,Duong Vu,11,18
-0909090025,0909090025,9,536,9,539,Kinh Do,Tan Phu,Long,12,17

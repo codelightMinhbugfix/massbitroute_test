@@ -6,6 +6,7 @@ import net.thucydides.junit.annotations.TestData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import steps.UtilSteps;
 import steps.api_massbit_route.Community_Nodes_Steps;
 import steps.api_massbit_route.Gateway_Community_Steps;
 import utilities.DataCSV;
@@ -27,14 +28,12 @@ public class Community_Nodes {
     private String gateway_name;
     private String blockchain;
     private String zone;
-    private String data_url;
     private String network;
 
-    public Community_Nodes(String gateway_name, String blockchain, String zone, String data_url, String network){
+    public Community_Nodes(String gateway_name, String blockchain, String zone, String network){
         this.gateway_name = gateway_name;
         this.blockchain = blockchain;
         this.zone = zone;
-        this.data_url = data_url;
         this.network = network;
     }
 
@@ -53,9 +52,26 @@ public class Community_Nodes {
 
         community_nodes_steps.should_be_able_to_say_hello()
                              .should_be_able_to_login()
-                             .should_be_able_to_add_new_node(gateway_name, blockchain, zone, data_url, network);
+                             .should_be_able_to_add_new_node(gateway_name, blockchain, zone, network);
 
-        Log.highlight("install script: " + community_nodes_steps.get_install_node_script());
+        String installScript = "echo yes|" + community_nodes_steps.get_install_node_script();
+        Log.highlight("install script: " + installScript);
+
+        UtilSteps.writeToFile("terraform_node/init.sh", installScript);
+
+        Thread.sleep(1000);
+
+        UtilSteps.runCommand("terraform_node/cmTerraformApply.sh");
+
+//        gateway_community_steps.should_be_able_to_activate_gateway_successfully();
+
+        Thread.sleep(4000);
+
+        UtilSteps.runCommand("terraform_node/cmTerraformDestroy.sh");
+
+        Thread.sleep(10000);
+
+        Log.highlight("Destroy VM instance successfully");
 
     }
 }

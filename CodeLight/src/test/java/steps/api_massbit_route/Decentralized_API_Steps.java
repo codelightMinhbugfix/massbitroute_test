@@ -12,6 +12,7 @@ import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
 
+import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 
 import steps.UtilSteps;
@@ -30,13 +31,16 @@ public class Decentralized_API_Steps {
     public static String sid = "";
     public static JsonObject api_info;
 
+    @Steps
+    UtilSteps utilSteps;
+
     public Response hello(){
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
                 .header("mbrid", 1)
                 .when()
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.HELLO);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.HELLO);
 //                .then().extract().asString();
 
 
@@ -60,15 +64,16 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_login() throws IOException, InterruptedException {
 
+        Log.info("Start to login");
         String body = "\n{\n" +
-                "\t\"username\":\"massbit\",\n" +
-                "\t\"password\":\"massbit123\"\n" +
+                "\t\"username\":\"duongqc\",\n" +
+                "\t\"password\":\"duongqc\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
                 .header("mbrid", mbrid)
-                .uri(URI.create(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN))
+                .uri(URI.create(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
@@ -106,7 +111,7 @@ public class Decentralized_API_Steps {
                 .header("mbrid", mbrid)
                 .when()
                 .body(body)
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_API);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_API);
 
         return response;
     }
@@ -114,6 +119,7 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_create_api(String name, String blockchain, String network){
 
+        Log.info("Start to create api");
         name.replaceAll(" ","");
         blockchain.replaceAll(" ","");
         network.replaceAll(" ","");
@@ -140,7 +146,7 @@ public class Decentralized_API_Steps {
                 .header("mbrid", mbrid)
                 .when()
                 .body(json)
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.UPDATE_API);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.UPDATE_API);
 
         return response;
     }
@@ -148,10 +154,13 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_day_to_unlimited(){
 
+        Log.info("Start to update api");
         api_info.getAsJsonObject("security").addProperty("limit_rate_per_day",0);;
 
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
+
+        Log.info("Response of update api");
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -160,13 +169,15 @@ public class Decentralized_API_Steps {
     }
 
     @Step
-    public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_day(){
+    public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_day(int number){
 
-        api_info.getAsJsonObject("security").addProperty("limit_rate_per_day",999999999);;
+        Log.info("Start to update request limit per day");
+
+        api_info.getAsJsonObject("security").addProperty("limit_rate_per_day",number);;
 
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of update request limit per day is " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -177,11 +188,12 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_day_to_negative_number(){
 
+        Log.info("Start to update request limit per day to negative number");
         api_info.getAsJsonObject("security").addProperty("limit_rate_per_day",-2);;
 
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of update request limit per day to negative number " + response_body);
 
 //        Assert.assertTrue(response.getStatusCode() == 200);
 //        Assert.assertFalse(JsonPath.from(response_body).getBoolean("result"));
@@ -190,13 +202,15 @@ public class Decentralized_API_Steps {
     }
 
     @Step
-    public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_sec(){
+    public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_sec(int number){
 
-        api_info.getAsJsonObject("security").addProperty("limit_rate_per_sec","999999999");;
+        Log.info("Start to update api request limit per second ");
+
+        api_info.getAsJsonObject("security").addProperty("limit_rate_per_sec",number);;
 
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of update api request limit per second " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -208,11 +222,13 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_sec_to_zero(){
 
+        Log.info("Start to update api request limit per second to zero");
+
         api_info.getAsJsonObject("security").addProperty("limit_rate_per_sec",0);;
 
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of update api request limit per second to zero " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -223,11 +239,13 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_update_api_request_limit_per_sec_to_negative_number(){
 
+        Log.info("Start to update api request limit per second to negative number");
+
         api_info.getAsJsonObject("security").addProperty("limit_rate_per_sec",-5);;
 
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of update api request limit per second to negative number " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -257,7 +275,7 @@ public class Decentralized_API_Steps {
                 .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
                 .header("mbrid", mbrid)
                 .when().log().all()
-                .get(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.GET_API_LIST);
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.GET_API_LIST + "&sid=" + sid);
 
         return response;
     }
@@ -278,7 +296,7 @@ public class Decentralized_API_Steps {
 
     public Response add_entrypoint(String type){
 
-        Log.info("ADD ENTRYPOINT");
+        Log.info("Start to add entrypoint");
 
         JsonArray arr = api_info.getAsJsonArray("entrypoints");
 
@@ -289,6 +307,7 @@ public class Decentralized_API_Steps {
                 break;
             case "INFURA":
                 arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_INFURA).getObject("",JsonObject.class));
+                Log.info("Infura config: " + Massbit_Route_Config.ENTRYPOINT_INFURA);
                 break;
             case "GETBLOCK":
                 arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_GETBLOCK).getObject("",JsonObject.class));
@@ -326,11 +345,6 @@ public class Decentralized_API_Steps {
                 arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_MASSBIT).getObject("",JsonObject.class));
         }
 
-
-
-
-        Log.info(api_info.toString());
-
         Response response = SerenityRest.rest()
                 .given()
                 .header("Content-Type", "application/json").config(RestAssured.config()
@@ -338,7 +352,7 @@ public class Decentralized_API_Steps {
                 .header("mbrid", mbrid)
                 .when()
                 .body(api_info)
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.UPDATE_API);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.UPDATE_API);
 
         return response;
     }
@@ -348,7 +362,7 @@ public class Decentralized_API_Steps {
 
         Response response = add_entrypoint(type);
         String response_body = response.getBody().asString();
-        Log.info("response of add entrypoint is " + response_body);
+        Log.info("Response of add entrypoint is " + response_body);
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
 
@@ -358,10 +372,12 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_edit_entrypoint(String type){
 
+        Log.info("Start to edit entrypoint");
+
         type.replaceAll(" ","");
         Response response = add_entrypoint(type);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of edit entrypoint " + response_body);
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
 
@@ -371,9 +387,11 @@ public class Decentralized_API_Steps {
     @Step
     public Decentralized_API_Steps should_be_able_to_delete_entrypoint(String type){
 
+        Log.info("Start to delete entrypoint");
+
         Response response = add_entrypoint(type);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        Log.info("response of delete entrypoint is " + response_body);
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
 
@@ -436,7 +454,9 @@ public class Decentralized_API_Steps {
 
         Response response = send_api_request(blockchain);
         String response_body = response.getBody().asString();
-        Log.info("response is " + response_body);
+        String header_response = response.getHeaders().toString();
+        Log.highlight("Header of response: " + header_response);
+        Log.info("response of call API is " + response_body);
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertFalse(response_body.isEmpty());
 

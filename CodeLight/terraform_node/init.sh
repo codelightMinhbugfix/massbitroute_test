@@ -1,0 +1,1 @@
+bash -c "$(curl -sSfL 'https://dapi.massbit.io/api/v1/node_install?id=ad61f7b4-4076-4413-b53b-760d76fbec27&user_id=1deac589-ffdc-4ea5-a480-d6a677ef704c&blockchain=eth&network=mainnet&zone=AS&data_url=http://34.87.80.115:8545')"

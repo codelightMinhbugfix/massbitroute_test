@@ -1,6 +1,7 @@
 package steps.api_massbit_route;
 
 import com.google.gson.JsonObject;
+import com.google.inject.internal.cglib.core.$CollectionUtils;
 import constants.Massbit_Route_Endpoint;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
@@ -9,6 +10,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 import steps.UtilSteps;
 import utilities.Log;
@@ -25,13 +27,16 @@ public class Gateway_Community_Steps {
     public static String sid = "";
     public static JsonObject gateway_info;
 
+    @Steps
+    private UtilSteps utilSteps;
+
     public Response hello(){
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
                 .header("mbrid", 1)
                 .when()
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.HELLO);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.HELLO);
 
         return response;
     }
@@ -51,17 +56,17 @@ public class Gateway_Community_Steps {
     }
 
     @Step
-    public Gateway_Community_Steps should_be_able_to_login() throws IOException, InterruptedException {
+    public void should_be_able_to_login() throws IOException, InterruptedException {
 
         String body = "\n{\n" +
-                "\t\"username\":\"massbit\",\n" +
-                "\t\"password\":\"massbit123\"\n" +
+                "\t\"username\":\"duongqc\",\n" +
+                "\t\"password\":\"duongqc\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
                 .header("mbrid", mbrid)
-                .uri(URI.create(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN))
+                .uri(URI.create(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
@@ -76,7 +81,6 @@ public class Gateway_Community_Steps {
 
         Log.highlight("sid :" + sid);
 
-        return this;
     }
 
     public Response add_new_gateway(String name, String blockchain, String zone, String network){
@@ -88,8 +92,8 @@ public class Gateway_Community_Steps {
                 "    \"sid\":\"" + sid + "\"\n" +
                 "}";
 
-        Log.info(body);
-        Log.info("url: " + UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_GATEWAY);
+        Log.info("Request body of add new gateway api:" + body);
+        Log.info("url: " + utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_GATEWAY);
 
         Response response = SerenityRest.rest()
                 .given()
@@ -98,7 +102,7 @@ public class Gateway_Community_Steps {
                 .header("mbrid", mbrid)
                 .when()
                 .body(body)
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_GATEWAY);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_GATEWAY);
 
         return response;
     }
@@ -108,7 +112,7 @@ public class Gateway_Community_Steps {
 
         Response response = add_new_gateway(name, blockchain, zone, network);
         String response_body = response.getBody().asString();
-        Log.info("response of create api of " + blockchain + " is: " + response_body);
+        Log.info("response of add new gateway of " + blockchain + " is: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -135,5 +139,39 @@ public class Gateway_Community_Steps {
 
         return install_script;
     }
+
+    public boolean gatewayActive(String id){
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when()
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CHECK_GATEWAY + id + "&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+        int status = JsonPath.from(response_body).getInt("data.status");
+
+        Log.info("Gateway info body: " + response_body);
+        if(status == 1)
+        { return true; }
+        else { return false; }
+
+    }
+
+    @Step
+    public Gateway_Community_Steps should_be_able_to_activate_gateway_successfully() throws InterruptedException, IOException {
+        int i = 0;
+        while (!gatewayActive(JsonPath.from(gateway_info.toString()).getString("id")) && i < 20){
+            Thread.sleep(30000);
+            i++;
+            should_be_able_to_login();
+        }
+        Assert.assertTrue(gatewayActive(JsonPath.from(gateway_info.toString()).getString("id")));
+        Log.highlight("Gateway register successfully");
+        return this;
+    }
+
 
 }

@@ -9,5 +9,4 @@ RUN ./mvnw dependency:go-offline
 
 COPY . .
 
-# CMD ["ping google.com"]
 CMD ["./mvnw", "-Dit.test=features.massbit_route.*", "-Dskip-test=true", "clean", "verify"]

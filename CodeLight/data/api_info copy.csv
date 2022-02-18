@@ -1,0 +1,10 @@
+name,blockchain,network
+test_auto_eth_01,eth,mainnet
+test_auto_near_01,near,mainnet
+test_auto_harmony_01,hmny,mainnet
+test_auto_polkadot_01,dot,mainnet
+test_auto_avalanche_01,avax,mainnet
+test_auto_fantom_01,ftm,mainnet
+test_auto_polygon_01,matic,mainnet
+test_auto_bsc_01,bsc,mainnet
+test_auto_solana_01,sol,mainnet

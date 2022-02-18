@@ -1,6 +1,7 @@
 package steps.api_massbit_route;
 
 import com.google.gson.JsonObject;
+import constants.Massbit_Route_Config;
 import constants.Massbit_Route_Endpoint;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
@@ -9,6 +10,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 import steps.UtilSteps;
 import utilities.Log;
@@ -21,6 +23,9 @@ import java.net.http.HttpResponse;
 
 public class Community_Nodes_Steps {
 
+    @Steps
+    UtilSteps utilSteps;
+
     public static String mbrid = "";
     public static String sid = "";
     public static JsonObject node_info;
@@ -31,7 +36,7 @@ public class Community_Nodes_Steps {
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
                 .header("mbrid", 1)
                 .when()
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.HELLO);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.HELLO);
 
 
         return response;
@@ -55,14 +60,14 @@ public class Community_Nodes_Steps {
     public Community_Nodes_Steps should_be_able_to_login() throws IOException, InterruptedException {
 
         String body = "\n{\n" +
-                "\t\"username\":\"massbit\",\n" +
-                "\t\"password\":\"massbit123\"\n" +
+                "\t\"username\":\"duongqc\",\n" +
+                "\t\"password\":\"duongqc\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
                 .header("mbrid", mbrid)
-                .uri(URI.create(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN))
+                .uri(URI.create(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
@@ -80,7 +85,22 @@ public class Community_Nodes_Steps {
         return this;
     }
 
-    public Response add_new_node(String name, String blockchain, String zone, String data_url, String network){
+    public Response add_new_node(String name, String blockchain, String zone, String network){
+
+        String data_url = "";
+
+        switch (blockchain){
+            case "eth":
+                data_url = Massbit_Route_Config.DATA_URL_ETHEREUM;
+                break;
+            case "dot":
+                data_url = Massbit_Route_Config.DATA_URL_POLKADOT;
+                break;
+
+        }
+
+        Log.info("data_source: " + data_url);
+
         String body = "{\n" +
                 "    \"name\":\"" + name + "\",\n" +
                 "    \"blockchain\":\"" + blockchain + "\",\n" +
@@ -91,7 +111,7 @@ public class Community_Nodes_Steps {
                 "}";
 
         Log.info(body);
-        Log.info("url: " + UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_NODE);
+        Log.info("url: " + utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_NODE);
 
         Response response = SerenityRest.rest()
                 .given()
@@ -100,15 +120,15 @@ public class Community_Nodes_Steps {
                 .header("mbrid", mbrid)
                 .when()
                 .body(body)
-                .post(UtilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_NODE);
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CREATE_NODE);
 
         return response;
     }
 
     @Step
-    public Community_Nodes_Steps should_be_able_to_add_new_node(String name, String blockchain, String zone, String data_url, String network){
+    public Community_Nodes_Steps should_be_able_to_add_new_node(String name, String blockchain, String zone, String network){
 
-        Response response = add_new_node(name, blockchain, zone, data_url, network);
+        Response response = add_new_node(name, blockchain, zone, network);
         String response_body = response.getBody().asString();
         Log.info("response of create node of " + blockchain + " is: " + response_body);
 

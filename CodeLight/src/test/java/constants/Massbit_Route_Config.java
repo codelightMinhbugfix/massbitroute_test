@@ -4,8 +4,8 @@ public interface Massbit_Route_Config {
 
     // Body of request to add entrypoint
     String ENTRYPOINT_MASSBIT = "{\"id\":1642751098000,\"type\":\"MASSBIT\",\"priority\":2,\"status\":1,\"backup\":0}";
-    String ENTRYPOINT_INFURA = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":1,\"status\":1,\"project_id\":\"project id Infura fake\",\"project_secret\":\"project secret Infura fake\"}";
-    String ENTRYPOINT_GETBLOCK = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":2,\"status\":1,\"api_key\":\"API key Getblock fake\"}";
+    String ENTRYPOINT_INFURA = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":1,\"status\":1,\"project_id\":\"b2e4635e55a448bc8fa9bb651d675208\",\"project_secret\":\"c893942ccbc94960848e4a33e91735d6\"}";
+    String ENTRYPOINT_GETBLOCK = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":2,\"status\":1,\"api_key\":\"de025584-88f9-4608-8508-021d0973c2f8\"}";
     String ENTRYPOINT_QUICKNODE = "{\"id\":1642996777000,\"type\":\"QUICKNODE\",\"priority\":1,\"status\":0,\"api_uri\":\"API_URI_Quicknode_fake\"}";
     String ENTRYPOINT_CUSTOM = "{\"id\":1642999215000,\"type\":\"CUSTOM\",\"priority\":4,\"status\":0,\"backup\":1,\"api_uri\":\"api_uri_fake\"}";
 
@@ -18,12 +18,27 @@ public interface Massbit_Route_Config {
     // Body of request to blockchain
 
     String ETHEREUM = "{\"jsonrpc\": \"2.0\",\"id\":1,\"method\":\"eth_getBlockByNumber\",\"params\":[\"latest\",true]}";
-    String NEAR = "{\"jsonrpc\": \"2.0\",\"id\":1,\"method\":\"eth_blockNumber\",\"params\":[]}";
+    String NEAR = "{\"method\": \"block\",\"jsonrpc\": \"2.0\",\"id\": \"dontcare\",\"params\": {\"block_id\": 17764600}}";
     String HARMONY = "{\"jsonrpc\": \"2.0\",\"id\": 1,\"method\": \"hmyv2_call\",\"params\": [{\"to\": \"0x08AE1abFE01aEA60a47663bCe0794eCCD5763c19\"},370000]}";
-    String POLKADOT = "{\"jsonrpc\":\"2.0\",\"result\":{\"methods\":[\"account_nextIndex\",\"author_hasKey\",\"author_hasSessionKeys\",\"author_insertKey\",\"author_pendingExtrinsics\",\"author_removeExtrinsic\",\"author_rotateKeys\",\"author_submitAndWatchExtrinsic\",\"author_submitExtrinsic\",\"author_unwatchExtrinsic\",\"chain_getBlock\",\"chain_getBlockHash\",\"chain_getFinalisedHead\",\"chain_getFinalizedHead\",\"chain_getHead\",\"chain_getHeader\",\"chain_getRuntimeVersion\",\"chain_subscribeAllHeads\",\"chain_subscribeFinalisedHeads\",\"chain_subscribeFinalizedHeads\",\"chain_subscribeNewHead\",\"chain_subscribeNewHeads\",\"chain_subscribeRuntimeVersion\",\"chain_unsubscribeAllHeads\",\"chain_unsubscribeFinalisedHeads\",\"chain_unsubscribeFinalizedHeads\",\"chain_unsubscribeNewHead\",\"chain_unsubscribeNewHeads\",\"chain_unsubscribeRuntimeVersion\",\"offchain_localStorageGet\",\"offchain_localStorageSet\",\"payment_queryInfo\",\"state_call\",\"state_callAt\",\"state_getChildKeys\",\"state_getChildStorage\",\"state_getChildStorageHash\",\"state_getChildStorageSize\",\"state_getKeys\",\"state_getKeysPaged\",\"state_getKeysPagedAt\",\"state_getMetadata\",\"state_getPairs\",\"state_getRuntimeVersion\",\"state_getStorage\",\"state_getStorageAt\",\"state_getStorageHash\",\"state_getStorageHashAt\",\"state_getStorageSize\",\"state_getStorageSizeAt\",\"state_queryStorage\",\"state_subscribeRuntimeVersion\",\"state_subscribeStorage\",\"state_unsubscribeRuntimeVersion\",\"state_unsubscribeStorage\",\"subscribe_newHead\",\"system_accountNextIndex\",\"system_addReservedPeer\",\"system_chain\",\"system_health\",\"system_name\",\"system_networkState\",\"system_nodeRoles\",\"system_peers\",\"system_properties\",\"system_removeReservedPeer\",\"system_version\",\"unsubscribe_newHead\"],\"version\":1},\"id\":1}";
+//    String POLKADOT = "{\"jsonrpc\":\"2.0\",\"result\":{\"block\":{\"extrinsics\":[\"0x280402000b50055ee97001\",\"0x1004140000\"],\"header\":{\"digest\":{\"logs\":[\"0x06424142453402af000000937fbd0f00000000\",\"0x054241424501011e38401b0aab22f4d72ebc95329c3798445786b92ca1ae69366aacb6e1584851f5fcdfcc0f518df121265c343059c62ab0a34e8e88fda8578810fbe508b6f583\"]},\"extrinsicsRoot\":\"0x0e354333c062892e774898e7ff5e23bf1cdd8314755fac15079e25c1a7765f06\",\"number\":\"0x16c28c\",\"parentHash\":\"0xe3bf2e8f0e901c292de24d07ebc412d67224ce52a3d1ffae76dc4bd78351e8ac\",\"stateRoot\":\"0xd582f0dfeb6a7c73c47db735ae82d37fbeb5bada67ee8abcd43479df0f8fc8d8\"}},\"justification\":null},\"id\":1}";
+//    String POLKADOT = "{\"jsonrpc\": \"2.0\",\"method\": \"chain_getBlockHash\",\"params\": [],\"id\": 1}";
+    String POLKADOT = "{\"jsonrpc\": \"2.0\",\"method\": \"chain_getBlockHash\",\"params\": [],\"id\": 1}";
     String AVALANCHE = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\" :\"eth_baseFee\",\"params\" :[]}";
     String FANTOM = "{\"jsonrpc\": \"2.0\",\"id\":1,\"method\":\"eth_getBlockByNumber\",\"params\":[\"latest\", true]}";
     String POLYGON = "{\"jsonrpc\": \"2.0\",\"id\":1,\"method\":\"eth_blockNumber\",\"params\":[]}";
-    String BSC = "";
+//    String BSC = "{\"method\": \"broadcast_tx_sync\",\"jsonrpc\": \"2.0\",\"params\": [\"abc\"],\"id\": \"dontcare\"}";
+    String BSC = "{\"jsonrpc\": \"2.0\",\"id\":1,\"method\":\"eth_getBlockByNumber\",\"params\":[\"latest\",true]}";
     String SOLANA = "{\"jsonrpc\": \"2.0\",\"id\":1,\"method\":\"getBlock\",\"params\":[430, {\"encoding\": \"json\",\"transactionDetails\":\"full\",\"rewards\":false}]}";
+
+    // data source of node
+
+    String DATA_URL_ETHEREUM = "http://34.87.80.115:8545/";
+    String DATA_URL_NEAR = "";
+    String DATA_URL_HARMONY = "";
+    String DATA_URL_POLKADOT = "https://34.87.170.136";
+    String DATA_URL_AVALANCHE = "";
+    String DATA_URL_FANTOM = "";
+    String DATA_URL_POLYGON = "";
+    String DATA_URL_BSC = "";
+    String DATA_URL_SOLANA = "";
 }
