@@ -27,11 +27,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
           
-      - name: pull image
-        run: docker pull ghcr.io/duongvu124/automation-test:latest
       
-      - name: run image
-        run: docker run automation-test
 
       # Runs a single command using the runners shell
       #- name: Run a one-line script
