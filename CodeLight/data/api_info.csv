@@ -1,5 +1,4 @@
 name,blockchain,network
 test_auto_eth_01,eth,mainnet
 test_auto_near_01,near,mainnet
-test_auto_harmony_01,hmny,mainnet
 test_auto_polkadot_01,dot,mainnet
