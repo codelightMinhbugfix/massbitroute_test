@@ -15,4 +15,5 @@ public interface Massbit_Route_Endpoint {
 
     // Nodes Community
     String CREATE_NODE = "/v1?action=node.create";
+    String CHECK_NODE = "/v1?action=node.get&id=";
 }

@@ -63,7 +63,7 @@ public class Community_Nodes {
 
         UtilSteps.runCommand("terraform_node/cmTerraformApply.sh");
 
-//        gateway_community_steps.should_be_able_to_activate_gateway_successfully();
+        community_nodes_steps.should_be_able_to_activate_node_successfully();
 
         Thread.sleep(4000);
 

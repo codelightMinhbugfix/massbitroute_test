@@ -93,8 +93,29 @@ public class Community_Nodes_Steps {
             case "eth":
                 data_url = Massbit_Route_Config.DATA_URL_ETHEREUM;
                 break;
+            case "near":
+                data_url = Massbit_Route_Config.DATA_URL_NEAR;
+                break;
+            case "hmny":
+                data_url = Massbit_Route_Config.DATA_URL_HARMONY;
+                break;
             case "dot":
                 data_url = Massbit_Route_Config.DATA_URL_POLKADOT;
+                break;
+            case "avax":
+                data_url = Massbit_Route_Config.DATA_URL_AVALANCHE;
+                break;
+            case "ftm":
+                data_url = Massbit_Route_Config.DATA_URL_FANTOM;
+                break;
+            case "matic":
+                data_url = Massbit_Route_Config.DATA_URL_POLYGON;
+                break;
+            case "bsc":
+                data_url = Massbit_Route_Config.DATA_URL_BSC;
+                break;
+            case "sol":
+                data_url = Massbit_Route_Config.DATA_URL_SOLANA;
                 break;
 
         }
@@ -157,6 +178,39 @@ public class Community_Nodes_Steps {
 
 
         return install_script;
+    }
+
+    public boolean nodeActive(String id){
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when()
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.CHECK_NODE + id + "&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+        int status = JsonPath.from(response_body).getInt("data.status");
+
+        Log.info("Node info body: " + response_body);
+        if(status == 1)
+        { return true; }
+        else { return false; }
+
+    }
+
+    @Step
+    public Community_Nodes_Steps should_be_able_to_activate_node_successfully() throws InterruptedException, IOException {
+        int i = 0;
+        while (!nodeActive(JsonPath.from(node_info.toString()).getString("id")) && i < 24){
+            Thread.sleep(30000);
+            i++;
+            should_be_able_to_login();
+        }
+        Assert.assertTrue(nodeActive(JsonPath.from(node_info.toString()).getString("id")));
+        Log.highlight("Node register successfully");
+        return this;
     }
 
 }

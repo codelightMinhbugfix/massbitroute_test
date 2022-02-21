@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "massbit-dev-335203",
+  "private_key_id": "6dbae6a6939f8d097bb29c3e434779b9c51f46e9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCn32czT15lwk8g\n0LyGXCouvc9Xh3+z3215j1wkU82uG5bg5HHdNAdYT1uP61SfMKCH0er38pBO7+Ob\nRADHI0cxRr/RJ4WvyEeEOh5BNrr6W2emAxzyON7h4c0njxnbS/omhl6zxj617CCj\nIECIAwGFFeaKnFa4QFgj5ZV0X1hXQcOW6Ifzea2Q9t0tDtET4jBgRBF/Anmg5ViK\n+87EWF4Pc3FUIKE/oiHhdANmg63uYRs7Se3I5EygrMdWQ06BbpH7InayTjf9/6XV\nYQfUvW/2AxL5Y/LQNXCh2ADKg7aUbgeoAgx86lf6FKkI0Ka6U7tlF7syaEdFxf/U\nsQy6/i5vAgMBAAECggEACFEM7s/t6S1WagBUdOa0qoGyzPZPMvmFslySKphXXz47\nxsLqioYkHpGPA5abmaCyGJo/1srPsBQds8bvBSd6mf3NMPYDEPGOJQZMhE118F+3\nHH8nNS9++l7u2cNrs/TM3QMSDcoym5ap7e6CHNA4a9Va7N9CJs5vehbnU12YF5YJ\nuGVpyti3Lt4A+LDr2CdRDzRz7iwmEz+UUAx7/BgciwJ+OM+gaCOmLVr3GXEK78C2\nKwc/GVwsi8cvaczvKgjzwhWyX3nX9VhdjqPBmw+UWo+5SU459IXksZNuZQnFEYGN\nzVuc+dftE+IwVw/Qrlph4TS8phDrM7Ah18yj/h9f2QKBgQDlyYx6SQq0g+BCI59s\nSc+tOrpiSktjq4NgOhllc7/hDe+e33qBAqRMJxi7yD72pYSI5t7YSlYkBqN2dtgN\nSYoa9dmhg2s6/iC/7ZM5pXl7XwKajJUtgPJ16WjdeZDusyaC5hsFk1GemuRfC4fo\nJ0mPKxCkAdKHpA2W2gND9Cg3rQKBgQC7BcTM6VuDQn0BjcRd0805QrJ/yW7DX71z\nNz+tLKI3E4P84LwAhmcfr7xpAjoaYrmayXTcGSLR1FxhNDs7D9indNFVhjuGpLcP\nwWpiwZ4vfIv7IlpT3jKY2fF1H2/OjTAPH8JqXUg+oVRQO86B5rNaKDZOK7RJAZKM\nOHu9yHQyCwKBgA3e4K/xAMhsvXjAlbr/qZ2XUfDk8zANBl0kpKvPFOIM6U35x3dK\nJYjDQ2bya3qP+zQYW5NKyXBbRjq8acZDjiaaeIybVjm1ZVywhpaQOokL7yhNHCQn\nCHu9nyrfT7RY9BYqta7ceazNRMPH+mg1FuehfduokIDHklpsxo2vi03xAoGAKP8E\nut5UfxtuB48qAl9RV0H1mulu7EjqYH016iIklOokPqSM0Ziktl9xb5tbXTlS8klC\n4pRn+5MPhQdMDJBWr659zL+WANfOgRem2GsU39fvX2eSYVwNv0/XDBOOELsGU+pk\nVaiJE6GNt+DETdlia1rxPIV8CZzcoPwos9tjDS0CgYBJFpQzDYzjA5rEcT+iioV1\nCuaIY73wi0/nMgTxsEDVtwRhEFbsyE+bMSmnjcCeZQH8Y3NEmjZcYeijqj7zD1jR\nOszj/vGVhPQkhcB/i4DELoCO7fOpTzFU3vlTegFxkn7HAaWtwyUWsjXB7PxxMvMk\nGlM+xiJuuEIU+lvDhoo8dw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "massbit-dev@massbit-dev-335203.iam.gserviceaccount.com",
+  "client_id": "112691529488101798817",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/massbit-dev%40massbit-dev-335203.iam.gserviceaccount.com"
+}
