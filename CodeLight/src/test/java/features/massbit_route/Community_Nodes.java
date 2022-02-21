@@ -48,7 +48,7 @@ public class Community_Nodes {
     @Test
     public void massbit_route_node_testing() throws IOException, InterruptedException {
 
-        Log.info("----------- Start Community Nodes test ----------");
+        Log.info("----------- Start Community Nodes test -----------");
 
         community_nodes_steps.should_be_able_to_say_hello()
                              .should_be_able_to_login()
