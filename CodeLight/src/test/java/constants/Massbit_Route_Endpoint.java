@@ -12,6 +12,7 @@ public interface Massbit_Route_Endpoint {
     // Gateway Community
     String CREATE_GATEWAY = "/v1?action=gateway.create";
     String CHECK_GATEWAY = "/v1?action=gateway.get&id=";
+    String GET_GATEWAY_LIST = "/v1?action=gateway.list";
 
     // Nodes Community
     String CREATE_NODE = "/v1?action=node.create";

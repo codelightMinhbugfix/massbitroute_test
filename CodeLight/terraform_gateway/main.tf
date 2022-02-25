@@ -1,5 +1,6 @@
 resource "google_compute_instance" "default" {
-  name         = "terraform-instance-gateway-ethereum-asia-new-02"
+  count        = 4
+  name         = "terraform-instance-gateway-ethereum-asia-new-02" tea
   machine_type = "e2-micro"
   zone         = "asia-southeast2-a"
 
@@ -32,3 +33,4 @@ resource "google_compute_instance" "default" {
     scopes = ["cloud-platform"]
   }
 }
+

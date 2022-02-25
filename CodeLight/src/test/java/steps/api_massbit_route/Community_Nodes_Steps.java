@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class Community_Nodes_Steps {
 
@@ -211,6 +212,19 @@ public class Community_Nodes_Steps {
         Assert.assertTrue(nodeActive(JsonPath.from(node_info.toString()).getString("id")));
         Log.highlight("Node register successfully");
         return this;
+    }
+
+    public List<List<String>> get_all_node_in_massbit(){
+        Response response = SerenityRest.rest()
+                .given().log().all()
+                .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .when().log().all()
+                .get("https://dapi.massbit.io/deploy/info/node/listid");
+
+        String response_body = response.getBody().asString();
+        List<List<String>> ls = UtilSteps.convertCSVFormatToList(response_body);
+
+        return ls;
     }
 
 }

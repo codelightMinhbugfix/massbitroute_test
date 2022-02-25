@@ -20,12 +20,17 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class Gateway_Community_Steps {
 
     public static String mbrid = "";
     public static String sid = "";
     public static JsonObject gateway_info;
+    public static ArrayList<ArrayList<String>> listGW = new ArrayList<ArrayList<String>>();
 
     @Steps
     private UtilSteps utilSteps;
@@ -59,8 +64,8 @@ public class Gateway_Community_Steps {
     public void should_be_able_to_login() throws IOException, InterruptedException {
 
         String body = "\n{\n" +
-                "\t\"username\":\"duongqc\",\n" +
-                "\t\"password\":\"duongqc\"\n" +
+                "\t\"username\":\"duongvu\",\n" +
+                "\t\"password\":\"duongkaka058c\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
@@ -173,5 +178,53 @@ public class Gateway_Community_Steps {
         return this;
     }
 
+    public ArrayList<ArrayList<String>> listGateway(){
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json")
+                .header("mbrid", mbrid)
+                .when()
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.GET_GATEWAY_LIST + "&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+
+        ArrayList<JsonObject> arr = JsonPath.from(response_body).getJsonObject("data");
+
+        for(Object object : arr){
+            if(((HashMap) object).get("status").toString().equals("1")){
+                String id = ((HashMap) object).get("id").toString();
+                String blockchain = ((HashMap) object).get("blockchain").toString();
+                String ip = ((HashMap) object).get("ip").toString();
+                ArrayList<String> gw = new ArrayList<>();
+                gw.add(id);
+                gw.add(blockchain);
+                gw.add(ip);
+                listGW.add(gw);
+            }
+            Log.highlight("done");
+        }
+
+        return listGW;
+    }
+
+    public void disableGateway(){
+
+
+
+    }
+
+    public List<List<String>> get_all_gateway_in_massbit(){
+        Response response = SerenityRest.rest()
+                .given().log().all()
+                .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .when().log().all()
+                .get("https://dapi.massbit.io/deploy/info/gateway/listid");
+
+        String response_body = response.getBody().asString();
+        List<List<String>> ls = UtilSteps.convertCSVFormatToList(response_body);
+
+        return ls;
+    }
 
 }

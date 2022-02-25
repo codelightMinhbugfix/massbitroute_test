@@ -434,7 +434,8 @@ public class Decentralized_API_Steps {
                 body = Massbit_Route_Config.ETHEREUM;
         }
 
-        Log.highlight("url: " + JsonPath.from(api_info.toString()).getString("gateway_http"));
+        String url = JsonPath.from(api_info.toString()).getString("gateway_http");
+        Log.highlight("url: " + url);
         Log.highlight("body: " + body);
         Thread.sleep(30000);
 
@@ -444,7 +445,7 @@ public class Decentralized_API_Steps {
                 .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
                 .when()
                 .body(body)
-                .post(JsonPath.from(api_info.toString()).getString("gateway_http"));
+                .post(url);
 
         return response;
     }
@@ -463,6 +464,118 @@ public class Decentralized_API_Steps {
         return this;
     }
 
+    public Response send_api_request(String blockchain, String ip) throws InterruptedException {
 
+        Log.info("Start to call API direct to gateway");
+        String body ="";
+        switch (blockchain) {
+            case "eth":
+                body = Massbit_Route_Config.ETHEREUM;
+                break;
+            case "near":
+                body = Massbit_Route_Config.NEAR;
+                break;
+            case "hmny":
+                body = Massbit_Route_Config.HARMONY;
+                break;
+            case "dot":
+                body = Massbit_Route_Config.POLKADOT;
+                break;
+            case "avax":
+                body = Massbit_Route_Config.AVALANCHE;
+                break;
+            case "ftm":
+                body = Massbit_Route_Config.FANTOM;
+                break;
+            case "matic":
+                body = Massbit_Route_Config.POLYGON;
+                break;
+            case "bsc":
+                body = Massbit_Route_Config.BSC;
+                break;
+            case "sol":
+                body = Massbit_Route_Config.SOLANA;
+                break;
+            default:
+                body = Massbit_Route_Config.ETHEREUM;
+        }
+
+        String b = JsonPath.from(api_info.toString()).getString("gateway_http").split(".com")[0] + ".com";
+        String host = b.substring(8);
+        String url = "http://" + ip + JsonPath.from(api_info.toString()).getString("gateway_http").split(".com")[1];
+
+        Log.highlight("host: " + host);
+        Log.highlight("url: " + url);
+        Log.highlight("body: " + body);
+        Thread.sleep(30000);
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("Host", host)
+                .when()
+                .body(body)
+                .post(url);
+
+        Log.highlight("response of send api: " + response.getBody().asString());
+
+        return response;
+    }
+
+    public Response send_api_request(String blockchain, String id, String x_api_key) throws InterruptedException {
+
+        Log.info("Start to call API direct to node");
+        String body ="";
+        switch (blockchain) {
+            case "eth":
+                body = Massbit_Route_Config.ETHEREUM;
+                break;
+            case "near":
+                body = Massbit_Route_Config.NEAR;
+                break;
+            case "hmny":
+                body = Massbit_Route_Config.HARMONY;
+                break;
+            case "dot":
+                body = Massbit_Route_Config.POLKADOT;
+                break;
+            case "avax":
+                body = Massbit_Route_Config.AVALANCHE;
+                break;
+            case "ftm":
+                body = Massbit_Route_Config.FANTOM;
+                break;
+            case "matic":
+                body = Massbit_Route_Config.POLYGON;
+                break;
+            case "bsc":
+                body = Massbit_Route_Config.BSC;
+                break;
+            case "sol":
+                body = Massbit_Route_Config.SOLANA;
+                break;
+            default:
+                body = Massbit_Route_Config.ETHEREUM;
+        }
+
+        String url = "http://" + id + ".node.mbr.massbitroute.com";
+
+        Log.info("url: " + url) ;
+        Thread.sleep(30000);
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("x-api-key", x_api_key)
+                .when()
+                .body(body)
+                .post(url);
+
+        Log.highlight("response of send api: " + response.getBody().asString());
+
+        return response;
+    }
 
 }

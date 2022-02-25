@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class UtilSteps {
 
@@ -44,6 +47,22 @@ public class UtilSteps {
                 Log.highlight("An error occurred.");
                 e.printStackTrace();
             }
+        }
+
+        public static List<List<String>> convertCSVFormatToList(String csvFormmat){
+            List<String> list = Arrays.asList(csvFormmat.split("\n"));
+            List<List<String>> list_item = new ArrayList<>();
+
+            for(String data_line : list){
+                String[] arr = data_line.split(" ");
+                ArrayList<String> lst = new ArrayList<>();
+                for(String str : arr){
+                    lst.add(str);
+                }
+                list_item.add(lst);
+            }
+            Log.info("Convert done");
+            return list_item;
         }
 
 }
