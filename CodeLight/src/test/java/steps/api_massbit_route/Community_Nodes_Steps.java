@@ -61,8 +61,8 @@ public class Community_Nodes_Steps {
     public Community_Nodes_Steps should_be_able_to_login() throws IOException, InterruptedException {
 
         String body = "\n{\n" +
-                "\t\"username\":\"duongqc\",\n" +
-                "\t\"password\":\"duongqc\"\n" +
+                "\t\"username\":\"duongvu\",\n" +
+                "\t\"password\":\"duongvu\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
