@@ -23,6 +23,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Decentralized_API_Steps {
@@ -30,6 +32,7 @@ public class Decentralized_API_Steps {
     public static String mbrid = "";
     public static String sid = "";
     public static JsonObject api_info;
+    public static ArrayList<String> listAPI = new ArrayList<String>();
 
     @Steps
     UtilSteps utilSteps;
@@ -66,8 +69,8 @@ public class Decentralized_API_Steps {
 
         Log.info("Start to login");
         String body = "\n{\n" +
-                "\t\"username\":\"duongqc\",\n" +
-                "\t\"password\":\"duongqc\"\n" +
+                "\t\"username\":\"duongvu\",\n" +
+                "\t\"password\":\"duongvu\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
@@ -289,9 +292,74 @@ public class Decentralized_API_Steps {
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertFalse(response_body.isEmpty());
 
-        mbrid = response_body;
+
+        ArrayList<JsonObject> arr = JsonPath.from(response_body).getJsonObject("data");
+
+        for(Object object : arr){
+
+                String id = ((HashMap) object).get("id").toString();
+
+                listAPI.add(id);
+        }
 
         return this;
+    }
+
+    public JsonObject get_api_info(String id){
+        Response response = SerenityRest.rest()
+                .given().log().all()
+                .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when().log().all()
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.GET_API_INFO + "&id=" + id + "&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+        JsonObject object = JsonPath.from(response_body).getObject("data", JsonObject.class);
+        return object;
+    }
+
+    public void deleteAPI(String id){
+
+        String body = "{\n" +
+                "    \"id\":\"" + id + "\"\n" +
+                "}";
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when()
+                .body(body)
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_API);
+
+        Log.highlight("Delete api +" +id + "success");
+    }
+
+    public void disable_api(String id){
+
+        JsonObject api = get_api_info(id);
+        api.addProperty("status","0");
+
+
+    }
+
+    public void disable_all_test_api(ArrayList<String> lst){
+        for(String id : lst){
+            disable_api(id);
+            Log.info("Disable api " + id + "success");
+        }
+
+        Log.highlight("Finish to Disable all api test");
+    }
+
+    public void delete_all_test_api(ArrayList<String> lst){
+        for(String id : lst){
+            deleteAPI(id);
+            Log.info("Delete api " + id + "success");
+        }
+
+        Log.highlight("Finish to delete all api test");
     }
 
     public Response add_entrypoint(String type){
