@@ -65,7 +65,7 @@ public class Gateway_Community_Steps {
 
         String body = "\n{\n" +
                 "\t\"username\":\"duongvu\",\n" +
-                "\t\"password\":\"duongkaka058c\"\n" +
+                "\t\"password\":\"duongvu\"\n" +
                 "}";
 
         HttpClient client = HttpClient.newBuilder().build();
