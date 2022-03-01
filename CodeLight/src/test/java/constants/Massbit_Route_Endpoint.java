@@ -7,7 +7,9 @@ public interface Massbit_Route_Endpoint {
     String LOGIN = "/v1?action=user.login";
     String CREATE_API = "/v1?action=api.create";
     String UPDATE_API = "/v1?action=api.update";
+    String DELETE_API = "/v1?action=api.delete";
     String GET_API_LIST = "/v1?action=api.list";
+    String GET_API_INFO = "/v1?action=api.get";
 
     // Gateway Community
     String CREATE_GATEWAY = "/v1?action=gateway.create";
