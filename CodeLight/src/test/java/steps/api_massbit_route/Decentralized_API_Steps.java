@@ -160,10 +160,12 @@ public class Decentralized_API_Steps {
         Log.info("Start to update api");
         api_info.getAsJsonObject("security").addProperty("limit_rate_per_day",0);;
 
+        Log.info("api_info: " + api_info);
+
         Response response = update_api(api_info);
         String response_body = response.getBody().asString();
 
-        Log.info("Response of update api");
+        Log.info("Response of update api"+ response_body) ;
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("result"));
@@ -532,7 +534,7 @@ public class Decentralized_API_Steps {
         return this;
     }
 
-    public Response send_api_request(String blockchain, String ip) throws InterruptedException {
+    public Response send_api_request_direct_to_gateway(String blockchain, String ip) throws InterruptedException {
 
         Log.info("Start to call API direct to gateway");
         String body ="";
@@ -586,12 +588,12 @@ public class Decentralized_API_Steps {
                 .body(body)
                 .post(url);
 
-        Log.highlight("response of send api: " + response.getBody().asString());
+        Log.highlight("response of send api direct to gateway: " + response.getBody().asString());
 
         return response;
     }
 
-    public Response send_api_request(String blockchain, String id, String x_api_key) throws InterruptedException {
+    public Response send_api_request_direct_to_node(String blockchain, String id, String x_api_key) throws InterruptedException {
 
         Log.info("Start to call API direct to node");
         String body ="";
@@ -641,7 +643,7 @@ public class Decentralized_API_Steps {
                 .body(body)
                 .post(url);
 
-        Log.highlight("response of send api: " + response.getBody().asString());
+        Log.highlight("response of send api direct to node: " + response.getBody().asString());
 
         return response;
     }
