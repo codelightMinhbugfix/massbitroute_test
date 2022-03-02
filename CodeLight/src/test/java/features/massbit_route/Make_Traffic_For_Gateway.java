@@ -44,7 +44,7 @@ public class Make_Traffic_For_Gateway {
 //                decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
 //
 //                for(int i = 0; i <5; i++) {
-//                    decentralized_api_steps.send_api_request(blockchain, ip);
+//                    decentralized_api_steps.send_api_request_direct_to_gateway(blockchain, ip);
 //                }
 //
 //
@@ -68,7 +68,7 @@ public class Make_Traffic_For_Gateway {
             decentralized_api_steps.should_be_able_to_create_api("traffic_node_test", blockchain, "mainnet");
             decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
             for(int i=0; i<2; i++) {
-                decentralized_api_steps.send_api_request(blockchain, id, x_api_key);
+                decentralized_api_steps.send_api_request_direct_to_node(blockchain, id, x_api_key);
             }
 
         }
