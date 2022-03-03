@@ -629,7 +629,7 @@ public class Decentralized_API_Steps {
                 body = Massbit_Route_Config.ETHEREUM;
         }
 
-        String url = "http://" + id + ".node.mbr.massbitroute.com";
+        String url = "http://" + id + ".node.mbr." + utilSteps.getMassbitURL();
 
         Log.info("url: " + url) ;
         Thread.sleep(30000);

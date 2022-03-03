@@ -3,6 +3,7 @@ package features.massbit_route;
 import net.serenitybdd.junit.runners.SerenityParameterizedRunner;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.junit.annotations.TestData;
+import org.jruby.RubyProcess;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,8 @@ public class Community_Nodes {
 
     @Before
     public void prepareForTest(){
-
+        Log.highlight("Java version:" + System.getProperty("java.version"));
+        Log.highlight("Terraform version:" + System.getProperty("terraform.version"));
     }
 
     @Steps

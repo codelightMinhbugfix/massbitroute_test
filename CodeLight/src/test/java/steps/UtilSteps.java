@@ -24,6 +24,13 @@ public class UtilSteps {
 //        return SerenityUtil.getEnv("api.massbitroute.url");
     }
 
+    public String getMassbitURL(){
+        String webserviceEndpoint =  EnvironmentSpecificConfiguration.from(environmentVariables)
+                .getProperty("api.massbit.url");
+        return webserviceEndpoint;
+//        return SerenityUtil.getEnv("api.massbitroute.url");
+    }
+
     public static void runCommand(String command) throws IOException {
         Process process = Runtime.getRuntime().exec(command);
         printResults(process);
