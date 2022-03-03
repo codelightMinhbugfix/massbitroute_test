@@ -32,23 +32,22 @@ public class TrafficSimulator {
 
     @Test
     public void simulate_traffic() throws IOException, InterruptedException {
-
-        
-        
-        
         decentralized_api_steps.should_be_able_to_say_hello();
         decentralized_api_steps.should_be_able_to_login();
-
-        
-        
+        long cycle = 0;
         Random random = new Random(123123);
         while(true) {
+        	//Reload node lists and gateway list every 10 cycles
+        	if (cycle % 10 == 0) {
+        		listNodes = getAvailableNodes();
+        		listGateways = getAvailableGateways();
+        	}
             for (NodeInfo node : listNodes) {  
             	//decentralized_api_steps.should_be_able_to_create_api("traffic_node_test", blockchain, "mainnet");
                 //decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
                 decentralized_api_steps.send_api_request_direct_to_node(node.getBlockchain(), node.getId(), node.getApiKey());
             }
-            for (NodeInfo gw : listGateWays) {
+            for (NodeInfo gw : listGateways) {
                 //decentralized_api_steps.should_be_able_to_create_api("traffic_gateway_test", blockchain, "mainnet");
                 //decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
             	decentralized_api_steps.send_api_request_direct_to_gateway(gw.getBlockchain(), gw.getIp());
