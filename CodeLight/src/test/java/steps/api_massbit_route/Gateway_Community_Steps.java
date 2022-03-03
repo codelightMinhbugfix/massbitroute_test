@@ -178,6 +178,24 @@ public class Gateway_Community_Steps {
         return this;
     }
 
+    @Step
+    public void ping_to_gateway(String id) throws InterruptedException, IOException {
+
+        String url = "https://" + id + ".gw.mbr.massbitroute.com/ping";
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when()
+                .get(url);
+
+        String response_body = response.getBody().asString();
+        Assert.assertTrue(response.getStatusCode()==200);
+        Assert.assertTrue(response_body.equalsIgnoreCase("pong"));
+
+    }
+
     public ArrayList<ArrayList<String>> listGateway(){
 
         Response response = SerenityRest.rest()

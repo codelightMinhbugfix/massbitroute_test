@@ -1,2 +1,2 @@
-cd /Users/duongvu/Documents/CodeLightRepo/massbitroute_test/CodeLight/terraform_node/
+cd terraform_node
 echo yes|terraform destroy

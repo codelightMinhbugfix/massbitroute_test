@@ -1,3 +1,3 @@
-cd /Users/duongvu/Documents/CodeLightRepo/massbitroute_test/CodeLight/terraform_node/
+cd terraform_node
 terraform plan
 echo yes|terraform apply
