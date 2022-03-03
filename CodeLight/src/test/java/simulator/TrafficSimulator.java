@@ -61,9 +61,9 @@ public class TrafficSimulator {
             	//decentralized_api_steps.send_api_request_direct_to_gateway(gw.getBlockchain(), gw.getIp());
             	RestAPI.getLatestBlockFromGateway(gw.getBlockchain(), domain, gw.getIp(), secret);
             }
-//          for (NodeInfo node : listNodes) { 
-//          	decentralized_api_steps.send_api_request_direct_to_node(node.getBlockchain(), node.getId(), node.getApiKey());
-//      	}
+            for (NodeInfo node : listNodes) { 
+            	decentralized_api_steps.send_api_request_direct_to_node(node.getBlockchain(), node.getId(), node.getApiKey());
+            }
             //Sleep for maximize 60s
             long sleepTime = Math.abs(random.nextLong()) % 60000;
             Log.info(String.format("Sleep for %d s...", sleepTime));
