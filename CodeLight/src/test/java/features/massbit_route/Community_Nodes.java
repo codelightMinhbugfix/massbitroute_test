@@ -39,9 +39,9 @@ public class Community_Nodes {
     }
 
     @Before
-    public void prepareForTest(){
+    public void prepareForTest() throws IOException {
         Log.highlight("Java version:" + System.getProperty("java.version"));
-        Log.highlight("Terraform version:" + System.getProperty("terraform.version"));
+        UtilSteps.runCommand("terraform --version");
     }
 
     @Steps
