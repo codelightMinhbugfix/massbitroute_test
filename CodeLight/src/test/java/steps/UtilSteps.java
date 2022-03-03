@@ -24,9 +24,9 @@ public class UtilSteps {
 //        return SerenityUtil.getEnv("api.massbitroute.url");
     }
 
-    public String getMassbitURL(){
+    public String getEnvironmentDomain(){
         String webserviceEndpoint =  EnvironmentSpecificConfiguration.from(environmentVariables)
-                .getProperty("api.massbit.url");
+                .getProperty("domainname");
         return webserviceEndpoint;
 //        return SerenityUtil.getEnv("api.massbitroute.url");
     }
