@@ -181,7 +181,7 @@ public class Gateway_Community_Steps {
     @Step
     public void ping_to_gateway(String id) throws InterruptedException, IOException {
 
-        String url = "https://" + id + ".gw.mbr." + utilSteps.getMassbitURL() +"/ping";
+        String url = "https://" + id + ".gw.mbr." + utilSteps.getEnvironmentDomain() +"/ping";
         Response response = SerenityRest.rest()
                 .given()
                 .header("Content-Type", "application/json").config(RestAssured.config()
