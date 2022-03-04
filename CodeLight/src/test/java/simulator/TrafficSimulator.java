@@ -60,7 +60,11 @@ public class TrafficSimulator {
 //            	String domain = apiInfo.get("gateway_domain").getAsString();
 //            	String secret = apiInfo.get("api_key").getAsString();
             	//decentralized_api_steps.send_api_request_direct_to_gateway(gw.getBlockchain(), gw.getIp());
-            	RestAPI.getLatestBlockFromGateway(domain, gw);
+            	try {
+            		RestAPI.getLatestBlockFromGateway(domain, gw);
+            	} catch(Exception e) {
+            		e.printStackTrace();
+            	}
             }
             for (NodeInfo node : listNodes) { 
             	decentralized_api_steps.send_api_request_direct_to_node(node.getBlockchain(), node.getId(), node.getApiKey());
