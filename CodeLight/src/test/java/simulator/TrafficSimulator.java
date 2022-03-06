@@ -48,6 +48,7 @@ public class TrafficSimulator {
         //decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
         long cycle = 0;
         Random random = new Random(123123);
+        String domain  = utilSteps.getEnvironmentDomain();
         while(true) {
         	//Reload node lists and gateway list every 10 cycles
         	if (cycle % 10 == 0) {
@@ -55,17 +56,24 @@ public class TrafficSimulator {
         		listGateways = getAvailableGateways();
         	}
             for (NodeInfo gw : listGateways) {
-            	JsonObject apiInfo = getApiInfo(gw.getBlockchain());
-            	String domain = apiInfo.get("gateway_domain").getAsString();
-            	String secret = apiInfo.get("api_key").getAsString();
+//            	JsonObject apiInfo = getApiInfo(gw.getBlockchain());
+//            	String domain = apiInfo.get("gateway_domain").getAsString();
+//            	String secret = apiInfo.get("api_key").getAsString();
             	//decentralized_api_steps.send_api_request_direct_to_gateway(gw.getBlockchain(), gw.getIp());
-            	RestAPI.getLatestBlockFromGateway(gw.getBlockchain(), domain, gw.getIp(), secret);
+            	try {
+            		RestAPI.getLatestBlockFromGateway(domain, gw);
+            	} catch(Exception e) {
+            		e.printStackTrace();
+            	}
             }
             for (NodeInfo node : listNodes) { 
             	decentralized_api_steps.send_api_request_direct_to_node(node.getBlockchain(), node.getId(), node.getApiKey());
             }
             //Sleep for maximize 60s
             long sleepTime = Math.abs(random.nextLong()) % 60000;
+            if (sleepTime < 10000) {
+            	sleepTime = 10000;
+            }
             Log.info(String.format("Sleep for %d s...", sleepTime));
             Thread.sleep(sleepTime);
         }
@@ -86,13 +94,15 @@ public class TrafficSimulator {
     	List<List<String>> list_nodes = community_nodes_steps.get_all_node_in_massbit();
     	if (list_nodes != null && list_nodes.size() > 0) {
         	for (List<String> list : list_nodes) {
-        		String blockchain = list.get(2);
                 String id = list.get(0);
+                String userId = list.get(1);
+                String blockchain = list.get(2);
+                String ip = list.get(4);
                 String x_api_key = list.get(7);
                 int status = Integer.parseInt(list.get(8));
                 int approved = Integer.parseInt(list.get(9));
                 if (status == 1 && approved == 1) {
-                	listNodes.add(new NodeInfo(blockchain, id, x_api_key));
+                	listNodes.add(new NodeInfo(blockchain, id, userId, ip, x_api_key));
                 }
         	}
         }
@@ -104,37 +114,39 @@ public class TrafficSimulator {
         List<NodeInfo> listGateWays = new ArrayList<NodeInfo>();
         if (list_gateway != null && list_gateway.size() > 0) {
         	for (List<String> list : list_gateway) {
+        		String id = list.get(0);
+        		String userId = list.get(1);
         		String blockchain = list.get(2);
                 String ip = list.get(4);
+                String x_api_key = list.get(7);
                 int status = Integer.parseInt(list.get(8));
                 int approved = Integer.parseInt(list.get(9));
                 if (status == 1 && approved == 1) {
-                	listGateWays.add(new NodeInfo(blockchain, ip));
+                	NodeInfo nodeInfo = new NodeInfo(blockchain, id, userId, ip, x_api_key);
+                	nodeInfo.setIp(ip);
+                	listGateWays.add(nodeInfo);
                 }
         	}
         }
         Log.info(String.format("Avaiable gateways: %d, active ones: %d", list_gateway.size(), listGateWays.size()));
         return listGateWays;
     }
-    class NodeInfo {
+    public static class NodeInfo {
     	String blockchain;
     	String id;
+    	String userId;
     	String ip;
     	String apiKey;
     	
-		public NodeInfo(String blockchain, String ip) {
+		public NodeInfo(String blockchain, String id, String userId, String ip, String apiKey) {
 			super();
 			this.blockchain = blockchain;
-			this.ip = ip;
-		}
-		
-		public NodeInfo(String blockchain, String id, String apiKey) {
-			super();
-			this.blockchain = blockchain;
+			this.userId = userId;
 			this.id = id;
+			this.ip = ip;
 			this.apiKey = apiKey;
 		}
-
+		
 		public String getBlockchain() {
 			return blockchain;
 		}
@@ -158,6 +170,14 @@ public class TrafficSimulator {
 		}
 		public void setApiKey(String apiKey) {
 			this.apiKey = apiKey;
+		}
+
+		public String getUserId() {
+			return userId;
+		}
+
+		public void setUserId(String userId) {
+			this.userId = userId;
 		}
     	
     }

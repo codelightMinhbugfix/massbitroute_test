@@ -7,6 +7,7 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
+import simulator.TrafficSimulator.NodeInfo;
 
 public class RestAPI {
 
@@ -138,6 +139,59 @@ public class RestAPI {
                 .post(url);
 
         Log.highlight("response of send api direct to gateway: " + response.getBody().asString());
+
+        return response;
+    }
+    public static Response getLatestBlockFromGateway(String domain, NodeInfo nodeInfo){
+
+    	Log.info("Start to call API direct to gateway");
+        String body ="";
+        String blockchain = nodeInfo.getBlockchain();
+        switch (blockchain) {
+            case "eth":
+                body = Massbit_Route_Config.ETHEREUM;
+                break;
+            case "near":
+                body = Massbit_Route_Config.NEAR;
+                break;
+            case "hmny":
+                body = Massbit_Route_Config.HARMONY;
+                break;
+            case "dot":
+                body = Massbit_Route_Config.POLKADOT;
+                break;
+            case "avax":
+                body = Massbit_Route_Config.AVALANCHE;
+                break;
+            case "ftm":
+                body = Massbit_Route_Config.FANTOM;
+                break;
+            case "matic":
+                body = Massbit_Route_Config.POLYGON;
+                break;
+            case "bsc":
+                body = Massbit_Route_Config.BSC;
+                break;
+            case "sol":
+                body = Massbit_Route_Config.SOLANA;
+                break;
+            default:
+                body = Massbit_Route_Config.ETHEREUM;
+        }
+        String type = "gw";
+        String url = String.format("http://%s.%s.mbr.%s/",nodeInfo.getId(), type, domain);
+        Log.info("url: " + url) ;
+        Log.info("body: " + body) ;
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                //.header("Host", host)
+                .when()
+                .body(body)
+                .post(url);
+
+        Log.highlight(String.format("response from gateway %s: userId: %s: %s ", nodeInfo.getId(), nodeInfo.getUserId(), response.getBody().asString()));
 
         return response;
     }
