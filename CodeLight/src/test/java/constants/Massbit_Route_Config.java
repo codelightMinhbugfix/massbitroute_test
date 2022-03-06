@@ -4,16 +4,23 @@ public interface Massbit_Route_Config {
 
     // Body of request to add entrypoint
     String ENTRYPOINT_MASSBIT = "{\"id\":1642751098000,\"type\":\"MASSBIT\",\"priority\":2,\"status\":1,\"backup\":1}";
+    String ENTRYPOINT_MASSBIT_2 = "{\"id\":1642751098001,\"type\":\"MASSBIT\",\"priority\":2,\"status\":1,\"backup\":0}";
     String ENTRYPOINT_INFURA = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":1,\"status\":1,\"project_id\":\"b2e4635e55a448bc8fa9bb651d675208\",\"project_secret\":\"c893942ccbc94960848e4a33e91735d6\"}";
     String ENTRYPOINT_GETBLOCK = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":2,\"status\":1,\"api_key\":\"de025584-88f9-4608-8508-021d0973c2f8\"}";
     String ENTRYPOINT_QUICKNODE = "{\"id\":1642996777000,\"type\":\"QUICKNODE\",\"priority\":1,\"status\":0,\"api_uri\":\"API_URI_Quicknode_fake\"}";
     String ENTRYPOINT_CUSTOM = "{\"id\":1642999215000,\"type\":\"CUSTOM\",\"priority\":4,\"status\":0,\"backup\":1,\"api_uri\":\"api_uri_fake\"}";
 
     String ENTRYPOINT_MASSBIT_EDIT = "{\"id\":1642751098000,\"type\":\"MASSBIT\",\"priority\":1,\"status\":1,\"backup\":0}";
-    String ENTRYPOINT_INFURA_EDIT = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":2,\"status\":0,\"project_id\":\"edit project id Infura fake\",\"project_secret\":\"edit project secret Infura fake\"}";
-    String ENTRYPOINT_GETBLOCK_EDIT = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":1,\"status\":0,\"api_key\":\"edit API key Getblock fake\"}";
+    String ENTRYPOINT_INFURA_EDIT = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":2,\"status\":0,\"project_id\":\"b2e4635e55a448bc8fa9bb651d675208\",\"project_secret\":\"c893942ccbc94960848e4a33e91735d6\"}";
+    String ENTRYPOINT_GETBLOCK_EDIT = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":1,\"status\":0,\"api_key\":\"de025584-88f9-4608-8508-021d0973c2f8\"}";
     String ENTRYPOINT_QUICKNODE_EDIT = "{\"id\":1642996777000,\"type\":\"QUICKNODE\",\"priority\":2,\"status\":1,\"api_uri\":\"edit API_URI_Quicknode_fake\"}";
     String ENTRYPOINT_CUSTOM_EDIT = "{\"id\":1642999215000,\"type\":\"CUSTOM\",\"priority\":2,\"status\":1,\"backup\":0,\"api_uri\":\"edit api_uri_fake\"}";
+
+    String ENTRYPOINT_MASSBIT_DISABLE = "{\"id\":1642751098000,\"type\":\"MASSBIT\",\"priority\":1,\"status\":0,\"backup\":0}";
+    String ENTRYPOINT_INFURA_DISABLE = "{\"id\":1642996420000,\"type\":\"INFURA\",\"priority\":2,\"status\":0,\"project_id\":\"b2e4635e55a448bc8fa9bb651d675208\",\"project_secret\":\"c893942ccbc94960848e4a33e91735d6\"}";
+    String ENTRYPOINT_GETBLOCK_DISABLE = "{\"id\":1642996653000,\"type\":\"GETBLOCK\",\"priority\":1,\"status\":0,\"api_key\":\"de025584-88f9-4608-8508-021d0973c2f8\"}";
+    String ENTRYPOINT_QUICKNODE_DISABLE = "{\"id\":1642996777000,\"type\":\"QUICKNODE\",\"priority\":2,\"status\":0,\"api_uri\":\"edit API_URI_Quicknode_fake\"}";
+    String ENTRYPOINT_CUSTOM_DISABLE = "{\"id\":1642999215000,\"type\":\"CUSTOM\",\"priority\":2,\"status\":0,\"backup\":0,\"api_uri\":\"edit api_uri_fake\"}";
 
     // Body of request to blockchain
 

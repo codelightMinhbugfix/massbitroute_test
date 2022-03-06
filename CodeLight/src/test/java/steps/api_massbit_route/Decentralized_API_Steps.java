@@ -25,6 +25,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Decentralized_API_Steps {
@@ -323,7 +324,8 @@ public class Decentralized_API_Steps {
     public void deleteAPI(String id){
 
         String body = "{\n" +
-                "    \"id\":\"" + id + "\"\n" +
+                "    \"id\":\"" + id + "\",\n" +
+                "    \"sid\":\"" + sid + "\"\n" +
                 "}";
 
         Response response = SerenityRest.rest()
@@ -335,7 +337,14 @@ public class Decentralized_API_Steps {
                 .body(body)
                 .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_API);
 
-        Log.highlight("Delete api +" +id + "success");
+        Log.info(response.getBody().asString());
+
+        Log.highlight(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_API);
+        Log.highlight("mbrid: " +body );
+        Log.highlight("mbrid: " +mbrid );
+        Log.highlight("sid: " + sid );
+
+        Log.highlight("Delete api " +id + " success");
     }
 
     public void disable_api(String id){
@@ -407,6 +416,26 @@ public class Decentralized_API_Steps {
             case "CUSTOM_EDIT":
                 arr.remove(0);
                 arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_CUSTOM_EDIT).getObject("",JsonObject.class));
+                break;
+            case "MASSBIT_DISABLE":
+                arr.remove(0);
+                arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_MASSBIT_DISABLE).getObject("",JsonObject.class));
+                break;
+            case "INFURA_DISABLE":
+                arr.remove(0);
+                arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_INFURA_DISABLE).getObject("",JsonObject.class));
+                break;
+            case "GETBLOCK_DISABLE":
+                arr.remove(0);
+                arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_GETBLOCK_DISABLE).getObject("",JsonObject.class));
+                break;
+            case "QUICKNODE_DISABLE":
+                arr.remove(0);
+                arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_QUICKNODE_DISABLE).getObject("",JsonObject.class));
+                break;
+            case "CUSTOM_DISABLE":
+                arr.remove(0);
+                arr.add(JsonPath.from(Massbit_Route_Config.ENTRYPOINT_CUSTOM_DISABLE).getObject("",JsonObject.class));
                 break;
             case "DELETE":
                 arr.remove(0);
@@ -534,6 +563,48 @@ public class Decentralized_API_Steps {
         return this;
     }
 
+    @Step
+    public Decentralized_API_Steps send_api_request_over_request_limit_per_day(String blockchain) throws InterruptedException {
+
+        Response response = send_api_request(blockchain);
+        String response_body = response.getBody().asString();
+        String header_response = response.getHeaders().toString();
+        Log.highlight("Header of response: " + header_response);
+        Log.info("response of call API is " + response_body);
+        Assert.assertFalse(response.getStatusCode() == 200);
+//        Assert.assertFalse(response_body.isEmpty());
+
+        return this;
+    }
+
+    @Step
+    public Decentralized_API_Steps send_api_request_with_bad_request_body(String blockchain) throws InterruptedException {
+
+        Response response = send_api_request(blockchain);
+        String response_body = response.getBody().asString();
+        String header_response = response.getHeaders().toString();
+        Log.highlight("Header of response: " + header_response);
+        Log.info("response of call API is " + response_body);
+        Assert.assertFalse(response.getStatusCode() == 200);
+//        Assert.assertFalse(response_body.isEmpty());
+
+        return this;
+    }
+
+    @Step
+    public Decentralized_API_Steps send_api_request_without_entrypoint(String blockchain) throws InterruptedException {
+
+        Response response = send_api_request(blockchain);
+        String response_body = response.getBody().asString();
+        String header_response = response.getHeaders().toString();
+        Log.highlight("Header of response: " + header_response);
+        Log.info("response of call API is " + response_body);
+        Assert.assertFalse(response.getStatusCode() == 200);
+//        Assert.assertFalse(response_body.isEmpty());
+
+        return this;
+    }
+
     public Response send_api_request_direct_to_gateway(String blockchain, String ip) throws InterruptedException {
 
         Log.info("Start to call API direct to gateway");
@@ -646,6 +717,32 @@ public class Decentralized_API_Steps {
         Log.highlight("response of send api direct to node: " + response.getBody().asString());
 
         return response;
+    }
+
+    public List<String> get_list_my_api(){
+        Response response = SerenityRest.rest()
+                .given().log().all()
+                .header("mbrid", mbrid)
+                .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .when().log().all()
+                .get("https://dapi.massbit.io/api/v1?action=api.list&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+        List<String> list_api = JsonPath.from(response_body).getList("data.id");
+        Log.highlight("done");
+        return  list_api;
+    }
+
+    public void cleanup_dapi() throws IOException, InterruptedException {
+
+        Log.info("Start to clean up my dapi");
+        List<String> lst = get_list_my_api();
+
+        for(String api_id : lst){
+            deleteAPI(api_id);
+        }
+
+        Log.highlight("clean up my dapi done");
     }
 
 }

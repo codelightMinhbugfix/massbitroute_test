@@ -15,8 +15,11 @@ public interface Massbit_Route_Endpoint {
     String CREATE_GATEWAY = "/v1?action=gateway.create";
     String CHECK_GATEWAY = "/v1?action=gateway.get&id=";
     String GET_GATEWAY_LIST = "/v1?action=gateway.list";
+    String DELETE_GW = "/v1?action=gateway.delete";
 
     // Nodes Community
     String CREATE_NODE = "/v1?action=node.create";
     String CHECK_NODE = "/v1?action=node.get&id=";
+    String GET_NODE_LIST = "/v1?action=node.list";
+    String DELETE_NODE = "/v1?action=node.delete";
 }

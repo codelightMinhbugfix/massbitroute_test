@@ -227,4 +227,57 @@ public class Community_Nodes_Steps {
         return ls;
     }
 
+    public List<String> listMyNode(){
+
+        Response response = SerenityRest.rest()
+                .given().log().all()
+                .header("mbrid", mbrid)
+                .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .when().log().all()
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.GET_NODE_LIST + "&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+        List<String> list_node = JsonPath.from(response_body).getList("data.id");
+        return  list_node;
+    }
+
+    public void deleteNode(String id){
+
+        String body = "{\n" +
+                "    \"id\":\"" + id + "\",\n" +
+                "    \"sid\":\"" + sid + "\"\n" +
+                "}";
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when()
+                .body(body)
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_NODE);
+
+        Log.info(response.getBody().asString());
+
+        Log.highlight(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_NODE);
+        Log.highlight("mbrid: " +body );
+        Log.highlight("mbrid: " +mbrid );
+        Log.highlight("sid: " + sid );
+
+        Log.highlight("Delete node " +id + " success");
+    }
+
+    public void cleanup_node() throws IOException, InterruptedException {
+
+        Log.info("Start to clean up my nodes");
+
+        List<String> lst = listMyNode();
+
+        for(String node_id : lst){
+            deleteNode(node_id);
+        }
+
+        Log.highlight("clean up my nodes done");
+    }
+
 }

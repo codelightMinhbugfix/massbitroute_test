@@ -59,6 +59,10 @@ public class Community_Nodes {
         String installScript = "echo yes|" + community_nodes_steps.get_install_node_script();
         Log.highlight("install script: " + installScript);
 
+//        UtilSteps.runCommand("ls");
+//        UtilSteps.runCommand("cd terraform_node");
+//        UtilSteps.runCommand("cd terraform_node");
+
         UtilSteps.writeToFile("terraform_node/init.sh", installScript);
 
         Thread.sleep(1000);
