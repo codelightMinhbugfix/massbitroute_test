@@ -151,12 +151,22 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.0.0-M5</version>
                 <configuration>
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens java.base/java.lang.invoke=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.util.regex=ALL-UNNAMED
+                        --add-opens java.base/java.net=ALL-UNNAMED
+                        --add-opens java.base/sun.net.spi=ALL-UNNAMED
+                        --add-opens java.base/java.io=ALL-UNNAMED
+                    </argLine>
                     <includes>
                         <include>**/features/**/*.java</include>
                     </includes>
-                    <parallel>methods</parallel>
-                    <threadCount>2</threadCount>
-                    <reuseForks>true</reuseForks>
+<!--                    <parallel>methods</parallel>-->
+<!--                    <threadCount>2</threadCount>-->
+<!--                    <reuseForks>true</reuseForks>-->
 <!--                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>-->
                     <systemPropertyVariables>
 <!--                        <tags>${tags}</tags>-->

@@ -181,7 +181,7 @@ public class Gateway_Community_Steps {
     @Step
     public void ping_to_gateway(String id) throws InterruptedException, IOException {
 
-        String url = "https://" + id + ".gw.mbr." + utilSteps.getMassbitURL() +"/ping";
+        String url = "https://" + id + ".gw.mbr." + utilSteps.getEnvironmentDomain() +"/ping";
         Response response = SerenityRest.rest()
                 .given()
                 .header("Content-Type", "application/json").config(RestAssured.config()
@@ -226,6 +226,49 @@ public class Gateway_Community_Steps {
         return listGW;
     }
 
+
+    public List<String> listMyGateway(){
+
+        Response response = SerenityRest.rest()
+                .given().log().all()
+                .header("mbrid", mbrid)
+                .header("Content-Type", "application/json").config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .when().log().all()
+                .get(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.GET_GATEWAY_LIST + "&sid=" + sid);
+
+        String response_body = response.getBody().asString();
+        List<String> list_gw = JsonPath.from(response_body).getList("data.id");
+
+        return  list_gw;
+        }
+
+    public void deleteGW(String id){
+
+        String body = "{\n" +
+                "    \"id\":\"" + id + "\",\n" +
+                "    \"sid\":\"" + sid + "\"\n" +
+                "}";
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                        .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .header("mbrid", mbrid)
+                .when()
+                .body(body)
+                .post(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_GW);
+
+        Log.info(response.getBody().asString());
+
+        Log.highlight(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.DELETE_GW);
+        Log.highlight("mbrid: " +body );
+        Log.highlight("mbrid: " +mbrid );
+        Log.highlight("sid: " + sid );
+
+        Log.highlight("Delete gateway " +id + " success");
+    }
+
+
     public void disableGateway(){
 
 
@@ -243,6 +286,18 @@ public class Gateway_Community_Steps {
         List<List<String>> ls = UtilSteps.convertCSVFormatToList(response_body);
 
         return ls;
+    }
+
+    public void cleanup_gateway() throws IOException, InterruptedException {
+
+        Log.info("Start to clean up my gateway");
+        List<String> lst = listMyGateway();
+
+        for(String gw_id : lst){
+            deleteGW(gw_id);
+        }
+
+        Log.highlight("clean up my gateway done");
     }
 
 }
