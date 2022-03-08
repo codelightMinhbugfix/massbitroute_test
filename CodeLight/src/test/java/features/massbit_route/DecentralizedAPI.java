@@ -50,11 +50,34 @@ public class DecentralizedAPI {
     Decentralized_API_Steps decentralized_api_steps;
 
     @Test
+    public void create_api_key_without_name(){
+        decentralized_api_steps.should_be_able_to_create_api("", blockchain, network);
+    }
+
+    @Test
+    public void create_api_key_without_blockchain(){
+        decentralized_api_steps.should_be_able_to_create_api(name, "", network);
+    }
+
+    @Test
+    public void create_api_key(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+    }
+
+    @Test
+    public void add_entrypoint_mmassbit(){
+        decentralized_api_steps.add_entrypoint("MASSBIT");
+    }
+
+    @Test
+    public void change_request_unlimited_per_day(){
+        decentralized_api_steps.should_be_able_to_update_api_request_limit_per_day_to_unlimited();
+    }
+
+
+    @Test
     public void massbit_route_call_api() throws IOException, InterruptedException {
 
-//        decentralized_api_steps.should_be_able_to_say_hello();
-//        decentralized_api_steps .should_be_able_to_login();
-//        decentralized_api_steps.should_be_able_to_get_api_list();
         decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
         decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
 
@@ -68,9 +91,6 @@ public class DecentralizedAPI {
     @Test
     public void massbit_route_call_api_2() throws IOException, InterruptedException {
 
-//        decentralized_api_steps.should_be_able_to_say_hello();
-//        decentralized_api_steps .should_be_able_to_login();
-//        decentralized_api_steps.should_be_able_to_get_api_list();
         decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
         decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
 

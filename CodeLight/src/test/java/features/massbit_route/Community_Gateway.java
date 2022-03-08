@@ -1,6 +1,7 @@
 package features.massbit_route;
 
 
+import constants.Massbit_Route_Config;
 import net.serenitybdd.junit.runners.SerenityParameterizedRunner;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.junit.annotations.TestData;
@@ -19,6 +20,7 @@ import java.util.Collection;
 @RunWith(SerenityParameterizedRunner.class)
 public class Community_Gateway {
 
+    enum Zone{AS,EU,NA,SA,AF,OC}
 
     @TestData
     public static Collection<Object[]> testData() throws Exception {
@@ -42,41 +44,43 @@ public class Community_Gateway {
     Gateway_Community_Steps gateway_community_steps;
 
     @Before
-    public void prepareForTest(){
-
-
-    }
-
-
-    @Test
-    public void massbit_route_gateway_testing() throws IOException, InterruptedException {
+    public void prepareForTest() throws IOException, InterruptedException {
 
         Log.info("----------- Start Community Gateway test ----------");
 
         gateway_community_steps.should_be_able_to_say_hello();
         gateway_community_steps.should_be_able_to_login();
-//        gateway_community_steps.listGateway();
-        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name, blockchain, zone, network);
 
-        String installScript = "echo yes|" + gateway_community_steps.get_install_gateway_script();
-        Log.highlight("install script: " + installScript);
+    }
 
-        UtilSteps.writeToFile("terraform_gateway/init.sh", installScript);
+    @Test
+    public void add_new_gateway_without_name(){
+        gateway_community_steps.should_be_able_to_add_new_gateway("",blockchain, zone, network);
+    }
 
-        Thread.sleep(1000);
+    @Test
+    public void add_new_gateway_without_blockchain(){
+        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,"", zone, network);
+    }
 
-        UtilSteps.runCommand("terraform_gateway/cmTerraformApply.sh");
+    @Test
+    public void add_new_gateway_without_zone(){
+        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, "", network);
+    }
+
+    @Test
+    public void add_new_gateway_without_network(){
+        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, zone, "");
+    }
+
+    @Test
+    public void add_new_gateway_in_Asia_zone()throws IOException, InterruptedException {
+        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.AS.toString(), network);
+        gateway_community_steps.create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script());
 
         gateway_community_steps.should_be_able_to_activate_gateway_successfully();
 
-        Thread.sleep(4000);
-//
-        UtilSteps.runCommand("terraform_gateway/cmTerraformDestroy.sh");
-
-        Thread.sleep(10000);
-
-        Log.highlight("Destroy VM instance successfully");
-
+        gateway_community_steps.destroy_vm_instance();
     }
 
 }

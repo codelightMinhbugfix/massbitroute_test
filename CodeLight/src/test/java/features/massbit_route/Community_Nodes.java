@@ -20,6 +20,8 @@ import java.util.Collection;
 @RunWith(SerenityParameterizedRunner.class)
 public class Community_Nodes {
 
+    enum Zone{AS,EU,NA,SA,AF,OC}
+
     @TestData
     public static Collection<Object[]> testData() throws Exception {
         Object[][] data = DataCSV.getAllDataCSV("data/nodes_info.csv");
@@ -39,45 +41,23 @@ public class Community_Nodes {
     }
 
     @Before
-    public void prepareForTest() throws IOException {
+    public void prepareForTest() throws IOException, InterruptedException {
         Log.highlight("Java version:" + System.getProperty("java.version"));
         UtilSteps.runCommand("terraform --version");
+        community_nodes_steps.should_be_able_to_say_hello()
+                             .should_be_able_to_login();
     }
 
     @Steps
     Community_Nodes_Steps community_nodes_steps;
 
     @Test
-    public void massbit_route_node_testing() throws IOException, InterruptedException {
-
-        Log.info("----------- Start Community Nodes test -----------");
-
-        community_nodes_steps.should_be_able_to_say_hello()
-                             .should_be_able_to_login()
-                             .should_be_able_to_add_new_node(gateway_name, blockchain, zone, network);
-
-        String installScript = "echo yes|" + community_nodes_steps.get_install_node_script();
-        Log.highlight("install script: " + installScript);
-
-//        UtilSteps.runCommand("ls");
-//        UtilSteps.runCommand("cd terraform_node");
-//        UtilSteps.runCommand("cd terraform_node");
-
-        UtilSteps.writeToFile("terraform_node/init.sh", installScript);
-
-        Thread.sleep(1000);
-
-        UtilSteps.runCommand("terraform_node/cmTerraformApply.sh");
-
-        community_nodes_steps.should_be_able_to_activate_node_successfully();
-
-        Thread.sleep(4000);
-
-        UtilSteps.runCommand("terraform_node/cmTerraformDestroy.sh");
-
-        Thread.sleep(10000);
-
-        Log.highlight("Destroy VM instance successfully");
+    public void add_new_node_in_Asia_zone()throws IOException, InterruptedException {
+        community_nodes_steps.should_be_able_to_add_new_node(gateway_name, blockchain, Zone.AS.toString(), network)
+                             .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
+                             .should_be_able_to_activate_node_successfully()
+                             .destroy_vm_instance();
 
     }
+
 }

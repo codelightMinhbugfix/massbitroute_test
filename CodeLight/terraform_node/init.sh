@@ -1,1 +1,1 @@
-echo yes|bash -c "$(curl -sSfL 'https://dapi.massbit.io/api/v1/node_install?id=e085fe28-978c-4eca-93ce-e63ee9b5e404&user_id=9b0c7d24-6edd-4224-b94c-9fa7f8a1f760&blockchain=dot&network=mainnet&zone=AS&data_url=https://34.87.170.136')"
+echo yes|bash -c "$(curl -sSfL 'https://dapi.massbit.io/api/v1/node_install?id=b4c0106c-2b5c-4dec-8bf6-fff0e8a60f7f&user_id=9b0c7d24-6edd-4224-b94c-9fa7f8a1f760&blockchain=dot&network=mainnet&zone=AS&data_url=https://34.87.170.136')"

@@ -39,7 +39,7 @@ public class Make_Traffic_For_Gateway {
 
 
         Log.info("list gateway size: " + list_gateway.size());
-        for(int i = 0; i <30; i++) {
+        for(int i = 0; i <2; i++) {
             for (List<String> list : list_gateway) {
                 String blockchain = list.get(2);
                 String ip = list.get(4);
@@ -49,14 +49,10 @@ public class Make_Traffic_For_Gateway {
                     decentralized_api_steps.should_be_able_to_create_api("traffic_gateway_test", blockchain, "mainnet");
                     decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
 
-
                     decentralized_api_steps.send_api_request_direct_to_gateway(blockchain, ip);
-
                 }
-
             }
         }
-
 
     }
 
@@ -82,12 +78,8 @@ public class Make_Traffic_For_Gateway {
                     decentralized_api_steps.should_be_able_to_add_entrypoint("MASSBIT");
 
                     decentralized_api_steps.send_api_request_direct_to_node(blockchain, id, x_api_key);
-
                 }
-
-
             }
         }
-
     }
 }

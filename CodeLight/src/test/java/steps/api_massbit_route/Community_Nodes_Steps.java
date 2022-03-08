@@ -175,8 +175,9 @@ public class Community_Nodes_Steps {
         String data_url = "&data_url=" + JsonPath.from(node_info.toString()).getString("data_url");
         String cmd_end = "')\"";
 
-        String install_script = cmd_start + url + id + user_id + blockchain + network + zone + data_url + cmd_end;
+        String install_script = "echo yes|" + cmd_start + url + id + user_id + blockchain + network + zone + data_url + cmd_end;
 
+        Log.highlight("install script to register node: " + install_script);
 
         return install_script;
     }
@@ -278,6 +279,29 @@ public class Community_Nodes_Steps {
         }
 
         Log.highlight("clean up my nodes done");
+    }
+
+    public Community_Nodes_Steps create_vm_instance_and_register_node(String installScript) throws InterruptedException, IOException {
+
+        UtilSteps.writeToFile(Massbit_Route_Config.NODE_PATH_TERRAFORM_INIT, installScript);
+
+        Thread.sleep(1000);
+
+        UtilSteps.runCommand(Massbit_Route_Config.NODE_PATH_TERRAFORM_APPLY);
+
+        return this;
+    }
+
+    public Community_Nodes_Steps destroy_vm_instance() throws InterruptedException, IOException {
+
+        Thread.sleep(4000);
+        UtilSteps.runCommand(Massbit_Route_Config.NODE_PATH_TERRAFORM_DESTROY);
+
+        Thread.sleep(10000);
+
+        Log.highlight("Destroy VM instance successfully");
+
+        return  this;
     }
 
 }

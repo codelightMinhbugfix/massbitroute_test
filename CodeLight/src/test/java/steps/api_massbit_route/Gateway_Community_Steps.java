@@ -2,6 +2,7 @@ package steps.api_massbit_route;
 
 import com.google.gson.JsonObject;
 import com.google.inject.internal.cglib.core.$CollectionUtils;
+import constants.Massbit_Route_Config;
 import constants.Massbit_Route_Endpoint;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
@@ -139,8 +140,9 @@ public class Gateway_Community_Steps {
         String zone = "&zone=" + JsonPath.from(gateway_info.toString()).getString("zone");
         String cmd_end = "')\"";
 
-        String install_script = cmd_start + url + id + user_id + blockchain + network + zone + cmd_end;
+        String install_script = "echo yes|" + cmd_start + url + id + user_id + blockchain + network + zone + cmd_end;
 
+        Log.highlight("install gateway script: " + install_script);
 
         return install_script;
     }
@@ -298,6 +300,25 @@ public class Gateway_Community_Steps {
         }
 
         Log.highlight("clean up my gateway done");
+    }
+
+    public void create_vm_instance_and_register_gateway(String installScript) throws InterruptedException, IOException {
+
+        UtilSteps.writeToFile(Massbit_Route_Config.GW_PATH_TERRAFORM_INIT, installScript);
+
+        Thread.sleep(1000);
+
+        UtilSteps.runCommand(Massbit_Route_Config.GW_PATH_TERRAFORM_APPLY);
+    }
+
+    public void destroy_vm_instance() throws InterruptedException, IOException {
+
+        Thread.sleep(4000);
+        UtilSteps.runCommand(Massbit_Route_Config.GW_PATH_TERRAFORM_DESTROY);
+
+        Thread.sleep(10000);
+
+        Log.highlight("Destroy VM instance successfully");
     }
 
 }
