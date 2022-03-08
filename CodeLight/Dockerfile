@@ -24,6 +24,7 @@ COPY . .
 RUN rm -rf terraform_node/.terraform.lock.hcl
 
 RUN cd terraform_node
+#RUN echo yes|terraform login
 RUN terraform init
 
 CMD ["./mvnw", "-Dit.test=features.massbit_route.Community_Nodes", "-Dskip-test=true", "-Denvironment=dev", "clean", "verify"]

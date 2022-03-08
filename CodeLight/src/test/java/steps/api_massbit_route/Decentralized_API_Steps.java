@@ -549,6 +549,62 @@ public class Decentralized_API_Steps {
         return response;
     }
 
+    public Response send_api_request_direct_gw_by_massbit_dommain(String blockchain, String object, String id) throws InterruptedException {
+
+        Log.info("Start to call API direct to" + object + " from massbit domain");
+        String body ="";
+        switch (blockchain) {
+            case "eth":
+                body = Massbit_Route_Config.ETHEREUM;
+                break;
+            case "near":
+                body = Massbit_Route_Config.NEAR;
+                break;
+            case "hmny":
+                body = Massbit_Route_Config.HARMONY;
+                break;
+            case "dot":
+                body = Massbit_Route_Config.POLKADOT;
+                break;
+            case "avax":
+                body = Massbit_Route_Config.AVALANCHE;
+                break;
+            case "ftm":
+                body = Massbit_Route_Config.FANTOM;
+                break;
+            case "matic":
+                body = Massbit_Route_Config.POLYGON;
+                break;
+            case "bsc":
+                body = Massbit_Route_Config.BSC;
+                break;
+            case "sol":
+                body = Massbit_Route_Config.SOLANA;
+                break;
+            default:
+                body = Massbit_Route_Config.ETHEREUM;
+        }
+
+        String url = "";
+        if(object.equalsIgnoreCase("gateway")){
+            url = id + ".gw.mbr.massbitroute.com";
+        } else {
+
+            url = id + ".node.mbr.massbitroute.com";
+        }
+        Thread.sleep(30000);
+
+        Response response = SerenityRest.rest()
+                .given()
+                .header("Content-Type", "application/json").config(RestAssured.config()
+                .encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                .when()
+                .body(body)
+                .post(url);
+
+        return response;
+    }
+
     @Step
     public Decentralized_API_Steps should_be_able_to_send_api_request(String blockchain) throws InterruptedException {
 

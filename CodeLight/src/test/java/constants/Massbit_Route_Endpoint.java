@@ -22,4 +22,7 @@ public interface Massbit_Route_Endpoint {
     String CHECK_NODE = "/v1?action=node.get&id=";
     String GET_NODE_LIST = "/v1?action=node.list";
     String DELETE_NODE = "/v1?action=node.delete";
+
+    // Portal
+    String LOGIN_REQUEST = "/auth/request-login";
 }

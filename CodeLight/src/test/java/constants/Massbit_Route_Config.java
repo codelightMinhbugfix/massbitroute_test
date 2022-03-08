@@ -48,4 +48,16 @@ public interface Massbit_Route_Config {
     String DATA_URL_POLYGON = "";
     String DATA_URL_BSC = "";
     String DATA_URL_SOLANA = "";
+
+    // Gateway
+    String GW_PATH_TERRAFORM_APPLY = "terraform_gateway/cmTerraformApply.sh";
+    String GW_PATH_TERRAFORM_DESTROY = "terraform_gateway/cmTerraformDestroy.sh";
+    String GW_PATH_TERRAFORM_INIT = "terraform_gateway/init.sh";
+
+    // Node
+    String NODE_PATH_TERRAFORM_APPLY = "terraform_node/cmTerraformApply.sh";
+    String NODE_PATH_TERRAFORM_DESTROY = "terraform_node/cmTerraformDestroy.sh";
+    String NODE_PATH_TERRAFORM_INIT = "terraform_node/init.sh";
+
+
 }

@@ -28,7 +28,12 @@ public class UtilSteps {
         String webserviceEndpoint =  EnvironmentSpecificConfiguration.from(environmentVariables)
                 .getProperty("domainname");
         return webserviceEndpoint;
-//        return SerenityUtil.getEnv("api.massbitroute.url");
+    }
+
+    public String getPortalURL(){
+        String webserviceEndpoint =  EnvironmentSpecificConfiguration.from(environmentVariables)
+                .getProperty("portal.url");
+        return webserviceEndpoint;
     }
 
     public static void runCommand(String command) throws IOException {
