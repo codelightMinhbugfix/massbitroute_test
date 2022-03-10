@@ -25,4 +25,10 @@ public interface Massbit_Route_Endpoint {
 
     // Portal
     String LOGIN_REQUEST = "/auth/request-login";
+    String REGISTER = "/auth/register";
+    String PORTAL_LOGIN = "/auth/login";
+    String PORTAL_CHANGE_PASSWORD = "/auth/change-password";
+    String REQUEST_RESET_PASSWORD = "/auth/request-reset-password";
+    String RESET_PASSWORD = "/auth/reset-password";
+    String GET_USER_INFO = "/user/info";
 }
