@@ -31,4 +31,20 @@ public interface Massbit_Route_Endpoint {
     String REQUEST_RESET_PASSWORD = "/auth/request-reset-password";
     String RESET_PASSWORD = "/auth/reset-password";
     String GET_USER_INFO = "/user/info";
+
+    // Portal gateway
+    String GET_GATEWAY_BY_STATUS = "/mbr/gateway/statistic";
+    String GET_MY_GATEWAY_LIST = "/mbr/gateway/list";
+    String GET_GATEWAY_INFO = "/mbr/gateway/";
+    String ADD_NEW_GATEWAY = "/mbr/gateway/";
+    String EDIT_GATEWAY_NAME = "/mbr/gateway/";
+    String DELETE_GATEWAY = "/mbr/gateway/";
+
+    // Portal node
+    String GET_NODE_BY_STATUS = "/mbr/node/statistic";
+    String GET_MY_NODE_LIST = "/mbr/node/list";
+    String GET_NODE_INFO = "/mbr/node/";
+    String ADD_NEW_NODE = "/mbr/node/";
+    String EDIT_NODE = "/mbr/node/";
+    String DELETE_PORTAL_NODE = "/mbr/node/";
 }

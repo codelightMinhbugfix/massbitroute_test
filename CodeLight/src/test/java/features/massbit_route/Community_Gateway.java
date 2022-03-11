@@ -30,13 +30,11 @@ public class Community_Gateway {
 
     private String gateway_name;
     private String blockchain;
-    private String zone;
     private String network;
 
-    public Community_Gateway(String gateway_name, String blockchain, String zone, String network){
+    public Community_Gateway(String gateway_name, String blockchain, String network){
         this.gateway_name = gateway_name;
         this.blockchain = blockchain;
-        this.zone = zone;
         this.network = network;
     }
 

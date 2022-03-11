@@ -59,5 +59,7 @@ public interface Massbit_Route_Config {
     String NODE_PATH_TERRAFORM_DESTROY = "terraform_node/cmTerraformDestroy.sh";
     String NODE_PATH_TERRAFORM_INIT = "terraform_node/init.sh";
 
-
+    //User
+    String uname = "duongvu";
+    String password = "Duong123";
 }
