@@ -132,7 +132,7 @@ public class Gateway_Community_Steps {
     public String get_install_gateway_script(){
 
         String cmd_start = "bash -c \"$(curl -sSfL '";
-        String url = "https://dapi.massbit.io/api/v1/gateway_install?";
+        String url = utilSteps.getAPIURL() + "/v1/gateway_install?";
         String id = "id=" + JsonPath.from(gateway_info.toString()).getString("id");
         String user_id = "&user_id=" + JsonPath.from(gateway_info.toString()).getString("user_id");
         String blockchain = "&blockchain=" + JsonPath.from(gateway_info.toString()).getString("blockchain");

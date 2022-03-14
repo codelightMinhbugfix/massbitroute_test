@@ -47,4 +47,8 @@ public interface Massbit_Route_Endpoint {
     String ADD_NEW_NODE = "/mbr/node/";
     String EDIT_NODE = "/mbr/node/";
     String DELETE_PORTAL_NODE = "/mbr/node/";
+
+    //Portal Project & dAPI
+    String CREATE_NEW_PROJECT = "/mbr/d-apis/project";
+    String CREATE_NEW_DAPI = "/mbr/d-apis";
 }

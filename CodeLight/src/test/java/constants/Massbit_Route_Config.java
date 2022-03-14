@@ -53,6 +53,8 @@ public interface Massbit_Route_Config {
     String GW_PATH_TERRAFORM_APPLY = "terraform_gateway/cmTerraformApply.sh";
     String GW_PATH_TERRAFORM_DESTROY = "terraform_gateway/cmTerraformDestroy.sh";
     String GW_PATH_TERRAFORM_INIT = "terraform_gateway/init.sh";
+    //install script
+    String portal_url = "https://dev.user.massbit.io&env=dev";
 
     // Node
     String NODE_PATH_TERRAFORM_APPLY = "terraform_node/cmTerraformApply.sh";
@@ -62,4 +64,14 @@ public interface Massbit_Route_Config {
     //User
     String uname = "duongvu";
     String password = "Duong123";
+
+    String uname_2 = "mison201";
+    String password_2 = "Tuong111";
+
+    // Portal Gateway
+    String PORTAL_GW_PATH_TERRAFORM_APPLY = "terraform_portal_gateway/cmTerraformApply.sh";
+    String PORTAL_GW_PATH_TERRAFORM_DESTROY = "terraform_portal_gateway/cmTerraformDestroy.sh";
+    String PORTAL_GW_PATH_TERRAFORM_INIT = "terraform_portal_gateway/init.sh";
+
+
 }

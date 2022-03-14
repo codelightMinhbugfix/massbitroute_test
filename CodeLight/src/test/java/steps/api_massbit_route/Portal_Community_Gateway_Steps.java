@@ -1,6 +1,9 @@
 package steps.api_massbit_route;
 
+import constants.Massbit_Route_Config;
 import constants.Massbit_Route_Endpoint;
+import io.restassured.RestAssured;
+import io.restassured.config.EncoderConfig;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -10,6 +13,8 @@ import net.thucydides.core.annotations.Steps;
 import org.junit.Assert;
 import steps.UtilSteps;
 import utilities.Log;
+
+import java.io.IOException;
 
 public class Portal_Community_Gateway_Steps {
 
@@ -108,7 +113,7 @@ public class Portal_Community_Gateway_Steps {
     }
 
     @Step
-    public Portal_Community_Gateway_Steps should_be_able_to_add_new_gateway(String name, String blockchain, String network, String zone){
+    public Portal_Community_Gateway_Steps should_be_able_to_add_new_portal_gateway(String name, String blockchain, String network, String zone){
 
         Response response = add_new_gateway(name, blockchain, network, zone);
         String response_body = response.getBody().asString();
@@ -261,7 +266,9 @@ public class Portal_Community_Gateway_Steps {
                 .when()
                 .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_GATEWAY_INFO + id);
 
+        Log.highlight("gateway info: " + response.getBody().asString());
         return response;
+
     }
 
 
@@ -281,20 +288,71 @@ public class Portal_Community_Gateway_Steps {
 
     public String get_install_gateway_script(){
 
-        String cmd_start = "bash -c \"$(curl -sSfL '";
+        String cmd_start = "sudo bash -c \"$(curl -sSfL '";
         String url = utilSteps.getAPIURL() + "/v1/gateway_install?";
         String id = "id=" + JsonPath.from(gw_info.toString()).getString("id");
-        String user_id = "&user_id=" + JsonPath.from(gw_info.toString()).getString("user_id");
+        String user_id = "&user_id=" + JsonPath.from(gw_info.toString()).getString("userId");
         String blockchain = "&blockchain=" + JsonPath.from(gw_info.toString()).getString("blockchain");
         String network = "&network=" + JsonPath.from(gw_info.toString()).getString("network");
         String zone = "&zone=" + JsonPath.from(gw_info.toString()).getString("zone");
+        String appKey = "&appKey=" + JsonPath.from(gw_info.toString()).getString("appKey");
         String cmd_end = "')\"";
 
-        String install_script = "echo yes|" + cmd_start + url + id + user_id + blockchain + network + zone + cmd_end;
+        String install_script = "echo yes|" + cmd_start + url + id + user_id + blockchain + network + zone + appKey + "&portal_url=" + Massbit_Route_Config.portal_url + cmd_end;
 
-        Log.highlight("install gateway script: " + install_script);
+        Log.highlight("install portal gateway script: " + install_script);
 
         return install_script;
+    }
+
+    public Portal_Community_Gateway_Steps create_vm_instance_and_register_gateway(String installScript) throws InterruptedException, IOException {
+
+        UtilSteps.writeToFile(Massbit_Route_Config.PORTAL_GW_PATH_TERRAFORM_INIT, installScript);
+
+        Thread.sleep(1000);
+
+        UtilSteps.runCommand(Massbit_Route_Config.PORTAL_GW_PATH_TERRAFORM_APPLY);
+
+        return this;
+    }
+
+    public Portal_Community_Gateway_Steps destroy_vm_instance() throws InterruptedException, IOException {
+
+        Thread.sleep(4000);
+        UtilSteps.runCommand(Massbit_Route_Config.PORTAL_GW_PATH_TERRAFORM_DESTROY);
+
+        Thread.sleep(10000);
+
+        Log.highlight("Destroy VM instance of portal gateway successfully");
+
+        return this;
+    }
+
+    public boolean gatewayActive(String id){
+
+        Response response_portal_gw_info = getGatewayInfo(id);
+
+        String response_body = response_portal_gw_info.getBody().asString();
+        String status = JsonPath.from(response_body).getString("status");
+
+        Log.info("Portal Gateway info body: " + response_body);
+        if(status.equalsIgnoreCase("verified"))
+        { return true; }
+        else { return false; }
+
+    }
+
+    @Step
+    public Portal_Community_Gateway_Steps should_be_able_to_activate_gateway_successfully(String id, String username, String password) throws InterruptedException, IOException {
+        int i = 0;
+        while (!gatewayActive(id) && i < 20){
+            Thread.sleep(30000);
+            i++;
+            should_be_able_to_login(username, password);
+        }
+        Assert.assertTrue(gatewayActive(id)) ;
+        Log.highlight("Portal Gateway register successfully");
+        return this;
     }
 
 
