@@ -77,7 +77,7 @@ public class Massbit_Portal_Steps {
 
         Response response = request_login(walletAddress);
         String response_body = response.getBody().asString();
-        Log.info("Response of login request " + response_body);
+        Log.info("Response of login request: " + response_body);
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertFalse(response_body.isEmpty());
 
@@ -112,7 +112,7 @@ public class Massbit_Portal_Steps {
 
         Response response = register(name, password, pass_confirm, email);
         String response_body = response.getBody().asString();
-        Log.info("Response of register " + response_body);
+        Log.info("Response of register: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertFalse(JsonPath.from(response_body).getString("id").isEmpty());
@@ -144,7 +144,7 @@ public class Massbit_Portal_Steps {
 
         Response response = login(uname, password);
         String response_body = response.getBody().asString();
-        Log.info("Response of login " + response_body);
+        Log.info("Response of login: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertFalse(JsonPath.from(response_body).getString("accessToken").isEmpty());
@@ -178,7 +178,7 @@ public class Massbit_Portal_Steps {
 
         Response response = changePassword(old_password, new_password);
         String response_body = response.getBody().asString();
-        Log.info("Response of change password " + response_body);
+        Log.info("Response of change password: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("status"));
@@ -207,7 +207,7 @@ public class Massbit_Portal_Steps {
 
         Response response = request_reset_password(email);
         String response_body = response.getBody().asString();
-        Log.info("Response of request reset password password " + response_body);
+        Log.info("Response of request reset password password: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("status"));
@@ -239,7 +239,7 @@ public class Massbit_Portal_Steps {
 
         Response response = reset_password(new_password, refresh_token);
         String response_body = response.getBody().asString();
-        Log.info("Response of reset password " + response_body);
+        Log.info("Response of reset password: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertTrue(JsonPath.from(response_body).getBoolean("status"));
@@ -269,7 +269,7 @@ public class Massbit_Portal_Steps {
 
         Response response = getUserInfo();
         String response_body = response.getBody().asString();
-        Log.info("Response of get user info " + response_body);
+        Log.info("Response of get user info: " + response_body);
 
         Assert.assertTrue(response.getStatusCode() == 200);
         Assert.assertFalse(JsonPath.from(response_body).getString("id").isEmpty());

@@ -54,7 +54,7 @@ public class Portal_Community_Gateway {
 
     }
 
-        @Test
+    @Test
     public void add_new_gateway_without_name(){
             portal_community_gateway_steps.should_be_able_to_add_new_portal_gateway("",blockchain, Zone.AS.toString(), network);
     }

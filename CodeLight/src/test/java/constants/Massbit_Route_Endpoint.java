@@ -50,5 +50,11 @@ public interface Massbit_Route_Endpoint {
 
     //Portal Project & dAPI
     String CREATE_NEW_PROJECT = "/mbr/d-apis/project";
+    String GET_PROJECT_LIST = "/mbr/d-apis/project/list";
     String CREATE_NEW_DAPI = "/mbr/d-apis";
+    String EDIT_NEW_DAPI = "/mbr/d-apis/";
+    String GET_DAPI_INFO = "/mbr/d-apis/";
+    String GET_DAPI_LIST_BY_PROJECTID = "/mbr/d-apis/list/";
+    String CREATE_ENTRYPOINT = "/mbr/d-apis/entrypoint/";
+    String EDIT_ENTRYPOINT = "/mbr/d-apis/entrypoint/";
 }
