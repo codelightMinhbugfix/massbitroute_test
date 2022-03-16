@@ -73,5 +73,10 @@ public interface Massbit_Route_Config {
     String PORTAL_GW_PATH_TERRAFORM_DESTROY = "terraform_portal_gateway/cmTerraformDestroy.sh";
     String PORTAL_GW_PATH_TERRAFORM_INIT = "terraform_portal_gateway/init.sh";
 
+    // Portal node
+    String PORTAL_NODE_PATH_TERRAFORM_APPLY = "terraform_portal_node/cmTerraformApply.sh";
+    String PORTAL_NODE_PATH_TERRAFORM_DESTROY = "terraform_portal_node/cmTerraformDestroy.sh";
+    String PORTAL_NODE_PATH_TERRAFORM_INIT = "terraform_portal_node/init.sh";
+
 
 }
