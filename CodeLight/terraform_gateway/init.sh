@@ -1,1 +1,1 @@
-echo yes|bash -c "$(curl -sSfL 'https://dapi.massbit.io/api/v1/gateway_install?id=ec2cac1d-1a5b-4e39-b6e1-127b763e59dd&user_id=9b0c7d24-6edd-4224-b94c-9fa7f8a1f760&blockchain=dot&network=mainnet&zone=AS')"
+echo yes|bash -c "$(curl -sSfL 'https://dapi.massbit.io/api/v1/gateway_install?id=673f5e1d-4672-4a89-883d-8d847f66ff17&user_id=9b0c7d24-6edd-4224-b94c-9fa7f8a1f760&blockchain=dot&network=mainnet&zone=AS')"

@@ -15,6 +15,10 @@ import steps.UtilSteps;
 import utilities.Log;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class Portal_Community_Gateway_Steps {
 
@@ -63,7 +67,6 @@ public class Portal_Community_Gateway_Steps {
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
                 .when()
                 .body(body)
                 .post(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.PORTAL_LOGIN);
@@ -88,7 +91,7 @@ public class Portal_Community_Gateway_Steps {
         return this;
     }
 
-    public Response add_new_gateway(String name, String blockchain, String network, String zone){
+    public Response add_new_gateway(String name, String blockchain, String zone, String network){
 
         String body = "{\n" +
                 "  \"name\": \"" + name + "\",\n" +
@@ -103,7 +106,6 @@ public class Portal_Community_Gateway_Steps {
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
                 .header("Authorization", access_token)
                 .when()
                 .body(body)
@@ -113,9 +115,9 @@ public class Portal_Community_Gateway_Steps {
     }
 
     @Step
-    public Portal_Community_Gateway_Steps should_be_able_to_add_new_portal_gateway(String name, String blockchain, String network, String zone){
+    public Portal_Community_Gateway_Steps should_be_able_to_add_new_portal_gateway(String name, String blockchain, String zone, String network){
 
-        Response response = add_new_gateway(name, blockchain, network, zone);
+        Response response = add_new_gateway(name, blockchain, zone, network);
         String response_body = response.getBody().asString();
         Log.info("Response of add new portal gateway: " + response_body);
 
@@ -149,7 +151,6 @@ public class Portal_Community_Gateway_Steps {
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
                 .header("Authorization", access_token)
                 .when()
                 .body(body)
@@ -178,7 +179,6 @@ public class Portal_Community_Gateway_Steps {
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
                 .header("Authorization", access_token)
                 .when()
                 .delete(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.DELETE_GATEWAY + id);
@@ -207,7 +207,6 @@ public class Portal_Community_Gateway_Steps {
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
                 .when()
                 .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_GATEWAY_BY_STATUS + "?status=" + status);
 
@@ -228,32 +227,46 @@ public class Portal_Community_Gateway_Steps {
         return this;
     }
 
-    public Response getMyGatewayList(){
+    public HttpResponse getMyGatewayList() throws IOException, InterruptedException {
 
-        Response response = SerenityRest.rest()
-                .given()
-                .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
+        Log.highlight(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_GATEWAY_LIST + "?limit=5");
+        Log.highlight(access_token);
+
+//        Response response = SerenityRest.rest()
+//                .given()
+//                .header("Authorization", access_token)
+//                .when().log().all()
+//                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_GATEWAY_LIST+ "?limit=5");
+//
+//        return response;
+
+        HttpClient client = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
                 .header("Authorization", access_token)
-                .when()
-                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_GATEWAY_LIST);
+                .uri(URI.create(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_GATEWAY_LIST+ "?limit=50"))
+                .GET()
+                .build();
+
+        HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assert.assertTrue(response.statusCode()==200);
 
         return response;
     }
 
     // Not verify yet
-    @Step
-    public Portal_Community_Gateway_Steps should_be_able_to_get_my_gateway_list(){
-
-        Response response = getMyGatewayList();
-        String response_body = response.getBody().asString();
-        Log.info("Response of get my gateway list: " + response_body);
-
-        Assert.assertTrue(response.getStatusCode() == 200);
-
-        Log.highlight("Get my gateway list successfully");
-        return this;
-    }
+//    @Step
+//    public Portal_Community_Gateway_Steps should_be_able_to_get_my_gateway_list(){
+//
+//        Response response = getMyGatewayList();
+//        String response_body = response.getBody().asString();
+//        Log.info("Response of get my gateway list: " + response_body);
+//
+//        Assert.assertTrue(response.getStatusCode() == 200);
+//
+//        Log.highlight("Get my gateway list successfully");
+//        return this;
+//    }
 
 
     public Response getGatewayInfo(String id){
@@ -261,7 +274,6 @@ public class Portal_Community_Gateway_Steps {
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
-//                .header("mbrid", mbrid)
                 .header("Authorization", access_token)
                 .when()
                 .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_GATEWAY_INFO + id);
@@ -295,7 +307,7 @@ public class Portal_Community_Gateway_Steps {
         String blockchain = "&blockchain=" + JsonPath.from(gw_info.toString()).getString("blockchain");
         String network = "&network=" + JsonPath.from(gw_info.toString()).getString("network");
         String zone = "&zone=" + JsonPath.from(gw_info.toString()).getString("zone");
-        String appKey = "&appKey=" + JsonPath.from(gw_info.toString()).getString("appKey");
+        String appKey = "&app_key=" + JsonPath.from(gw_info.toString()).getString("appKey");
         String cmd_end = "')\"";
 
         String install_script = "echo yes|" + cmd_start + url + id + user_id + blockchain + network + zone + appKey + "&portal_url=" + Massbit_Route_Config.portal_url + cmd_end;
@@ -345,10 +357,13 @@ public class Portal_Community_Gateway_Steps {
     @Step
     public Portal_Community_Gateway_Steps should_be_able_to_activate_gateway_successfully(String id, String username, String password) throws InterruptedException, IOException {
         int i = 0;
-        while (!gatewayActive(id) && i < 20){
+        while (!gatewayActive(id) && i < 35){
             Thread.sleep(30000);
             i++;
-            should_be_able_to_login(username, password);
+            if(i==8 || i == 16 || i == 24 || i == 32){
+                should_be_able_to_login(username, password);
+            }
+
         }
         Assert.assertTrue(gatewayActive(id)) ;
         Log.highlight("Portal Gateway register successfully");

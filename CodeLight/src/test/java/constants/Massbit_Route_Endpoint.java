@@ -33,7 +33,7 @@ public interface Massbit_Route_Endpoint {
     String GET_USER_INFO = "/user/info";
 
     // Portal gateway
-    String GET_GATEWAY_BY_STATUS = "/mbr/gateway/statistic";
+    String GET_GATEWAY_BY_STATUS = "/mbr/gateway/list/verify";
     String GET_MY_GATEWAY_LIST = "/mbr/gateway/list";
     String GET_GATEWAY_INFO = "/mbr/gateway/";
     String ADD_NEW_GATEWAY = "/mbr/gateway/";
@@ -41,7 +41,7 @@ public interface Massbit_Route_Endpoint {
     String DELETE_GATEWAY = "/mbr/gateway/";
 
     // Portal node
-    String GET_NODE_BY_STATUS = "/mbr/node/statistic";
+    String GET_NODE_BY_STATUS = "/mbr/node/list/verify";
     String GET_MY_NODE_LIST = "/mbr/node/list";
     String GET_NODE_INFO = "/mbr/node/";
     String ADD_NEW_NODE = "/mbr/node/";
@@ -57,4 +57,5 @@ public interface Massbit_Route_Endpoint {
     String GET_DAPI_LIST_BY_PROJECTID = "/mbr/d-apis/list/";
     String CREATE_ENTRYPOINT = "/mbr/d-apis/entrypoint/";
     String EDIT_ENTRYPOINT = "/mbr/d-apis/entrypoint/";
+    String DELETE_ENTRYPOINT = "/mbr/d-apis/entrypoint/";
 }

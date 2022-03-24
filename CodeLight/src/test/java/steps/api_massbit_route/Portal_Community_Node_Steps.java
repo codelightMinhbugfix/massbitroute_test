@@ -2,6 +2,8 @@ package steps.api_massbit_route;
 
 import constants.Massbit_Route_Config;
 import constants.Massbit_Route_Endpoint;
+import io.restassured.RestAssured;
+import io.restassured.config.EncoderConfig;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -13,18 +15,25 @@ import steps.UtilSteps;
 import utilities.Log;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
 
 public class Portal_Community_Node_Steps {
 
 
     public static String access_token = "";
     public static String node_info = "";
+    public static String node_id = "";
 
     @Steps
     private UtilSteps utilSteps;
 
     public Response login(String uname, String password){
 
+        Log.highlight(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.PORTAL_LOGIN);
         String body = "{\n" +
                 "  \"username\": \"" + uname + "\",\n" +
                 "  \"password\": \"" + password + "\"\n" +
@@ -133,8 +142,13 @@ public class Portal_Community_Node_Steps {
         Assert.assertFalse(JsonPath.from(response_body).getString("appKey").isEmpty());
 
         node_info = response_body;
+        node_id = JsonPath.from(response_body).getString("id");
         Log.highlight("Add new portal node successfully");
         return this;
+    }
+
+    public String getNode_id(){
+        return node_id;
     }
 
     public String get_install_node_script(){
@@ -147,7 +161,7 @@ public class Portal_Community_Node_Steps {
         String network = "&network=" + JsonPath.from(node_info.toString()).getString("network");
         String zone = "&zone=" + JsonPath.from(node_info.toString()).getString("zone");
         String data_url = "&data_url=" + JsonPath.from(node_info.toString()).getString("dataSource");
-        String appKey = "&appKey=" + JsonPath.from(node_info.toString()).getString("appKey");
+        String appKey = "&app_key=" + JsonPath.from(node_info.toString()).getString("appKey");
         String cmd_end = "')\"";
 
         String install_script = "echo yes|" + cmd_start + url + id + user_id + blockchain + network + zone + data_url + appKey + "&portal_url=" + Massbit_Route_Config.portal_url + cmd_end;
@@ -165,6 +179,36 @@ public class Portal_Community_Node_Steps {
 
         UtilSteps.runCommand(Massbit_Route_Config.PORTAL_NODE_PATH_TERRAFORM_APPLY);
 
+        return this;
+    }
+
+    public boolean nodeActive(String id){
+
+        Response response = getNodeInfo(id);
+
+        String response_body = response.getBody().asString();
+        String status = JsonPath.from(response_body).getString("status");
+
+        Log.info("Node info body: " + response_body);
+        if(status.equalsIgnoreCase("verified"))
+        { return true; }
+        else { return false; }
+
+    }
+
+    @Step
+    public Portal_Community_Node_Steps should_be_able_to_activate_node_successfully(String username, String password) throws InterruptedException, IOException {
+        int i = 0;
+        while (!nodeActive(JsonPath.from(node_info.toString()).getString("id")) && i < 35){
+            Thread.sleep(30000);
+            i++;
+            if(i == 8 || i == 16 || i == 24 || i == 30){
+                should_be_able_to_login(username, password);
+            }
+
+        }
+        Assert.assertTrue(nodeActive(JsonPath.from(node_info.toString()).getString("id")));
+        Log.highlight("Node register successfully");
         return this;
     }
 
@@ -215,12 +259,14 @@ public class Portal_Community_Node_Steps {
 
     public Response delete_node(String id){
 
+        Log.info(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.DELETE_NODE + id);
+
         Response response = SerenityRest.rest()
                 .given()
                 .contentType(ContentType.JSON.withCharset("UTF-8"))
                 .header("Authorization", access_token)
                 .when()
-                .delete(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.DELETE_NODE + id);
+                .delete(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.DELETE_PORTAL_NODE + id);
 
         return response;
     }
@@ -264,31 +310,45 @@ public class Portal_Community_Node_Steps {
         return this;
     }
 
-    public Response getMyNodeList(){
+    public HttpResponse getMyNodeList() throws IOException, InterruptedException {
 
-        Response response = SerenityRest.rest()
-                .given()
-                .contentType(ContentType.JSON.withCharset("UTF-8"))
+        Log.info(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_NODE_LIST + "?limit=5");
+
+//        Response response = SerenityRest.rest()
+//                .given()
+//                .contentType(ContentType.JSON.withCharset("UTF-8"))
+//                .header("Authorization", access_token)
+//                .when()
+//                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_NODE_LIST + "?limit=5");
+
+        HttpClient client = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
                 .header("Authorization", access_token)
-                .when()
-                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_NODE_LIST);
+                .uri(URI.create(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_MY_NODE_LIST+ "?limit=50"))
+                .GET()
+                .build();
+
+        HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Assert.assertTrue(response.statusCode()==200);
+
 
         return response;
     }
 
     // Not verify yet
-    @Step
-    public Portal_Community_Node_Steps should_be_able_to_get_my_node_list(){
-
-        Response response = getMyNodeList();
-        String response_body = response.getBody().asString();
-        Log.info("Response of get my node list: " + response_body);
-
-        Assert.assertTrue(response.getStatusCode() == 200);
-
-        Log.highlight("Get my node list successfully");
-        return this;
-    }
+//    @Step
+//    public Portal_Community_Node_Steps should_be_able_to_get_my_node_list(){
+//
+//        Response response = getMyNodeList();
+//        String response_body = response.getBody().asString();
+//        Log.info("Response of get my node list: " + response_body);
+//
+//        Assert.assertTrue(response.getStatusCode() == 200);
+//
+//        Log.highlight("Get my node list successfully");
+//        return this;
+//    }
 
     public Response getNodeInfo(String id){
 
@@ -314,6 +374,99 @@ public class Portal_Community_Node_Steps {
 
         Log.highlight("Get node info successfully");
         return this;
+    }
+
+    // APIs call automatic in install script
+
+    public Response get_geo(String id){
+
+        Response response = SerenityRest.rest()
+                .given()
+                .contentType(ContentType.JSON.withCharset("UTF-8"))
+                .header("Authorization", access_token)
+                .when()
+                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_NODE_INFO + id + "/geo");
+
+        return response;
+    }
+
+    @Step
+    public Portal_Community_Node_Steps should_be_able_to_get_geo(String id){
+
+        Response response = get_geo(id);
+        String response_body = response.getBody().asString();
+        Log.info("Response of get geo: " + response_body);
+
+        Assert.assertTrue(response.getStatusCode() == 200);
+        Assert.assertEquals(JsonPath.from(response_body).getString("id"), id);
+        Assert.assertEquals(JsonPath.from(response_body).getString("status"), "created");
+
+        Log.highlight("Get geo successfully");
+        return this;
+    }
+
+    public Response get_register(String id){
+
+        Response response = SerenityRest.rest()
+                .given()
+                .contentType(ContentType.JSON.withCharset("UTF-8"))
+                .header("Authorization", access_token)
+                .when()
+                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_NODE_INFO + id + "/register");
+
+        return response;
+    }
+
+    @Step
+    public Portal_Community_Node_Steps should_be_able_to_get_register(String id){
+
+        Response response = get_register(id);
+        String response_body = response.getBody().asString();
+        Log.info("Response of get register: " + response_body);
+
+        Assert.assertTrue(response.getStatusCode() == 200);
+        Assert.assertEquals(JsonPath.from(response_body).getString("id"), id);
+        Assert.assertEquals(JsonPath.from(response_body).getString("status"), "installed");
+
+        Log.highlight("Get register successfully");
+        return this;
+    }
+
+    public Response get_verify(String id){
+
+        Response response = SerenityRest.rest()
+                .given()
+                .contentType(ContentType.JSON.withCharset("UTF-8"))
+                .header("Authorization", access_token)
+                .when()
+                .get(utilSteps.getPortalURL()+ Massbit_Route_Endpoint.GET_NODE_INFO + id + "/verify");
+
+        return response;
+    }
+
+    @Step
+    public Portal_Community_Node_Steps should_be_able_to_get_verify(String id){
+
+        Response response = get_verify(id);
+        String response_body = response.getBody().asString();
+        Log.info("Response of get verify: " + response_body);
+
+        Assert.assertTrue(response.getStatusCode() == 200);
+        Assert.assertEquals(JsonPath.from(response_body).getString("id"), id);
+        Assert.assertEquals(JsonPath.from(response_body).getString("status"), "verified");
+
+        Log.highlight("Get verify successfully");
+        return this;
+    }
+
+    public void delete_all_node() throws IOException, InterruptedException {
+        HttpResponse response = getMyNodeList();
+        String response_body = response.body().toString();
+        List<String> lst_node = JsonPath.from(response_body).getList("nodes.id");
+        for(String node_id : lst_node){
+            should_be_able_to_delete_node(node_id);
+        }
+        Log.highlight("All nodes are deleted ");
     }
 
 }

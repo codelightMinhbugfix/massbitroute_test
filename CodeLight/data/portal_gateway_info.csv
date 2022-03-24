@@ -1,10 +1,2 @@
 gateway_name,blockchain,network
 test_gateway_eth,eth,mainnet
-test_gateway_near,near,mainnet
-test_gateway_harmony,hmny,mainnet
-test_gateway_polkadot,dot,mainnet
-test_gateway_avalanche,avax,mainnet
-test_gateway_fantom,ftm,mainnet
-test_gateway_polygon,matic,mainnet
-test_gateway_bsc,bsc,mainnet
-test_gateway_solana,sol,mainnet
