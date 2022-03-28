@@ -39,7 +39,7 @@ public interface Massbit_Route_Config {
 
     // data source of node
 
-    String DATA_URL_ETHEREUM = "http://34.87.80.115:8545/";
+    String DATA_URL_ETHEREUM = "http://34.124.230.213:8545";
     String DATA_URL_NEAR = "";
     String DATA_URL_HARMONY = "";
     String DATA_URL_POLKADOT = "https://34.87.170.136";
@@ -53,11 +53,40 @@ public interface Massbit_Route_Config {
     String GW_PATH_TERRAFORM_APPLY = "terraform_gateway/cmTerraformApply.sh";
     String GW_PATH_TERRAFORM_DESTROY = "terraform_gateway/cmTerraformDestroy.sh";
     String GW_PATH_TERRAFORM_INIT = "terraform_gateway/init.sh";
+    //install script
+    String portal_url = "https://portal.massbitroute.dev&env=dev";
 
     // Node
     String NODE_PATH_TERRAFORM_APPLY = "terraform_node/cmTerraformApply.sh";
     String NODE_PATH_TERRAFORM_DESTROY = "terraform_node/cmTerraformDestroy.sh";
     String NODE_PATH_TERRAFORM_INIT = "terraform_node/init.sh";
+
+    //User
+    String uname = "duong";
+    String password = "Duong123";
+
+    String uname_2 = "mison201";
+    String password_2 = "Tuong111";
+
+    // Portal Gateway
+    String PORTAL_GW_PATH_TERRAFORM_APPLY = "terraform_portal_gateway/cmTerraformApply.sh";
+    String PORTAL_GW_PATH_TERRAFORM_DESTROY = "terraform_portal_gateway/cmTerraformDestroy.sh";
+    String PORTAL_GW_PATH_TERRAFORM_INIT = "terraform_portal_gateway/init.sh";
+
+    // Portal node
+    String PORTAL_NODE_PATH_TERRAFORM_APPLY = "terraform_portal_node/cmTerraformApply.sh";
+    String PORTAL_NODE_PATH_TERRAFORM_DESTROY = "terraform_portal_node/cmTerraformDestroy.sh";
+    String PORTAL_NODE_PATH_TERRAFORM_INIT = "terraform_portal_node/init.sh";
+    String NEW_NAME = "new name";
+    String NEW_DATA_SOURCE = "https://127.0.0.1:8545";
+
+    // Portal dApi entrypoint provider
+    String PORTAL_ENTRYPOINT_MASSBIT = "{\"provider\":\"MASSBIT\",\"priority\":1,\"status\":1,\"providerConfig\":{}}";
+    String PORTAL_ENTRYPOINT_MASSBIT_EDITED = "{\"provider\":\"MASSBIT\",\"priority\":2,\"status\":1,\"providerConfig\":{}}";
+    String PORTAL_ENTRYPOINT_INFURA = "{\"provider\":\"INFURA\",\"priority\":1,\"status\":1,\"providerConfig\":{\"project_id\":\"b2e4635e55a448bc8fa9bb651d675208\",\"project_secret\":\"c893942ccbc94960848e4a33e91735d6\"}}";
+    String PORTAL_ENTRYPOINT_GETBLOCK = "{\"provider\":\"GETBLOCK\",\"priority\":1,\"status\":1,\"providerConfig\":{\"api_key\":\"de025584-88f9-4608-8508-021d0973c2f8\"}}";
+    String PORTAL_ENTRYPOINT_QUICKNODE = "{\"provider\":\"QUICKNODE\",\"priority\":1,\"status\":1,\"providerConfig\":{\"api_uri\":\"API_URI_fake\"}}";
+    String PORTAL_ENTRYPOINT_CUSTOM = "{\"provider\":\"CUSTOM\",\"priority\":1,\"status\":1,\"providerConfig\":{\"api_uri\":\"api_uri_fake\"}}";
 
 
 }

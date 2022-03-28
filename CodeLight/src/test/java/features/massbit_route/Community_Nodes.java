@@ -20,6 +20,7 @@ import java.util.Collection;
 @RunWith(SerenityParameterizedRunner.class)
 public class Community_Nodes {
 
+
     enum Zone{AS,EU,NA,SA,AF,OC}
 
     @TestData
@@ -30,13 +31,11 @@ public class Community_Nodes {
 
     private String gateway_name;
     private String blockchain;
-    private String zone;
     private String network;
 
-    public Community_Nodes(String gateway_name, String blockchain, String zone, String network){
+    public Community_Nodes(String gateway_name, String blockchain, String network){
         this.gateway_name = gateway_name;
         this.blockchain = blockchain;
-        this.zone = zone;
         this.network = network;
     }
 
@@ -57,7 +56,46 @@ public class Community_Nodes {
                              .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
                              .should_be_able_to_activate_node_successfully()
                              .destroy_vm_instance();
-
     }
+
+//    @Test
+//    public void add_new_node_in_Europe_zone()throws IOException, InterruptedException {
+//        community_nodes_steps.should_be_able_to_add_new_node(gateway_name, blockchain, Zone.EU.toString(), network)
+//                             .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
+//                             .should_be_able_to_activate_node_successfully()
+//                             .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_node_in_North_America_zone()throws IOException, InterruptedException {
+//        community_nodes_steps.should_be_able_to_add_new_node(gateway_name, blockchain, Zone.NA.toString(), network)
+//                             .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
+//                             .should_be_able_to_activate_node_successfully()
+//                             .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_node_in_South_America_zone()throws IOException, InterruptedException {
+//        community_nodes_steps.should_be_able_to_add_new_node(gateway_name, blockchain, Zone.SA.toString(), network)
+//                             .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
+//                             .should_be_able_to_activate_node_successfully()
+//                             .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_node_in_Africa_zone()throws IOException, InterruptedException {
+//        community_nodes_steps.should_be_able_to_add_new_node(gateway_name, blockchain, Zone.AF.toString(), network)
+//                             .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
+//                             .should_be_able_to_activate_node_successfully()
+//                             .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_node_in_Oceania_zone()throws IOException, InterruptedException {
+//        community_nodes_steps.should_be_able_to_add_new_node(gateway_name, blockchain, Zone.OC.toString(), network)
+//                             .create_vm_instance_and_register_node(community_nodes_steps.get_install_node_script())
+//                             .should_be_able_to_activate_node_successfully()
+//                             .destroy_vm_instance();
+//    }
 
 }

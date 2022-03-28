@@ -30,13 +30,11 @@ public class Community_Gateway {
 
     private String gateway_name;
     private String blockchain;
-    private String zone;
     private String network;
 
-    public Community_Gateway(String gateway_name, String blockchain, String zone, String network){
+    public Community_Gateway(String gateway_name, String blockchain, String network){
         this.gateway_name = gateway_name;
         this.blockchain = blockchain;
-        this.zone = zone;
         this.network = network;
     }
 
@@ -53,34 +51,72 @@ public class Community_Gateway {
 
     }
 
-    @Test
-    public void add_new_gateway_without_name(){
-        gateway_community_steps.should_be_able_to_add_new_gateway("",blockchain, zone, network);
-    }
+//    @Test
+//    public void add_new_gateway_without_name(){
+//        gateway_community_steps.should_be_able_to_add_new_gateway("",blockchain, Zone.AS.toString(), network);
+//    }
+//
+//    @Test
+//    public void add_new_gateway_without_blockchain(){
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,"", Zone.EU.toString(), network);
+//    }
 
-    @Test
-    public void add_new_gateway_without_blockchain(){
-        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,"", zone, network);
-    }
+//    @Test
+//    public void add_new_gateway_without_zone(){
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, "", network);
+//    }
 
-    @Test
-    public void add_new_gateway_without_zone(){
-        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, "", network);
-    }
-
-    @Test
-    public void add_new_gateway_without_network(){
-        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, zone, "");
-    }
+//    @Test
+//    public void add_new_gateway_without_network(){
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.NA.toString(), "");
+//    }
 
     @Test
     public void add_new_gateway_in_Asia_zone()throws IOException, InterruptedException {
-        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.AS.toString(), network);
-        gateway_community_steps.create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script());
-
-        gateway_community_steps.should_be_able_to_activate_gateway_successfully();
-
-        gateway_community_steps.destroy_vm_instance();
+        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.AS.toString(), network)
+                               .create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script())
+                               .should_be_able_to_activate_gateway_successfully()
+                               .destroy_vm_instance();
     }
+
+//    @Test
+//    public void add_new_gateway_in_Europe_zone()throws IOException, InterruptedException {
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.EU.toString(), network)
+//                               .create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script())
+//                               .should_be_able_to_activate_gateway_successfully()
+//                               .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_gateway_in_North_America_zone()throws IOException, InterruptedException {
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.NA.toString(), network)
+//                               .create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script())
+//                               .should_be_able_to_activate_gateway_successfully()
+//                               .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_gateway_in_South_America_zone()throws IOException, InterruptedException {
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.SA.toString(), network)
+//                               .create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script())
+//                               .should_be_able_to_activate_gateway_successfully()
+//                               .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_gateway_in_Africa_zone()throws IOException, InterruptedException {
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.AF.toString(), network)
+//                               .create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script())
+//                               .should_be_able_to_activate_gateway_successfully()
+//                               .destroy_vm_instance();
+//    }
+//
+//    @Test
+//    public void add_new_gateway_in_Oceania_zone()throws IOException, InterruptedException {
+//        gateway_community_steps.should_be_able_to_add_new_gateway(gateway_name,blockchain, Zone.OC.toString(), network)
+//                               .create_vm_instance_and_register_gateway(gateway_community_steps.get_install_gateway_script())
+//                               .should_be_able_to_activate_gateway_successfully()
+//                               .destroy_vm_instance();
+//    }
 
 }

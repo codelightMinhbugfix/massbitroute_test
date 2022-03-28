@@ -132,7 +132,7 @@ public class Gateway_Community_Steps {
     public String get_install_gateway_script(){
 
         String cmd_start = "bash -c \"$(curl -sSfL '";
-        String url = "https://dapi.massbit.io/api/v1/gateway_install?";
+        String url = utilSteps.getAPIURL() + "/v1/gateway_install?";
         String id = "id=" + JsonPath.from(gateway_info.toString()).getString("id");
         String user_id = "&user_id=" + JsonPath.from(gateway_info.toString()).getString("user_id");
         String blockchain = "&blockchain=" + JsonPath.from(gateway_info.toString()).getString("blockchain");
@@ -302,16 +302,18 @@ public class Gateway_Community_Steps {
         Log.highlight("clean up my gateway done");
     }
 
-    public void create_vm_instance_and_register_gateway(String installScript) throws InterruptedException, IOException {
+    public Gateway_Community_Steps create_vm_instance_and_register_gateway(String installScript) throws InterruptedException, IOException {
 
         UtilSteps.writeToFile(Massbit_Route_Config.GW_PATH_TERRAFORM_INIT, installScript);
 
         Thread.sleep(1000);
 
         UtilSteps.runCommand(Massbit_Route_Config.GW_PATH_TERRAFORM_APPLY);
+
+        return this;
     }
 
-    public void destroy_vm_instance() throws InterruptedException, IOException {
+    public Gateway_Community_Steps destroy_vm_instance() throws InterruptedException, IOException {
 
         Thread.sleep(4000);
         UtilSteps.runCommand(Massbit_Route_Config.GW_PATH_TERRAFORM_DESTROY);
@@ -319,6 +321,8 @@ public class Gateway_Community_Steps {
         Thread.sleep(10000);
 
         Log.highlight("Destroy VM instance successfully");
+
+        return this;
     }
 
 }

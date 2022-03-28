@@ -65,6 +65,9 @@ public class Community_Nodes_Steps {
                 "\t\"password\":\"duongvu\"\n" +
                 "}";
 
+        Log.info(body);
+        Log.info(utilSteps.getAPIURL()+ Massbit_Route_Endpoint.LOGIN);
+
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder().header("Content-Type", "application/json")
                 .header("mbrid", mbrid)
@@ -73,6 +76,9 @@ public class Community_Nodes_Steps {
                 .build();
 
         HttpResponse<?> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        Log.info(response.toString());
+
 
         Assert.assertTrue(response.statusCode()==200);
         Assert.assertFalse(response.body().toString().isEmpty());
@@ -166,7 +172,7 @@ public class Community_Nodes_Steps {
     public String get_install_node_script(){
 
         String cmd_start = "bash -c \"$(curl -sSfL '";
-        String url = "https://dapi.massbit.io/api/v1/node_install?";
+        String url = utilSteps.getAPIURL() + "/v1/node_install?";
         String id = "id=" + JsonPath.from(node_info.toString()).getString("id");
         String user_id = "&user_id=" + JsonPath.from(node_info.toString()).getString("user_id");
         String blockchain = "&blockchain=" + JsonPath.from(node_info.toString()).getString("blockchain");
@@ -208,7 +214,10 @@ public class Community_Nodes_Steps {
         while (!nodeActive(JsonPath.from(node_info.toString()).getString("id")) && i < 24){
             Thread.sleep(30000);
             i++;
-            should_be_able_to_login();
+            if(i == 8 || i == 16){
+                should_be_able_to_login();
+            }
+
         }
         Assert.assertTrue(nodeActive(JsonPath.from(node_info.toString()).getString("id")));
         Log.highlight("Node register successfully");

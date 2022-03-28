@@ -23,6 +23,8 @@ import java.util.List;
 //@UseTestDataFrom(value="data/api_info.csv")
 public class DecentralizedAPI {
 
+    enum Provider{MASSBIT,INFURA,GETBLOCK,QUICKNODE,CUSTOM,MASSBIT_EDIT,INFURA_EDIT,GETBLOCK_EDIT,QUICKNODE_EDIT,CUSTOM_EDIT}
+
     @TestData
     public static Collection<Object[]> testData() throws Exception {
         Object[][] data = DataCSV.getAllDataCSV("data/api_info.csv");
@@ -65,14 +67,110 @@ public class DecentralizedAPI {
     }
 
     @Test
-    public void add_entrypoint_mmassbit(){
-        decentralized_api_steps.add_entrypoint("MASSBIT");
-    }
-
-    @Test
     public void change_request_unlimited_per_day(){
         decentralized_api_steps.should_be_able_to_update_api_request_limit_per_day_to_unlimited();
     }
+
+    @Test
+    public void add_entrypoint_massbit(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.MASSBIT.toString());
+    }
+
+    @Test
+    public void add_entrypoint_infura(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.INFURA.toString());
+    }
+
+    @Test
+    public void add_entrypoint_getblock(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.GETBLOCK.toString());
+    }
+
+    @Test
+    public void add_entrypoint_quicknode(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.QUICKNODE.toString());
+    }
+
+    @Test
+    public void add_entrypoint_custom(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.CUSTOM.toString());
+    }
+
+    @Test
+    public void edit_entrypoint_massbit(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.MASSBIT.toString())
+                               .should_be_able_to_edit_entrypoint(Provider.MASSBIT_EDIT.toString());
+    }
+
+    @Test
+    public void edit_entrypoint_infura(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.INFURA.toString())
+                               .should_be_able_to_edit_entrypoint(Provider.INFURA_EDIT.toString());
+    }
+
+    @Test
+    public void edit_entrypoint_getblock(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.GETBLOCK.toString())
+                               .should_be_able_to_edit_entrypoint(Provider.GETBLOCK_EDIT.toString());
+    }
+
+    @Test
+    public void edit_entrypoint_quicknode(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.QUICKNODE.toString())
+                               .should_be_able_to_edit_entrypoint(Provider.QUICKNODE_EDIT.toString());
+    }
+
+    @Test
+    public void edit_entrypoint_custom(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.CUSTOM.toString())
+                               .should_be_able_to_edit_entrypoint(Provider.CUSTOM_EDIT.toString());
+    }
+
+    @Test
+    public void delete_entrypoint_massbit(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.MASSBIT.toString());
+        decentralized_api_steps.should_be_able_to_delete_entrypoint(Provider.MASSBIT.toString());
+    }
+
+    @Test
+    public void delete_entrypoint_infura(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.INFURA.toString());
+        decentralized_api_steps.should_be_able_to_delete_entrypoint(Provider.INFURA.toString());
+    }
+
+    @Test
+    public void delete_entrypoint_getblock(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.GETBLOCK.toString());
+        decentralized_api_steps.should_be_able_to_delete_entrypoint(Provider.GETBLOCK.toString());
+    }
+
+    @Test
+    public void delete_entrypoint_quicknode(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.QUICKNODE.toString());
+        decentralized_api_steps.should_be_able_to_delete_entrypoint(Provider.QUICKNODE.toString());
+    }
+
+    @Test
+    public void delete_entrypoint_custom(){
+        decentralized_api_steps.should_be_able_to_create_api(name, blockchain, network);
+        decentralized_api_steps.should_be_able_to_add_entrypoint(Provider.CUSTOM.toString());
+        decentralized_api_steps.should_be_able_to_delete_entrypoint(Provider.CUSTOM.toString());
+    }
+
 
 
     @Test
