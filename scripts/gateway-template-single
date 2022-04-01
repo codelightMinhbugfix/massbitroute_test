@@ -1,0 +1,34 @@
+
+resource "google_compute_instance" "gateway-[[GATEWAY_ID]]" {
+  name         = "${var.project_prefix}-${var.environment}-gateway-[[BLOCKCHAIN]]-[[GATEWAY_ID]]"
+  machine_type = var.map_machine_types["gateway"]
+  zone         = "${var.default_zone}"
+
+  tags = ["http-server", "https-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
+      size = 2000
+    }
+  }
+
+  network_interface {
+    network = "${var.network_interface}"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+  metadata_startup_script =  <<EOH
+  #!/bin/bash
+  sudo bash -c "$(curl -sSfL 'https://dapi.massbitroute.dev/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=811c3782-2794-4423-aa02-3b008fda438d&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=[[ZONE]]&app_key=[[APP_KEY]]&portal_url=https://portal.massbitroute.dev&env=dev')"  >> /home/verification.log
+  EOH
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email = "${var.email}"
+    scopes = ["cloud-platform"]
+  }
+}

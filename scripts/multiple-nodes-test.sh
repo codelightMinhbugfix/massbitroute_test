@@ -124,10 +124,15 @@ echo "---------------------------------"
 done
 echo "Checking node status: Passed"
 
-# echo "Cleaning up VMs: In Progress"
-# terraform destroy
-# if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform destroy "; exit 1; fi
-# echo "Cleaning up VMs: Passed"
+# Cleaning up test VMs
+echo "Cleaning up VMs: In Progress"
+terraform destroy -auto-approve
+if [[ "$?" != "0" ]]; then
+  echo "Failed to execute: terraform destroy "
+  exit 1
+fi
+echo "Cleaning up VMs: Passed"
+
 
 exit 0
 
