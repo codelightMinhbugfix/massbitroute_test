@@ -25,7 +25,15 @@ hs_err_pid*
 
 scripts/project-key.json
 scripts/test-nodes.tf
-scripts/nodelist.csv
-scripts/gatewaylist.csv
+scripts/single-node-test/nodelist.csv
+scripts/single-node-test/gatewaylist.csv
 scripts/eth-sources.csv
 scripts/.env
+
+scripts/single-node-test/.terraform/
+scripts/single-node-test/terraform.lock
+scripts/single-node-test/.terraform.*
+scripts/single-node-test/terraform.tfstate*
+scripts/single-node-test/tfplan
+scripts/single-node-test/project_key.json
+scripts/single-node-test/test-nodes.tf
