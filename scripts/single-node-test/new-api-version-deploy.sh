@@ -10,9 +10,10 @@ fi
 
 GIT_BRANCH=$1
 
-GIT_GATEWAY_WRITE_USER=gwman
-GIT_GATEWAY_WRITE_PW="4f48f3ebb63af40b68860a0eab46acb01d456d31  -"
-PRIVATE_GIT_DOMAIN=git.massbitroute.dev
+############# SENSITIVE DATA
+GIT_GATEWAY_WRITE_USER=""
+GIT_GATEWAY_WRITE_PW=""
+PRIVATE_GIT_DOMAIN=""
 
 #-------------------------------------------
 # create terraform file for new node
