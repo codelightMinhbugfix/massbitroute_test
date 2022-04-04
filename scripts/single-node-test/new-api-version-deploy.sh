@@ -68,7 +68,8 @@ echo "Create node VMs on GCE: Passed"
 # save old IP 
 NEW_API_IP=$(terraform output -raw api_public_ip)
 
-mkdir -p /massbit/gwman
+sudo mkdir -p /massbit/gwman
+sudo chmod 766 /massbit/gwman
 cd /massbit/gwman
 git clone http://$GIT_GATEWAY_WRITE_USER:$GIT_GATEWAY_WRITE_PW@$PRIVATE_GIT_DOMAIN/massbitroute/gwman.git 
 
