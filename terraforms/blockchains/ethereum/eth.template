@@ -1,0 +1,34 @@
+resource "google_compute_instance" "eth-[[ZONE]]" {
+  name         = "${var.project_prefix}-${var.environment}-eth-[[ZONE]]"
+  machine_type = "e2-small"
+  zone         = "[[ZONE]]"
+
+  tags = ["http-server", "https-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
+      size = 20
+    }
+  }
+
+  network_interface {
+    network = "default"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+  metadata = {
+
+  }
+
+  metadata_startup_script = "${file("init.sh")}"
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email = "${var.email}"
+    scopes = ["cloud-platform"]
+  }
+}
