@@ -1,0 +1,45 @@
+
+
+resource "google_compute_instance" "api-new-commit-test" {
+  name         = "${var.project_prefix}-${var.environment}-api-[[API_NODE_ID]]"
+  machine_type = var.map_machine_types["api"]
+  zone         = "${var.default_zone}"
+
+  tags = ["http-server", "https-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
+      size = 2000
+    }
+  }
+
+  network_interface {
+    network = "${var.network_interface}"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+  metadata_startup_script =  <<EOH
+  #!/bin/bash
+  git clone https://github.com/massbitprotocol/massbitroute.git -b [[BRANCH_NAME]]
+  cd scripts
+  run _install
+
+  EOH
+
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email = "${var.email}"
+    scopes = ["cloud-platform"]
+  }
+
+}
+
+output "api_public_ip" {
+  description = "Public IP of new API VM"
+  value = google_compute_instance.api-new-commit-test.network_interface.0.network_ip
+}
