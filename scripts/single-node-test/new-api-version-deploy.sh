@@ -1,3 +1,6 @@
+#!/bin/bash
+
+
 if [ -z "$1" ]
   then
     echo "ERROR: Git branch name is required"
@@ -82,7 +85,7 @@ cp massbitroute.dev massbitroute.dev.bak
 sed -i "s/^dapi A.*/dapi A $NEW_API_IP/g"
 
 git add .
-git commit -m "Update entry for dapi [OLD] $OLD_API_IP  - [NEW] $NEW_API_IP"
+git commit -m "Update entry for dapi [OLD] $OLD_API_IP - [NEW] $NEW_API_IP"
 # git push origin master
 
 
@@ -90,13 +93,6 @@ git commit -m "Update entry for dapi [OLD] $OLD_API_IP  - [NEW] $NEW_API_IP"
 while [ "$(nslookup dapi.massbitroute.dev  | grep "Address: $NEW_API_IP")" != "Address: $NEW_API_IP" ]
 do
   echo "Waiting for DNS to update new API IP ..."
+  sleep 10
 done 
-echo "DNS updated. ${nslookup dapi.massbitroute.dev  | grep "Address: $NEW_API_IP"}"
-
-# revert old IP
-rm massbitroute.dev 
-cp massbitroute.dev.bak massbitroute.dev
-
-git add .
-git commit -m "Update entry for dapi [OLD] $OLD_API_IP  - [NEW] $NEW_API_IP"
-# git push origin master
+echo "DNS entry for api updated: ${nslookup dapi.massbitroute.dev  | grep "Address: $NEW_API_IP"}"
