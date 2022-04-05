@@ -24,9 +24,11 @@ resource "google_compute_instance" "api-new-commit-test" {
 
   metadata_startup_script =  <<EOH
   #!/bin/bash
-  git clone https://github.com/massbitprotocol/massbitroute.git -b [[BRANCH_NAME]]
-  cd scripts
-  run _install
+  git clone https://github.com/massbitprotocol/massbitroute.git -b [[BRANCH_NAME]]  /massbit/massbitroute/app/src/sites/services/api
+  dest_branch=dev
+  echo "export MBR_ENV=$dest_branch">>/massbit/massbitroute/app/src/sites/services/api/.env
+  sudo /massbit/massbitroute/app/src/sites/services/api/scripts/run _install
+  sudo run _install
 
   EOH
 
