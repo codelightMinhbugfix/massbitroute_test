@@ -34,7 +34,6 @@ resource "google_compute_instance" "node-[[GATEWAY_ID]]" {
   [[MASSBITROUTE_CORE_IP]] massbitroute.devdmin.massbitroute.dev
   [[MASSBITROUTE_CORE_IP]] dapi.massbitroute.dev
   [[MASSBITROUTE_CORE_IP]] massbitroute.devpi.massbitroute.dev
-  [[MASSBITROUTE_CORE_IP]] git.massbitroute.dev
   [[MASSBITROUTE_CORE_IP]] verify.massbitroute.dev
   [[MASSBITROUTE_CORE_IP]] fisherman.massbitroute.dev
   [[MASSBITROUTE_CORE_IP]] portal.massbitroute.dev

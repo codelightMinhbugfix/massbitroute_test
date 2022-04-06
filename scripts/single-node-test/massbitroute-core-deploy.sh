@@ -2,9 +2,9 @@
 ############# SENSITIVE DATA
 # PRIVATE_GIT_GATEWAY_WRITE_USER=""
 # GIT_GATEWAY_WRITE_PASSWORD=""
-PRIVATE_GIT_DOMAIN=""
-PRIVATE_GIT_READ_PASSWORD=""
-PRIVATE_GIT_READ_USERNAME=""
+PRIVATE_GIT_DOMAIN="git.massbitroute.dev"
+PRIVATE_GIT_READ_PASSWORD=$(echo envenv | sha1sum | cut -d " " -f 1)
+PRIVATE_GIT_READ_USERNAME="env"
 
 if [ -z "$1" ]
   then
@@ -77,7 +77,7 @@ if [[ "$?" != "0" ]]; then
 fi
 echo "Create node VMs on GCE: Passed"
 
-NEW_API_IP=$(terraform output -raw api_public_ip)
+NEW_API_IP=$(terraform output -raw mbrcore_public_ip)
 echo $NEW_API_IP > MASSBITROUTE_CORE_IP
 
 
@@ -86,7 +86,7 @@ echo $NEW_API_IP > MASSBITROUTE_CORE_IP
 # #  Update new IP in GWMan
 # #-------------------------------------------
 # # save old IP 
-# NEW_API_IP=$(terraform output -raw api_public_ip)
+# NEW_API_IP=$(terraform output -raw mbrcore_public_ip)
 
 # sudo mkdir -p /massbit/gwman
 # sudo chmod 766 /massbit/gwman
