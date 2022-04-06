@@ -2,9 +2,9 @@
 ############# SENSITIVE DATA
 # PRIVATE_GIT_GATEWAY_WRITE_USER=""
 # GIT_GATEWAY_WRITE_PASSWORD=""
-PRIVATE_GIT_DOMAIN="git.massbitroute.dev"
-PRIVATE_GIT_READ_PASSWORD=$(echo envenv | sha1sum | cut -d " " -f 1)
-PRIVATE_GIT_READ_USERNAME="env"
+export PRIVATE_GIT_DOMAIN="git.massbitroute.dev"
+export PRIVATE_GIT_READ_PASSWORD=$(echo envenv | sha1sum | cut -d " " -f 1)
+export PRIVATE_GIT_READ_USERNAME="env"
 
 if [ -z "$1" ]
   then
@@ -24,7 +24,8 @@ GIT_MERGE_BRANCH=$2
 #-------------------------------------------
 # create terraform file for new node
 #-------------------------------------------
-sudo echo 'variable "project_prefix" {
+sudo echo '
+variable "project_prefix" {
   type        = string
   description = "The project prefix (mbr)."
 }
@@ -45,16 +46,33 @@ variable "map_machine_types" {
   type = map
 }' >test-nodes.tf
 
-
 nodeId="$(echo $RANDOM | md5sum | head -c 5)"
-cat massbitroute-core-template-single | \
-     sed "s/\[\[API_NODE_ID\]\]/$nodeId/g" | \
+## CORE NODE
+# cat massbitroute-core-template-single | \
+#      sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
+#     sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
+#     sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
+#     sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  >> test-nodes.tf
+
+## PORTAL NODE
+cat massbitroute-portal-template-single | \
+    sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
     sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
     sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
     sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
     sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
-    sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  >> test-nodes.tf
+    sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g" >> test-nodes.tf
 
+## RUST NODE
+# cat massbitroute-rust-template-single | \
+#      sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
+#     sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
+#     sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
+#     sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  >> test-nodes.tf
 
 #-------------------------------------------
 #  Spin up new VM on GCE
@@ -77,8 +95,13 @@ if [[ "$?" != "0" ]]; then
 fi
 echo "Create node VMs on GCE: Passed"
 
-NEW_API_IP=$(terraform output -raw mbrcore_public_ip)
-echo $NEW_API_IP > MASSBITROUTE_CORE_IP
+# CORE_IP=$(terraform output -raw mbr_core_public_ip)
+PORTAL_IP=$(terraform output -raw mbr_portal_public_ip)
+# RUST_IP=$(terraform output -raw mbr_rust_public_ip)
+
+echo $CORE_IP > MASSBITROUTE_CORE_IP
+echo $PORTAL_IP > MASSBITROUTE_PORTAL_IP
+echo $RUST_IP > MASSBITROUTE_RUST_IP
 
 
 

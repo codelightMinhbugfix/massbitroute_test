@@ -1,7 +1,7 @@
 
 
-resource "google_compute_instance" "mbr-core-new-commit-test" {
-  name         = "${var.project_prefix}-${var.environment}-core-test-[[NODE_ID]]"
+resource "google_compute_instance" "mbr-rust-new-commit-test" {
+  name         = "${var.project_prefix}-${var.environment}-rust-test-[[API_NODE_ID]]"
   machine_type = var.map_machine_types["mbr-core"]
   zone         = "${var.default_zone}"
 
@@ -33,14 +33,16 @@ resource "google_compute_instance" "mbr-core-new-commit-test" {
   sudo systemctl stop systemd-resolved
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
+  
 
 
   #-------------------------------------------
-  #  Install massbitroute core components
+  #  Install RUST
   #-------------------------------------------
-  export GIT_PRIVATE_READ_URL="http://[[PRIVATE_GIT_READ_USERNAME]]:[[PRIVATE_GIT_READ_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]"
-  curl https://raw.githubusercontent.com/massbitprotocol/massbitroute_dev/dev/scripts/install.sh | bash -x >> /home/core_install.log
-
+  curl https://sh.rustup.rs -sSf | sh -s -- -y
+  rustup update nightly
+  rustup update stable
+  rustup target add wasm32-unknown-unknown --toolchain nightly
   EOH
 
 
@@ -52,7 +54,7 @@ resource "google_compute_instance" "mbr-core-new-commit-test" {
 
 }
 
-output "mbr_core_public_ip" {
+output "mbr_rust_public_ip" {
   description = "Public IP of new.massbitroute.devPI VM"
-  value = google_compute_instance.mbr-core-new-commit-test.network_interface.0.access_config.0.nat_ip
+  value = google_compute_instance.mbr-rust-new-commit-test.network_interface.0.access_config.0.nat_ip
 }
