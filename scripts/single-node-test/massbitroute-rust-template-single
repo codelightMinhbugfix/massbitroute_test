@@ -29,7 +29,6 @@ resource "google_compute_instance" "mbr-rust-new-commit-test" {
   #-------------------------------------------
   sudo sed 's/#DNSStubListener=yes/DNSStubListener=no/' /etc/systemd/resolved.conf -i
   sudo pkill -f systemd-resolve
-
   sudo systemctl stop systemd-resolved
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
@@ -39,19 +38,32 @@ resource "google_compute_instance" "mbr-rust-new-commit-test" {
   sudo git clone http://[[PRIVATE_GIT_SSH_USERNAME]]:[[PRIVATE_GIT_SSH_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssh.git -b main /opt/ssh-key
   sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
   chmod og-rwx /root/.ssh/id_rsa
-  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /root/.ssh/authorized_keys
+  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /home/hoang/.ssh/authorized_keys
   
   ssh-keyscan github.com >> ~/.ssh/known_hosts
 
   #-------------------------------------------
   #  Install RUST
   #-------------------------------------------
+  sudo apt update
   curl https://sh.rustup.rs -sSf | sh -s -- -y
   rustup update nightly
   rustup update stable
   rustup target add wasm32-unknown-unknown --toolchain nightly
+  sudo apt install build-essential pkg-config libssl-dev -y
 
-  
+  sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
+  sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
+  sudo cd /massbit/massbitroute/app/src/sites/services/monitor/check_component/script
+  sudo cargo build --release
+  cd ..
+  mkdir -p /opt/verification
+  sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
+  sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
+  sudo cp src/archive/base-endpoint.json /opt/verification/base-endpoint.json
+  sudo cp run.sh /opt/verification/run.sh
+
+  sudo supervisorctl restart verification
   EOH
 
 

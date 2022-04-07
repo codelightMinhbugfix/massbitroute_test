@@ -26,7 +26,7 @@ resource "google_compute_instance" "mbr-portal-new-commit-test" {
   #-------------------------------------------
   #  Update host file for Massbitroute.dev
   #-------------------------------------------
-
+  echo "start" > /home/portal.log
   sudo sed 's/#DNSStubListener=yes/DNSStubListener=no/' /etc/systemd/resolved.conf -i
   sudo pkill -f systemd-resolve
   sudo systemctl stop systemd-resolved
@@ -50,7 +50,7 @@ resource "google_compute_instance" "mbr-portal-new-commit-test" {
   sudo git clone http://[[PRIVATE_GIT_SSH_USERNAME]]:[[PRIVATE_GIT_SSH_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssh.git -b main /opt/ssh-key
   sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
   chmod og-rwx /root/.ssh/id_rsa
-  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /root/.ssh/authorized_keys
+  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /home/hoang/.ssh/authorized_keys
   
   ssh-keyscan github.com >> ~/.ssh/known_hosts
 
@@ -79,8 +79,8 @@ resource "google_compute_instance" "mbr-portal-new-commit-test" {
   git clone http://[[PRIVATE_GIT_SSL_USERNAME]]:[[PRIVATE_GIT_SSL_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssl.git /etc/letsencrypt
   sudo apt update && sudo apt upgrade -y && sudo apt install curl nginx -y
   sudo apt install software-properties-common
-  cp /opt/ssh-key/portal.nginx /etc/nginx/site-enabled/portal
-  cp /opt/ssh-key/staking.nginx /etc/nginx/site-enabled/staking
+  cp /opt/ssh-key/portal.nginx /etc/nginx/sites-enabled/portal
+  cp /opt/ssh-key/staking.nginx /etc/nginx/sites-enabled/staking
 
 
   sudo service nginx reload
