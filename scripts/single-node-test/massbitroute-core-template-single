@@ -34,7 +34,15 @@ resource "google_compute_instance" "mbr-core-new-commit-test" {
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
 
-
+  # SSH
+  sudo mkdir /opt/ssh-key
+  sudo git clone http://[[PRIVATE_GIT_SSH_USERNAME]]:[[PRIVATE_GIT_SSH_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssh.git -b main /opt/ssh-key
+  sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
+  chmod og-rwx /root/.ssh/id_rsa
+  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /root/.ssh/authorized_keys
+  
+  ssh-keyscan github.com >> ~/.ssh/known_hosts
+  
   #-------------------------------------------
   #  Install massbitroute core components
   #-------------------------------------------

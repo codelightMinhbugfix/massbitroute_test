@@ -1,7 +1,7 @@
 
 
 resource "google_compute_instance" "mbr-rust-new-commit-test" {
-  name         = "${var.project_prefix}-${var.environment}-rust-test-[[API_NODE_ID]]"
+  name         = "${var.project_prefix}-${var.environment}-rust-test-[[NODE_ID]]"
   machine_type = var.map_machine_types["mbr-core"]
   zone         = "${var.default_zone}"
 
@@ -34,7 +34,14 @@ resource "google_compute_instance" "mbr-rust-new-commit-test" {
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
   
-
+  # SSH
+  sudo mkdir /opt/ssh-key
+  sudo git clone http://[[PRIVATE_GIT_SSH_USERNAME]]:[[PRIVATE_GIT_SSH_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssh.git -b main /opt/ssh-key
+  sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
+  chmod og-rwx /root/.ssh/id_rsa
+  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /root/.ssh/authorized_keys
+  
+  ssh-keyscan github.com >> ~/.ssh/known_hosts
 
   #-------------------------------------------
   #  Install RUST
@@ -43,6 +50,8 @@ resource "google_compute_instance" "mbr-rust-new-commit-test" {
   rustup update nightly
   rustup update stable
   rustup target add wasm32-unknown-unknown --toolchain nightly
+
+  
   EOH
 
 
