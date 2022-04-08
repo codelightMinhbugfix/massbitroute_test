@@ -96,13 +96,12 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   #-------------------------------------------
   sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
   sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
-  sudo cd /massbit/massbitroute/app/src/sites/services/monitor/check_component/script
+  sudo cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
   sudo cargo build --release
-  sudo cd /massbit/massbitroute/app/src/sites/services/monitor/check_component/
   mkdir -p /opt/verification
   sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
   sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
-  cp /opt/ssh-key/base-endpoint.json  /opt/verification/base-endpoint.json
+  sudo cp /opt/ssh-key/base-endpoint.json  /opt/verification/base-endpoint.json
   sudo cp script/run.sh /opt/verification/run.sh
   sudo chmod 770 /opt/verification/run.sh
   sudo supervisorctl reread
