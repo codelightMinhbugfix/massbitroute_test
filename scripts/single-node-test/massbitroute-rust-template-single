@@ -109,7 +109,6 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   sudo supervisorctl start verification
   EOH
 
-
   service_account {
     # Google recommends custom service.massbitroute.devccounts that have cloud-platform scope.massbitroute.devnd permissions granted via IAM Roles.
     email = "${var.email}"
