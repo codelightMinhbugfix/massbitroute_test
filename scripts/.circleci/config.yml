@@ -1,5 +1,8 @@
 version: 2.1
-
+parameters:
+  is_pr:
+    type: boolean
+    default: false
 jobs:
   test_nodes:
     docker:
@@ -10,23 +13,40 @@ jobs:
     steps:
       - run: mkdir -p /massbitroute/nodetest && cd /massbitroute/nodetest
       - checkout
+      - run: apt install ssh git -y
+      - run: export BUILD_BRANCH=$CIRCLE_BRANCH
+      - run: 
+          name: Get SSH KEY
+          command: |
+              sudo git clone http://ssh:1fdaf5d506fda56b4a50a5e3f24d68799e33cdd2@git.massbitroute.dev/massbitroute/ssh.git -b main /opt/ssh-key
+              sudo cp /opt/ssh-key/ci-ssh-key  /root/.ssh/id_rsa
+              sudo cp /opt/ssh-key/ci-ssh-key.pub  /root/.ssh/id_rsa.pub
+              cat /root/.ssh/id_rsa
+              cat /root/.ssh/id_rsa.pub
       - run: 
           name: Obtain GCE key
           command: echo $PROJECT_KEY > project_key.json
-      - run: cd scripts/single-node-test
       - run: 
           name: Spawn core node
-          command: sudo bash deploy-mb-core.sh 
+          command: cd scripts/single-node-test && sudo bash ./deploy-mb-core.sh $CIRCLE_BRANCH dev
       - run: 
           name: Update host files for nodes 
-          command: sudo bash build-hosts-file.sh
-      # - run:    
-      #     name: Run node/gateway test
-      #     command: sudo bash single-node-test.sh 
-      -
-          
+          command: cd scripts/single-node-test &&  sudo bash -x ./build-hosts-file.sh
+
+
 # Orchestrate our job run sequence
 workflows:
-  massbitroute-ci:
+  version: 2
+
+  massbitroute-ci-pr:
+    when: << pipeline.parameters.is_pr >>
     jobs:
       - test_nodes
+
+  massbitroute-ci-merged:
+    jobs:
+      - test_nodes:
+          filters:
+            branches:
+              only: master
+
