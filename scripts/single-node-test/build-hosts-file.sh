@@ -17,3 +17,4 @@ ssh hoang@$MASSBITROUTE_PORTAL_IP "sudo cp /home/hoang/hosts1 /etc/hosts1"
 scp test-hosts-file hoang@$MASSBITROUTE_RUST_IP:/home/hoang/hosts
 ssh hoang@$MASSBITROUTE_RUST_IP "sudo cp /home/hoang/hosts1 /etc/hosts1"
 
+cp test-hosts-file /etc/hosts
