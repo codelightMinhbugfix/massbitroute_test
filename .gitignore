@@ -41,4 +41,4 @@ scripts/single-node-test/MASSBITROUTE_CORE_IP
 scripts/single-node-test/MASSBITROUTE_PORTAL_IP
 scripts/single-node-test/MASSBITROUTE_RUST_IP
 scripts/single-node-test/test-hosts-file
-
+scripts/single-node-test/hosts/

@@ -31,6 +31,7 @@ resource "google_compute_instance" "mbr-portal-new-commit-test" {
 sudo wget https://raw.githubusercontent.com/hoanito/hosts/main/test-hosts-file -P /etc/
 sudo cp /etc/hosts /etc/hosts.bak
 sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
+  sudo chmod 770 /opt/update_hosts.sh
 
   sudo echo "1 * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
 
