@@ -1,14 +1,13 @@
 #!/bin/bash
 ############# SENSITIVE DATA
-# PRIVATE_GIT_GATEWAY_WRITE_USER=""
-# GIT_GATEWAY_WRITE_PASSWORD=""
+
 export PRIVATE_GIT_DOMAIN="git.massbitroute.dev"
 export PRIVATE_GIT_READ_PASSWORD=$(echo massbit123 | sha1sum | cut -d " " -f 1)
 export PRIVATE_GIT_READ_USERNAME="massbit"
-PRIVATE_GIT_SSL_USERNAME="ssl"
-PRIVATE_GIT_SSL_PASSWORD=$(echo sslssl | sha1sum | cut -d " " -f 1)
-PRIVATE_GIT_SSH_USERNAME="ssh"
-PRIVATE_GIT_SSH_PASSWORD=$(echo sshssh | sha1sum | cut -d " " -f 1)
+export PRIVATE_GIT_SSL_USERNAME="ssl"
+export PRIVATE_GIT_SSL_PASSWORD=$(echo sslssl | sha1sum | cut -d " " -f 1)
+export PRIVATE_GIT_SSH_USERNAME="ssh"
+export PRIVATE_GIT_SSH_PASSWORD=$(echo sshssh | sha1sum | cut -d " " -f 1)
 
 if [ -z "$1" ]
   then
@@ -51,14 +50,15 @@ variable "map_machine_types" {
 }' >test-nodes.tf
 
 nodeId="$(echo $RANDOM | md5sum | head -c 5)"
-## CORE NODE
-cat massbitroute-core-template-single | \
-     sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
-    sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
-    sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
-    sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
-    sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
-    sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  >> test-nodes.tf
+
+# ## CORE NODE
+# cat massbitroute-core-template-single | \
+#      sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
+#     sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
+#     sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
+#     sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  >> test-nodes.tf
 
 ## PORTAL NODE
 cat massbitroute-portal-template-single | \
@@ -74,15 +74,15 @@ cat massbitroute-portal-template-single | \
     sed "s/\[\[PRIVATE_GIT_SSH_PASSWORD\]\]/$PRIVATE_GIT_SSH_PASSWORD/g" >> test-nodes.tf
 
 # RUST NODE
-cat massbitroute-rust-template-single | \
-     sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
-    sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
-    sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
-    sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
-    sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
-    sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  | \
-    sed "s/\[\[PRIVATE_GIT_SSH_USERNAME\]\]/$PRIVATE_GIT_SSH_USERNAME/g" | \
-    sed "s/\[\[PRIVATE_GIT_SSH_PASSWORD\]\]/$PRIVATE_GIT_SSH_PASSWORD/g" >> test-nodes.tf
+# cat massbitroute-rust-template-single | \
+#      sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
+#     sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \
+#     sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
+#     sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
+#     sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  | \
+#     sed "s/\[\[PRIVATE_GIT_SSH_USERNAME\]\]/$PRIVATE_GIT_SSH_USERNAME/g" | \
+#     sed "s/\[\[PRIVATE_GIT_SSH_PASSWORD\]\]/$PRIVATE_GIT_SSH_PASSWORD/g" >> test-nodes.tf
 
 #-------------------------------------------
 #  Spin up new VM on GCE
@@ -105,9 +105,9 @@ if [[ "$?" != "0" ]]; then
 fi
 echo "Create node VMs on GCE: Passed"
 
-CORE_IP=$(terraform output -raw mbr_core_public_ip)
-PORTAL_IP=$(terraform output -raw mbr_portal_public_ip)
-RUST_IP=$(terraform output -raw mbr_rust_public_ip)
+# CORE_IP=$(terraform output -raw mbr_core_public_ip)
+# PORTAL_IP=$(terraform output -raw mbr_portal_public_ip)
+# RUST_IP=$(terraform output -raw mbr_rust_public_ip)
 
 echo $CORE_IP > MASSBITROUTE_CORE_IP
 echo $PORTAL_IP > MASSBITROUTE_PORTAL_IP

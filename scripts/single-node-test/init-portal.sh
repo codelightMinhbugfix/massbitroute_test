@@ -1,28 +1,3 @@
-
-
-resource "google_compute_instance" "mbr-portal-new-commit-test" {
-  name         = "${var.project_prefix}-${var.environment}-portal-test-[[NODE_ID]]"
-  machine_type = var.map_machine_types["mbr-core"]
-  zone         = "${var.default_zone}"
-
-  tags = ["http-server", "https-server"]
-
-  boot_disk {
-    initialize_params {
-      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
-      size = 2000
-    }
-  }
-
-  network_interface {
-    network = "${var.network_interface}"
-
-    access_config {
-      nat_ip = "34.101.57.212"
-    }
-  }
-
-  metadata_startup_script =  <<EOH
   #!/bin/bash
   #-------------------------------------------
   #  Update host file for Massbitroute.dev
@@ -34,34 +9,12 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
 
   sudo echo "1 * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
 
+  echo "start" > /home/portal.log
   sudo sed 's/#DNSStubListener=yes/DNSStubListener=no/' /etc/systemd/resolved.conf -i
   sudo pkill -f systemd-resolve
-
   sudo systemctl stop systemd-resolved
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
-
-  #-------------------------------------------
-  #  Install SSH keys
-  #-------------------------------------------
-  sudo mkdir /opt/ssh-key
-  sudo git clone http://[[PRIVATE_GIT_SSH_USERNAME]]:[[PRIVATE_GIT_SSH_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssh.git -b main /opt/ssh-key
-  sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
-  sudo chmod og-rwx /root/.ssh/id_rsa
-  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /home/hoang/.ssh/authorized_keys
-  
-  ssh-keyscan github.com >> ~/.ssh/known_hosts
-  
-  #-------------------------------------------
-  #  Install massbitroute PORTAL components
-  #-------------------------------------------
-  export PRIVATE_GIT_DOMAIN='[[PRIVATE_GIT_DOMAIN]]'
-  export PRIVATE_GIT_READ_PASSWORD='[[PRIVATE_GIT_READ_PASSWORD]]'
-  export PRIVATE_GIT_READ_USERNAME='[[PRIVATE_GIT_READ_USERNAME]]'
-  export PRIVATE_GIT_SSL_USERNAME='[[PRIVATE_GIT_SSL_USERNAME]]'
-  export PRIVATE_GIT_SSL_PASSWORD='[[PRIVATE_GIT_SSL_PASSWORD]]'
-  export PRIVATE_GIT_SSH_USERNAME='[[PRIVATE_GIT_SSH_USERNAME]]'
-  export PRIVATE_GIT_SSH_PASSWORD='[[PRIVATE_GIT_SSH_PASSWORD]]'
 
   #-------------------------------------------
   #  Install packages
@@ -74,7 +27,18 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
   sudo npm install -g n
   sudo n stable
   sudo yarn global add pm2
+
+  #-------------------------------------------
+  #  Install SSH keys
+  #-------------------------------------------
+  sudo mkdir /opt/ssh-key
+  sudo git clone http://$PRIVATE_GIT_SSH_USERNAME:$PRIVATE_GIT_SSH_PASSWORD@$PRIVATE_GIT_DOMAIN/massbitroute/ssh.git -b main /opt/ssh-key
+  sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
+  sudo chmod og-rwx /root/.ssh/id_rsa
+  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /home/hoang/.ssh/authorized_keys
   
+  ssh-keyscan github.com >> ~/.ssh/known_hosts
+
   #-------------------------------------------
   #  Install PORTAL API
   #-------------------------------------------
@@ -110,18 +74,4 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
   cp /opt/ssh-key/staking.nginx /etc/nginx/sites-enabled/staking
   sudo service nginx reload
 
-  EOH
-
-
-  service_account {
-    # Google recommends custom service.massbitroute.devccounts that have cloud-platform scope.massbitroute.devnd permissions granted via IAM Roles.
-    email = "${var.email}"
-    scopes = ["cloud-platform"]
-  }
-
-}
-
-output "mbr_portal_public_ip" {
-  description = "Public IP of new.massbitroute.devPI VM"
-  value = google_compute_instance.mbr-portal-new-commit-test.network_interface.0.access_config.0.nat_ip
-}
+  
