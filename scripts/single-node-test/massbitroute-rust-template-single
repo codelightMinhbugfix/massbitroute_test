@@ -80,23 +80,7 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   #-------------------------------------------
   sudo apt update && sudo apt upgrade -y && sudo apt install curl nginx -y
   sudo apt install software-properties-common
-  echo "server {
-    server_name verify.massbitroute.dev;
-    listen 80;
-    location / {
-      #try_files $uri $uri/ =404;
-      #proxy_buffering off;
-      proxy_pass http://localhost:3030;
-      #proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header Host $host;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      #proxy_http_version 1.1;
-      #proxy_set_header Upgrade $http_upgrade;
-      #proxy_set_header Connection "upgrade";
-      #proxy_read_timeout 86400s;
-      #proxy_send_timeout 86400s;
-    }
-}" >> /etc/nginx/sites-enabled/verification
+  sudo curl https://raw.githubusercontent.com/hoanito/hosts/main/verification.nginx > /etc/nginx/sites-enabled/verification
 
   sudo service nginx restart
 
@@ -105,8 +89,8 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   #-------------------------------------------
   sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
   sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
-  sudo cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
-  sudo cargo build --release
+  cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
+  cargo build --release
   mkdir -p /opt/verification
   sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
   sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
