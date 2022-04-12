@@ -1,0 +1,48 @@
+resource "google_compute_instance" "client-[[ZONE]]" {
+  name         = "${var.project_prefix}-${var.environment}-client-[[ZONE]]"
+  machine_type = "e2-small"
+  zone         = "[[ZONE]]"
+
+  tags = ["http-server", "https-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
+      size = 10
+    }
+  }
+
+  network_interface {
+    network = "default"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+  metadata = {
+
+  }
+
+  metadata_startup_script = "${file("init_[[INIT_FILE]].sh")}"
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email = "[[EMAIL]]"
+    scopes = ["cloud-platform"]
+  }
+#  provisioner "remote-exec" {
+#      inline = [
+#        "sudo mkdir /tmp/benchmark",
+#        "sudo chmod +w /tmp/benchmark"
+#      ]
+#    }
+#  provisioner "file" {
+#    source = "./benchmark/"
+#    destination = "/tmp/benchmark"
+#  }
+}
+
+output "client-[[ZONE]]_ip_addr" {
+   value = google_compute_instance.client-[[ZONE]].network_interface.0.access_config.0.nat_ip
+}
