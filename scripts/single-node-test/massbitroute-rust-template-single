@@ -90,7 +90,7 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
   sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
   cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
-  cargo build --release
+  sudo cargo build --release
   mkdir -p /opt/verification
   sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
   sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
