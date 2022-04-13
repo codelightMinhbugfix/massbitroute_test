@@ -5,6 +5,7 @@
 #-------------------------------------------
 sudo apt update -y
 curl https://sh.rustup.rs -sSf | sh -s -- -y
+source $HOME/.cargo/env
 rustup update nightly
 rustup update stable
 rustup target add wasm32-unknown-unknown --toolchain nightly
@@ -68,7 +69,7 @@ sudo service nginx restart
 sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
 sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
 cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
-cargo build --release
+/root/.cargo/bin/cargo build --release >> /home/verification.log
 mkdir -p /opt/verification
 sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
 sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
@@ -114,7 +115,8 @@ sudo chmod 770 /opt/verification/run.sh
 #  Install FISHERMAN (RUST)
 #-------------------------------------------
 cd /massbit/massbitroute/app/src/sites/services/monitor/fisherman
-cargo build --release
+/root/.cargo/bin/cargo build --release >> /home/fisherman.log
+
 mkdir -p /opt/fisherman
 sudo cp target/release/mbr-fisherman /opt/fisherman/mbr-fisherman
 

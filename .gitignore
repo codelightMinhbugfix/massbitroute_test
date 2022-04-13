@@ -23,3 +23,9 @@
 hs_err_pid*
 credentials
 .terraform
+terraforms/verifications/terraform.tfstate*
+terraforms/verifications/.terraform.lock.hcl
+terraforms/verifications/.env
+terraforms/verifications/init_*
+terraforms/verifications/verification.plan
+terraforms/verifications/verification.tf

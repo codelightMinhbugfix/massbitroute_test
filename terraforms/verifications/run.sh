@@ -22,9 +22,9 @@ _prepare_terraform() {
     type = map
   }' > verification.tf
 
-  while IFS="," read -r region zone continent
+  nodeId="$(echo $RANDOM | md5sum | head -c 5)"
+  while IFS="," read -r region zone continent temp
   do
-    echo $zone
     cat init.tpl | sed "s/\[\[DOMAIN\]\]/$domain/g" \
                     | sed "s/\[\[ETH_BASE_URL01\]\]/$eth_base_url01/g" \
                     | sed "s/\[\[ETH_BASE_URL02\]\]/$eth_base_url02/g" \
@@ -32,12 +32,14 @@ _prepare_terraform() {
                     | sed "s/\[\[ETH_SERVICE_URL\]\]/${eth_service_url}/g" \
                     | sed "s/\[\[ETH_SERVICE_KEY\]\]/${eth_service_key}/g" \
                     | sed "s/\[\[DOT_SERVICE_URL\]\]/${dot_service_url}/g" \
-                    | sed "s/\[\[ZONE\]\]/${continent,,}/g" \
-                    | sed "s/\[\[BLOCKCHAIN_ENDPOINT\]\]/${blockchain_endpoint}/g" > init_${continent,,}.sh
+                    | sed "s/\[\[ZONE\]\]/$continent/g" \
+                    | sed "s/\[\[BLOCKCHAIN_ENDPOINT\]\]/${blockchain_endpoint}/g" \
+                    | sed "s/\[\[NODEID\]\]/$nodeId/g" > init_$continent.sh
     cat template |  sed "s/\[\[REGION\]\]/$region/g" \
                 | sed  "s/\[\[CLOUD_ZONE\]\]/$zone/g" \
-                | sed  "s/\[\[ZONE\]\]/${continent,,}/g" \
-                | sed  "s/\[\[EMAIL\]\]/$email/g"  >> verification.tf
+                | sed  "s/\[\[ZONE\]\]/$continent/g" \
+                | sed  "s/\[\[EMAIL\]\]/$email/g" \
+                | sed "s/\[\[NODEID\]\]/$nodeId/g"  >> verification.tf
   done < <(tail ../../credentials/zonelist.csv)
 }
 

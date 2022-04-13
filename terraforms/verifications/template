@@ -1,5 +1,5 @@
 resource "google_compute_instance" "verification-[[ZONE]]" {
-  name         = "verification-[[ZONE]]"
+  name         = "verification-[[ZONE]]-[[NODEID]]"
   machine_type = var.map_machine_types["verification"]
   zone         = "[[CLOUD_ZONE]]"
 

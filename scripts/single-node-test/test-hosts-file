@@ -1,0 +1,22 @@
+34.101.111.101 hostmaster.massbitroute.dev
+34.101.111.101 ns1.massbitroute.dev
+34.101.111.101 ns2.massbitroute.dev
+34.101.111.101 massbitroute.devdmin.massbitroute.dev
+34.101.111.101 dapi.massbitroute.dev
+34.101.111.101 massbitroute.devpi.massbitroute.dev
+34.101.111.101 dev.massbitroute.dev
+34.101.111.101 staging.massbitroute.dev
+34.101.111.101 production.massbitroute.dev
+34.101.111.101 status.dapi.massbitroute.dev
+34.101.111.101 session.mbr.massbitroute.dev
+34.101.111.101 monitor.mbr.massbitroute.dev
+34.101.111.101 glmr1.bc.massbitroute.dev
+34.101.111.101 dot1.bc.massbitroute.dev
+34.101.111.101 chain.massbitroute.dev
+
+34.101.57.212 portal.massbitroute.dev
+34.101.57.212 staking.massbitroute.dev
+
+34.101.214.148 verify.massbitroute.dev
+34.101.214.148 fisherman.massbitroute.dev
+34.101.214.148 stat.mbr.massbitroute.dev
