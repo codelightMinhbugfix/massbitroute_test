@@ -119,6 +119,11 @@ cd /massbit/massbitroute/app/src/sites/services/monitor/fisherman
 
 mkdir -p /opt/fisherman
 sudo cp target/release/mbr-fisherman /opt/fisherman/mbr-fisherman
+sudo cp ../check_component/src/archive/check-flow.json      /opt/fisherman/check-flow.json
+sudo cp config_check_component.json                         /opt/fisherman/config_check_component.json
+sudo cp config_fisherman.json                               /opt/fisherman/config_fisherman.json
+
+cp /opt/verification/base-endpoint.json /opt/fisherman
 
 sudo cat > /opt/fisherman/run.sh  <<EOL
 #!/bin/bash
@@ -129,7 +134,7 @@ ZONE=[[ZONE]] RUST_LOG=info RUST_LOG_TYPE=file
     -b base-endpoint.json -c check-flow.json \
     -m  wss://[[BLOCKCHAIN_ENDPOINT]] --signer-phrase "[[MNEMONIC]]"  --domain [[DOMAIN]]
 EOL
-
+sudo chmod 770 /opt/fisherman/run.sh
 sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start verification
