@@ -73,7 +73,7 @@ _prepare_terraform() {
   }
   variable "map_machine_types" {
     type = map
-  }' > test-nodes.tf
+  }' > nodes.tf
   # create  node
   while IFS="," read -r nodeId appId name blockchain dataSource zone cloudZone
   do
@@ -83,7 +83,7 @@ _prepare_terraform() {
       | sed  "s/\[\[ZONE\]\]/$zone/g" | sed  "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
       | sed  "s/\[\[DATASOURCE\]\]/$dataSource/g" | sed  "s/\[\[NAME\]\]/$name/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
-      | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" | sed  "s/\[\[USER_ID\]\]/$userId/g"  >> test-nodes.tf
+      | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" | sed  "s/\[\[USER_ID\]\]/$userId/g"  >> nodes.tf
   done < <(tail nodelist.csv)
 
   #create gw
@@ -93,7 +93,7 @@ _prepare_terraform() {
       | sed  "s/\[\[ZONE\]\]/$zone/g" | sed  "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
       | sed  "s/\[\[NAME\]\]/$name/g" | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
-      | sed  "s/\[\[USER_ID\]\]/$userId/g" >> test-nodes.tf
+      | sed  "s/\[\[USER_ID\]\]/$userId/g" >> nodes.tf
   done < <(tail gatewaylist.csv)
 }
 _check_created_nodes() {
