@@ -1,0 +1,35 @@
+resource "google_compute_instance" "verification-[[ZONE]]" {
+  name         = "verification-[[ZONE]]"
+  machine_type = var.map_machine_types["verification"]
+  zone         = "[[CLOUD_ZONE]]"
+
+  tags = ["http-server", "https-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
+      size = 10
+    }
+  }
+
+  network_interface {
+    network = "${var.network_interface}"
+
+    access_config {
+      // Ephemeral IP
+    }
+  }
+
+  metadata_startup_script = "${file("init_[[ZONE]].sh")}"
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email = "[[EMAIL]]"
+    scopes = ["cloud-platform"]
+  }
+}
+
+output "verify_[[ZONE]]_public_ip" {
+  description = "Public IP of new.massbitroute.devPI VM"
+  value = google_compute_instance.verification-[[ZONE]].network_interface.0.access_config.0.nat_ip
+}

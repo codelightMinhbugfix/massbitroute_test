@@ -12,4 +12,3 @@ map_machine_types={
   "stat":"e2-small",
   "monitor":"e2-small"
 }
-list_dns_names=["dns1","dns2"]
