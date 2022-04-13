@@ -123,7 +123,7 @@ sudo cp ../check_component/src/archive/check-flow.json      /opt/fisherman/check
 sudo cp config_check_component.json                         /opt/fisherman/config_check_component.json
 sudo cp config_fisherman.json                               /opt/fisherman/config_fisherman.json
 
-cp /opt/verification/base-endpoint.json /opt/fisherman
+sudo cp /opt/verification/base-endpoint.json /opt/fisherman
 
 sudo cat > /opt/fisherman/run.sh  <<EOL
 #!/bin/bash
