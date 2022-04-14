@@ -1,6 +1,5 @@
 #!/bin/bash
-#bearer="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MTFjMzc4Mi0yNzk0LTQ0MjMtYWEwMi0zYjAwOGZkYTQzOGQiLCJpYXQiOjE2NDg2MTM3ODAsImV4cCI6MTY0ODcwMDE4MH0.hZQak__--HUYsXTz3YSDfDYmIK0r85a-jaiDSb0CqV16AqeXd5i1oXy0J5JAd03ZgMVOepSn_pCtjZlbmk82i8l7Tcxc2pjvdKuj2GmCWIyNKrKFokkp8NSsRkogAuCk8cZymNJVv0LXjiQOXFk-6hJ-mJMyT1hlJUIkuECYp-zihCp5QkK2q2QYbVCN1YLYsHLuWTrsKjH48v_NPJtfg6D8GHXvZT_SAen24o3reLV1247B_4yZ9ohcICiP3lQp-qSGIC3o_iMaOCHznEuPziA7puoxxsOPdyaE-JSXCYc80pljnUFEdiNH1ArJo6JspUzm1MTWeiwRPJs9fp2T8Q"
-source .env
+source ../../credentials/.env
 nodePrefix=$random
 staking_amount=100
 #login
@@ -162,16 +161,49 @@ _check_verified_nodes() {
     sleep 20
   done
 }
-_stake_nodes() {
+_register_nodes() {
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
     do
-      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking' \
+      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/admin/register-provider' \
          --header 'Content-Type: application/json' --data-raw "{
-           \"memonic\": \"$MEMONIC\",
+           \"operator\": \"$wallet_address\",
            \"providerId\": \"$nodeId\",
            \"providerType\": \"Node\",
            \"blockchain\": \"$blockchain\",
-           \"network\": \"mainnet\",
+           \"network\": \"mainnet\"
+       }" | jq .status)
+       if [[ "$staking_response" != "success" ]]; then
+         echo "Register node $nodeId: Failed"
+       else
+         echo "Register node $nodeId: Passed"
+       fi
+    done < <(tail nodelist.csv)
+}
+_register_gateways() {
+  while IFS="," read -r gatewayId appId name blockchain zone cloudZone
+    do
+      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/admin/register-provider' \
+         --header 'Content-Type: application/json' --data-raw "{
+           \"operator\": \"$wallet_address\",
+           \"providerId\": \"$gatewayId\",
+           \"providerType\": \"Gateway\",
+           \"blockchain\": \"$blockchain\",
+           \"network\": \"mainnet\"
+       }" | jq .status)
+       if [[ "$staking_response" != "success" ]]; then
+         echo "Register gateway $gatewayId: Failed"
+       else
+         echo "Register gateway $gatewayId: Passed"
+       fi
+    done < <(tail gatewaylist.csv)
+}
+_stake_nodes() {
+  while IFS="," read -r nodeId appId name blockchain zone cloudZone
+    do
+      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
+         --header 'Content-Type: application/json' --data-raw "{
+           \"memonic\": \"$MEMONIC\",
+           \"providerId\": \"$nodeId\",
            \"amount\": \"$staking_amount\"
        }" | jq .status)
        if [[ "$staking_response" != "success" ]]; then
@@ -184,13 +216,10 @@ _stake_nodes() {
 _stake_gateways() {
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
     do
-      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking' \
+      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
          --header 'Content-Type: application/json' --data-raw "{
            \"memonic\": \"$MEMONIC\",
            \"providerId\": \"$gatewayId\",
-           \"providerType\": \"Gateway\",
-           \"blockchain\": \"$blockchain\",
-           \"network\": \"mainnet\",
            \"amount\": \"$staking_amount\"
        }" | jq .status)
        if [[ "$staking_response" != "success" ]]; then
@@ -239,6 +268,8 @@ _setup() {
   _create_vms
   _check_verified_nodes
   _check_verified_gateways
+  _register_nodes
+  _register_gateways
   _stake_nodes
   _stake_gateways
 }
