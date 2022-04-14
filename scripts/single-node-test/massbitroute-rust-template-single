@@ -78,7 +78,7 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   #-------------------------------------------
   #  Install NGINX
   #-------------------------------------------
-  sudo apt update && sudo apt upgrade -y && sudo apt install curl nginx -y
+  sudo apt install curl nginx -y
   sudo apt install software-properties-common
   sudo curl https://raw.githubusercontent.com/hoanito/hosts/main/verification.nginx > /etc/nginx/sites-enabled/verification
 
@@ -90,12 +90,13 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
   sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
   cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
-  sudo cargo build --release
+  /root/.cargo/bin/cargo build --release
   mkdir -p /opt/verification
   sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
   sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
   sudo cp /opt/ssh-key/base-endpoint.json  /opt/verification/base-endpoint.json
   sudo cp script/run.sh /opt/verification/run.sh
+  sudo cp config_check_component.json /opt/verification/config_check_component.json
   sudo chmod 770 /opt/verification/run.sh
   sudo supervisorctl reread
   sudo  supervisorctl update
