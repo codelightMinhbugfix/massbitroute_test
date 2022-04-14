@@ -1,5 +1,5 @@
 #! /bin/bash
-source .env
+source ../../credentials/.env
 
 _prepare_terraform() {
   eth_base_url01=$(echo $eth_base_url01 | sed "s|\/|\\\/|g")
@@ -53,7 +53,7 @@ _create_vms() {
 
   while IFS="," read -r region zone continent temp
   do
-    terraform output -raw "verify_${zone}_public_ip" >> new_dns_record.txt
+    terraform output -raw "verify_${continent}_public_ip" >> new_dns_record.txt
   done < <(tail ../../credentials/zonelist.csv)
 
 }
