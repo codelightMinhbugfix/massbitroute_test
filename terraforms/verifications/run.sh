@@ -34,12 +34,15 @@ _prepare_terraform() {
                     | sed "s/\[\[DOT_SERVICE_URL\]\]/${dot_service_url}/g" \
                     | sed "s/\[\[ZONE\]\]/$continent/g" \
                     | sed "s/\[\[BLOCKCHAIN_ENDPOINT\]\]/${blockchain_endpoint}/g" \
-                    | sed "s/\[\[NODEID\]\]/$nodeId/g" > init_$continent.sh
+                    | sed "s/\[\[NODEID\]\]/$nodeId/g" \
+                    | sed "s/\[\[MNEMONIC\]\]/$mnemonic/g" > init_$continent.sh
     cat template |  sed "s/\[\[REGION\]\]/$region/g" \
                 | sed  "s/\[\[CLOUD_ZONE\]\]/$zone/g" \
                 | sed  "s/\[\[ZONE\]\]/$continent/g" \
                 | sed  "s/\[\[EMAIL\]\]/$email/g" \
                 | sed "s/\[\[NODEID\]\]/$nodeId/g"  >> verification.tf
+
+    
   done < <(tail ../../credentials/zonelist.csv)
 }
 
@@ -47,6 +50,12 @@ _create_vms() {
   terraform init
   terraform plan -var-file=./terraform.tfvars -out=verification.plan
   terraform apply verification.plan
+
+  while IFS="," read -r region zone continent temp
+  do
+    terraform output -raw "verify_${zone}_public_ip" >> new_dns_record.txt
+  done < <(tail ../../credentials/zonelist.csv)
+
 }
 
 _setup() {
