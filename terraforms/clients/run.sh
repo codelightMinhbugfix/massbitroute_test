@@ -1,5 +1,5 @@
 #! /bin/bash
-source .env
+source ../../credentials/.env
 #login
 #-------------------------------------------
 # Log into Portal
