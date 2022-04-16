@@ -58,7 +58,9 @@ cat massbitroute-core-template-single | \
     sed "s/\[\[MERGE_BRANCH\]\]/$GIT_MERGE_BRANCH/g" | \
     sed "s/\[\[PRIVATE_GIT_READ_USERNAME\]\]/$PRIVATE_GIT_READ_USERNAME/g" | \
     sed "s/\[\[PRIVATE_GIT_READ_PASSWORD\]\]/$PRIVATE_GIT_READ_PASSWORD/g" | \
-    sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  >> test-nodes.tf
+    sed "s/\[\[PRIVATE_GIT_DOMAIN\]\]/$PRIVATE_GIT_DOMAIN/g"  | \
+    sed "s/\[\[PRIVATE_GIT_SSH_USERNAME\]\]/$PRIVATE_GIT_SSH_USERNAME/g" | \
+    sed "s/\[\[PRIVATE_GIT_SSH_PASSWORD\]\]/$PRIVATE_GIT_SSH_PASSWORD/g" >> test-nodes.tf
 
 ## PORTAL NODE
 cat massbitroute-portal-template-single | \
@@ -73,7 +75,7 @@ cat massbitroute-portal-template-single | \
     sed "s/\[\[PRIVATE_GIT_SSH_USERNAME\]\]/$PRIVATE_GIT_SSH_USERNAME/g" | \
     sed "s/\[\[PRIVATE_GIT_SSH_PASSWORD\]\]/$PRIVATE_GIT_SSH_PASSWORD/g" >> test-nodes.tf
 
-RUST NODE
+# RUST NODE
 cat massbitroute-rust-template-single | \
      sed "s/\[\[NODE_ID\]\]/$nodeId/g" | \
     sed "s/\[\[BRANCH_NAME\]\]/$GIT_BRANCH/g" | \

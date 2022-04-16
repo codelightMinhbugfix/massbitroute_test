@@ -20,3 +20,4 @@
 [[MASSBITROUTE_RUST_IP]] verify.massbitroute.dev
 [[MASSBITROUTE_RUST_IP]] fisherman.massbitroute.dev
 [[MASSBITROUTE_RUST_IP]] stat.mbr.massbitroute.dev
+127.0.0.1 localhost

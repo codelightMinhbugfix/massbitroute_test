@@ -1,15 +1,16 @@
 #!/bin/bash
 
-bearer="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MTFjMzc4Mi0yNzk0LTQ0MjMtYWEwMi0zYjAwOGZkYTQzOGQiLCJpYXQiOjE2NDkxNDA4NjUsImV4cCI6MTY0OTIyNzI2NX0.mQWmiiKq1EYEkMYaxyNNumX5iOShl0fYCeQaip9RZeq-5wFR8wZ4MyGHOWFY3B7ZastOJKJOBL2I93zZVCBiAfM1Isp6d6_PCH0AeJJnvP2rSzxbgtkd2cIvkQMJ6V9PBwAFTlYpACX46s7cE4ZE2psyb_0rld34s9hiHBa4Q9ksrZcjywyf-4saWXIJpz9kXGGs92QN4tULuvYCj4IDfCHJNh-M2ijodcqMYQNju0zKMip8cn78plc3W9_wZMPCmTyAcZyYc86OWBlnoqweuA2W2_uKrvUVJ7zbKpXjotzY10dAhJlhbcaoYfPo6rd790WFKOmmCdUxZBPeUArpMw"
 blockchain="eth"
 dataSource="http:\/\/34.124.230.213:8545"
 nodePrefix="$(echo $RANDOM | md5sum | head -c 5)"
-GATEWAY_ID=""
-NODE_ID=""
 MEMONIC="peanut thank prevent burden erode welcome dust one develop code lamp rule"
-
 TEST_USERNAME="Juanito"
 TEST_PASSWORD="Defense22"
+
+GATEWAY_ID=""
+NODE_ID="26a10578-7ccd-40cf-b43a-9800a08e11dd"
+PROJECT_ID="b9bfced5-f1c6-4f53-90bd-eee7b6a7de4d"
+
 #-------------------------------------------
 # Log into Portal
 #-------------------------------------------
@@ -114,29 +115,29 @@ while IFS="," read -r nodeId appId zone; do
 done < <(tail nodelist.csv)
 
 
-# #-------------------------------------------
-# #  Spin up nodes VM on GCE
-# #-------------------------------------------
-# echo "Create node VMs on GCE: In Progress"
-# terraform init -input=false
-# if [[ "$?" != "0" ]]; then
-#   echo "terraform init: Failed "
-#   exit 1
-# fi
-# sudo terraform plan -out=tfplan -input=false
-# if [[ "$?" != "0" ]]; then
-#   echo "terraform plan: Failed "
-#   exit 1
-# fi
-# sudo terraform apply -input=false tfplan
-# if [[ "$?" != "0" ]]; then
-#   echo "terraform apply: Failed"
-#   exit 1
-# fi
-# echo "Create node VMs on GCE: Passed"
+#-------------------------------------------
+#  Spin up nodes VM on GCE
+#-------------------------------------------
+echo "Create node VMs on GCE: In Progress"
+terraform init -input=false
+if [[ "$?" != "0" ]]; then
+  echo "terraform init: Failed "
+  exit 1
+fi
+sudo terraform plan -out=tfplan -input=false
+if [[ "$?" != "0" ]]; then
+  echo "terraform plan: Failed "
+  exit 1
+fi
+sudo terraform apply -input=false tfplan
+if [[ "$?" != "0" ]]; then
+  echo "terraform apply: Failed"
+  exit 1
+fi
+echo "Create node VMs on GCE: Passed"
 
-# echo "Waiting for nodes to set up"
-# sleep 300
+echo "Waiting for nodes to set up"
+sleep 300
 
 #-------------------------------------------
 # Check if nodes are verified
@@ -219,15 +220,27 @@ echo "Verify Node staking status: Passed"
 #-------------------------------------------
 # Test staking for PROJECT
 #-------------------------------------------
-project_staking_response=$(curl --location --request POST 'http://localhost:3005/massbit/staking-project' \
+project_staking_response=$(curl --location --request POST 'https://staking.massbitroute.dev/massbit/staking-project' \
 --header 'Content-Type: application/json' \
 --data-raw "{
-    \"memonic": "renew inject still alcohol describe organ actual say regret drop behind hat",
-    \"projectId": "e8ea55c4-5a0c-4c72-9c82-919157c82de3",
-    \"blockchain": "eth",
-    \"network": "mainnet",
-    \"amount": "100"
+    \"memonic\": \"$MEMONIC\",
+    \"projectId\": \"$PROJECT_ID\",
+    \"blockchain\": \"$blockchain\",
+    \"network\": \"mainnet\",
+    \"amount\": \"100\"
 }")
+staking_message=$(echo $project_staking_response | jq -r ". | .message ")
+
+if [[ "$staking_message" -ne 'AlreadyExist (dapi): The provider/project is already registered.' ]]
+then
+  staking_status=$(echo $project_staking_response | jq -r ". | .status ")
+  if [[ "$project_staking_response" -eq 'staked' ]]; then
+    echo "Verify Project staking status: Failed"
+    exit 1
+  fi
+fi
+
+echo "Verify Project staking status: Passed"
 
 #-------------------------------------------
 # Create dAPI
@@ -237,9 +250,9 @@ create_dapi_response=$(curl -s --location --request POST 'https://portal.massbit
   --header 'Content-Type: application/json' \
   --data-raw "{
     \"name\": \"test-dapi\",
-    \"projectId\": \"591e5376-822e-4d76-b39c-1b2885138880\"
+    \"projectId\": \"$PROJECT_ID\"
 }")
-create_dapi_status=$(echo $create_dapi_response | -r '. | .status')
+create_dapi_status=$(echo $create_dapi_response | jq -r '. | .status')
 if [[ "$create_dapi_status" != "1" ]]; then
   echo "Create new dAPI: Failed"
   exit 1
@@ -255,8 +268,10 @@ appKey=$(echo $create_dapi_response | jq -r '. | .appKey')
 dapiURL="https://$apiId.$blockchain-mainnet.massbitroute.dev/$appKey"
 echo $dapiURL > DAPI_URL
 
-dapi_response_code=$(curl -o /dev/null -s -w "%{http_code}\n" --request POST $apiURL \
+dapi_response_code=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST "$dapiURL" \
   --header 'Content-Type: application/json' \
+  --header "Host: $apiId.$blockchain-mainnet.massbitroute.dev" \
+  --header "x-api-key: $appKey" \
   --data-raw '{
     "jsonrpc": "2.0",
     "method": "eth_getBlockByNumber",
