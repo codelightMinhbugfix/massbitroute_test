@@ -1,20 +1,42 @@
 #!/bin/bash
 
-blockchain="eth"
-dataSource="http:\/\/34.124.230.213:8545"
-nodePrefix="$(echo $RANDOM | md5sum | head -c 5)"
+# blockchain="eth"
+# dataSource="http:\/\/34.124.230.213:8545"
+
+if [ -z "$1" ]
+  then
+    echo "ERROR: Blockchain is required"
+    exit 1
+fi
+
+blockchain="$1"
+
 MEMONIC="peanut thank prevent burden erode welcome dust one develop code lamp rule"
 TEST_USERNAME="Juanito"
 TEST_PASSWORD="Defense22"
+USER_ID="772efcb1-f14e-4e7b-a5a7-d17d97fff8e5"
 
-GATEWAY_ID=""
-NODE_ID="26a10578-7ccd-40cf-b43a-9800a08e11dd"
-PROJECT_ID="b9bfced5-f1c6-4f53-90bd-eee7b6a7de4d"
+
+if [ "$blockchain" = "eth" ]
+then
+  PROJECT_ID="b9bfced5-f1c6-4f53-90bd-eee7b6a7de4d"
+  dataSource="http:\/\/34.124.230.213:8545"
+elif [ "$blockchain" = "dot" ]
+then
+  PROJECT_ID="ea36a4b2-655b-4e89-9f5c-6a53cdce909f"
+  dataSource="https:\/\/34.116.128.226"
+else
+  echo "ERROR. Blockchain unspecified or invalid"
+  exit 1
+fi
+
+
+nodePrefix="$(echo $RANDOM | md5sum | head -c 5)"
 
 #-------------------------------------------
 # Log into Portal
 #-------------------------------------------
-bearer=$(curl --location --request POST 'https://portal.massbitroute.dev/auth/login' --header 'Content-Type: application/json' \
+bearer=$(curl -s --location --request POST 'https://portal.massbitroute.dev/auth/login' --header 'Content-Type: application/json' \
         --data-raw "{\"username\": \"$TEST_USERNAME\", \"password\": \"$TEST_PASSWORD\"}"| jq  -r ". | .accessToken")
 
 if [[ "$bearer" == "null" ]]; then
@@ -77,6 +99,12 @@ sudo curl -s --location --request POST 'https://portal.massbitroute.dev/mbr/gate
 GATEWAY_ID=$(cut -d ',' -f 1 gatewaylist.csv)
 NODE_ID=$(cut -d ',' -f 1 nodelist.csv)
 
+echo "        NODE/GW INFO        "
+echo "----------------------------"
+echo "Gateway ID: $GATEWAY_ID"
+echo "Node ID: $NODE_ID"
+echo "----------------------------"
+
 # curl node info
 gateway_reponse_code=$(curl -o /dev/null -s -w "%{http_code}\n" "https://portal.massbitroute.dev/mbr/gateway/$GATEWAY_ID" --header "Authorization: Bearer $bearer")
 if [[ $gateway_reponse_code != 200 ]]; then
@@ -102,7 +130,8 @@ while IFS="," read -r nodeId appId zone; do
     sed "s/\[\[APP_KEY\]\]/$appId/g" | \
     sed "s/\[\[ZONE\]\]/$zone/g" | \
     sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
-    sed "s/\[\[MASSBITROUTE_CORE_IP\]\]/$MASSBITROUTE_CORE_IP/g">>test-nodes.tf
+    sed "s/\[\[MASSBITROUTE_CORE_IP\]\]/$MASSBITROUTE_CORE_IP/g" | \
+    sed "s/\[\[USER_ID\]\]/$USER_ID/g" >>test-nodes.tf
 done < <(tail gatewaylist.csv)
 
 while IFS="," read -r nodeId appId zone; do
@@ -111,7 +140,8 @@ while IFS="," read -r nodeId appId zone; do
     sed "s/\[\[ZONE\]\]/$zone/g" | \
     sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
     sed "s/\[\[DATASOURCE\]\]/$dataSource/g" | \
-    sed "s/\[\[MASSBITROUTE_CORE_IP\]\]/$MASSBITROUTE_CORE_IP/g" >>test-nodes.tf
+    sed "s/\[\[MASSBITROUTE_CORE_IP\]\]/$MASSBITROUTE_CORE_IP/g" | \
+    sed "s/\[\[USER_ID\]\]/$USER_ID/g" >>test-nodes.tf
 done < <(tail nodelist.csv)
 
 
@@ -137,14 +167,23 @@ fi
 echo "Create node VMs on GCE: Passed"
 
 echo "Waiting for nodes to set up"
-sleep 300
+sleep 180
 
 #-------------------------------------------
 # Check if nodes are verified
 #-------------------------------------------
-while [[ "$gateway_status" != "verified" ]] && [[ "$node_status" != "verified" ]]; do
+while [[ "$gateway_status" != "verified" ]] || [[ "$node_status" != "verified" ]]; do
   echo "Checking node status: In Progress"
 
+  if [[ "$gateway_status" = "failed" ]] || [[ "$node_status" = "failed" ]]
+  then
+    echo "---------------------------------"
+    echo "Gateway status: $gateway_status"
+    echo "Node status: $node_status"
+    echo "---------------------------------"
+    echo "Checking nodes verified status: Failed"
+    exit 1
+  fi
 
   gateway_status=$(curl -s --location --request GET "https://portal.massbitroute.dev/mbr/gateway/$GATEWAY_ID" \
     --header "Authorization: Bearer $bearer" | jq -r ". | .status")
@@ -158,7 +197,7 @@ while [[ "$gateway_status" != "verified" ]] && [[ "$node_status" != "verified" ]
   echo "---------------------------------"
   sleep 10
 done
-echo "Checking node status: Passed"
+echo "Checking node verified status: Passed"
 
 
 #-------------------------------------------
@@ -220,7 +259,7 @@ echo "Verify Node staking status: Passed"
 #-------------------------------------------
 # Test staking for PROJECT
 #-------------------------------------------
-project_staking_response=$(curl --location --request POST 'https://staking.massbitroute.dev/massbit/staking-project' \
+project_staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-project' \
 --header 'Content-Type: application/json' \
 --data-raw "{
     \"memonic\": \"$MEMONIC\",
@@ -268,19 +307,33 @@ appKey=$(echo $create_dapi_response | jq -r '. | .appKey')
 dapiURL="https://$apiId.$blockchain-mainnet.massbitroute.dev/$appKey"
 echo $dapiURL > DAPI_URL
 
+if [ "$blockchain" = "eth" ]
+then
+  http_data='{
+      "jsonrpc": "2.0",
+      "method": "eth_getBlockByNumber",
+      "params": [
+          "latest",
+          true
+      ],
+      "id": 1
+  }'
+elif [ "$blockchain" = "dot" ]
+then
+  http_data='{
+    "jsonrpc": "2.0",
+    "method": "chain_getBlock",
+    "params": [],
+    "id": 1
+}'
+fi
+
+
 dapi_response_code=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST "$dapiURL" \
   --header 'Content-Type: application/json' \
   --header "Host: $apiId.$blockchain-mainnet.massbitroute.dev" \
   --header "x-api-key: $appKey" \
-  --data-raw '{
-    "jsonrpc": "2.0",
-    "method": "eth_getBlockByNumber",
-    "params": [
-        "latest",
-        true
-    ],
-    "id": 1
-}')
+  --data-raw "$http_data")
 if [[ "$dapi_response_code" != "200" ]]; then
   echo "Calling dAPI: Failed"
   exit 1
@@ -288,17 +341,15 @@ fi
 echo "Calling dAPI: Pass"
 
 
-# #-------------------------------------------
-# # Cleaning up test VMs
-# #-------------------------------------------
-# echo "Cleaning up VMs: In Progress"
-# terraform destroy -auto-approve
-# if [[ "$?" != "0" ]]; then
-#   echo "Failed to execute: terraform destroy "
-#   exit 1
-# fi
-# echo "Cleaning up VMs: Passed"
+#-------------------------------------------
+# Cleaning up test VMs
+#-------------------------------------------
+echo "Cleaning up VMs: In Progress"
+terraform destroy -auto-approve
+if [[ "$?" != "0" ]]; then
+  echo "Failed to execute: terraform destroy "
+  exit 1
+fi
+echo "Cleaning up VMs: Passed"
 
-# exit 0
-
-# # # if verify check query
+exit 0
