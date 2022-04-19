@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # blockchain="eth"
-# dataSource="http:\/\/34.124.230.213:8545"
+# dataSource="http:\/\/34.87.241.136:8545"
 
 if [ -z "$1" ]
   then
@@ -9,21 +9,18 @@ if [ -z "$1" ]
     exit 1
 fi
 
+
 blockchain="$1"
 
-MEMONIC="peanut thank prevent burden erode welcome dust one develop code lamp rule"
-TEST_USERNAME="Juanito"
-TEST_PASSWORD="Defense22"
-USER_ID="772efcb1-f14e-4e7b-a5a7-d17d97fff8e5"
-
+source .env
 
 if [ "$blockchain" = "eth" ]
 then
-  PROJECT_ID="b9bfced5-f1c6-4f53-90bd-eee7b6a7de4d"
-  dataSource="http:\/\/34.124.230.213:8545"
+  PROJECT_ID="2a961159-a1da-4611-a329-881d2459b3ff"
+  dataSource="http:\/\/34.87.241.136:8545"
 elif [ "$blockchain" = "dot" ]
 then
-  PROJECT_ID="ea36a4b2-655b-4e89-9f5c-6a53cdce909f"
+  PROJECT_ID="c664ec9e-e412-4200-a5ac-b879383b8151"
   dataSource="https:\/\/34.116.128.226"
 else
   echo "ERROR. Blockchain unspecified or invalid"
@@ -203,6 +200,23 @@ echo "Checking node verified status: Passed"
 #-------------------------------------------
 # Test staking for NODES/GW
 #-------------------------------------------
+# register gateway
+gateway_register_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/admin/register-provider' \
+--header 'Content-Type: application/json' \
+--data-raw "{
+    \"providerId\": \"$GATEWAY_ID\",
+    \"operator\": \"$WALLET_ADDRESS\",
+    \"providerType\": \"Gateway\",
+    \"blockchain\": \"$blockchain\",
+    \"network\": \"mainnet\"
+}" | jq -r ". | .status")
+if [[ "$gateway_register_response" != "success" ]]; then
+  echo "Gateway registration: Failed "
+  exit 1
+fi
+echo "Gateway registration: Passed"
+
+# stake gateway
 gateway_staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
   --header 'Content-Type: application/json' --data-raw "{
     \"memonic\": \"$MEMONIC\",
@@ -211,12 +225,28 @@ gateway_staking_response=$(curl -s --location --request POST 'https://staking.ma
     \"blockchain\": \"$blockchain\",
     \"network\": \"mainnet\",
     \"amount\": \"100\"
-}" | jq .status)
-if [[ "$gateway_staking_status" != "success" ]]; then
+}" | jq -r ". | .status")
+if [[ "$gateway_staking_response" != "success" ]]; then
   echo "Gateway staking status: Failed "
   exit 1
 fi
 echo "Gateway staking status: Passed"
+
+# register Node
+node_register_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/admin/register-provider' \
+--header 'Content-Type: application/json' \
+--data-raw "{
+    \"providerId\": \"$NODE_ID\",
+    \"operator\": \"$WALLET_ADDRESS\",
+    \"providerType\": \"Node\",
+    \"blockchain\": \"$blockchain\",
+    \"network\": \"mainnet\"
+}" | jq -r ". | .status")
+if [[ "$node_register_response" != "success" ]]; then
+  echo "Node registration: Failed "
+  exit 1
+fi
+echo "Node registration: Passed"
 
 node_staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
   --header 'Content-Type: application/json' --data-raw "{
@@ -226,8 +256,8 @@ node_staking_response=$(curl -s --location --request POST 'https://staking.massb
     \"blockchain\": \"$blockchain\",
     \"network\": \"mainnet\",
     \"amount\": \"100\"
-}" | jq .status)
-if [[ "$node_staking_status" != "success" ]]; then
+}" | jq -r ". | .status")
+if [[ "$node_staking_response" != "success" ]]; then
   echo "Node staking: Failed"
   exit 1
 fi
@@ -328,11 +358,11 @@ then
 }'
 fi
 
+sleep 60
+echo "Waiting for dAPI to configure"
 
 dapi_response_code=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST "$dapiURL" \
   --header 'Content-Type: application/json' \
-  --header "Host: $apiId.$blockchain-mainnet.massbitroute.dev" \
-  --header "x-api-key: $appKey" \
   --data-raw "$http_data")
 if [[ "$dapi_response_code" != "200" ]]; then
   echo "Calling dAPI: Failed"
