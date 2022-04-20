@@ -1,18 +1,13 @@
 
 
-resource "google_compute_instance" "mbr-portal-new-commit-test" {
+resource "google_compute_instance_from_machine_image" "mbr-portal-new-commit-test" {
   name         = "${var.project_prefix}-${var.environment}-portal-test-[[NODE_ID]]"
   machine_type = var.map_machine_types["mbr-core"]
   zone         = "${var.default_zone}"
+  provider = google-beta
 
   tags = ["http-server", "https-server"]
-
-  boot_disk {
-    initialize_params {
-      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
-      size = 20
-    }
-  }
+  source_machine_image = "projects/mbr-test-341307/global/machineImages/mbr-test-portal"
 
   network_interface {
     network = "${var.network_interface}"
@@ -27,14 +22,6 @@ resource "google_compute_instance" "mbr-portal-new-commit-test" {
   #-------------------------------------------
   #  Update host file for Massbitroute.dev
   #-------------------------------------------
-  sudo echo "
-sudo wget https://raw.githubusercontent.com/hoanito/hosts/main/test-hosts-file -P /etc/
-sudo cp /etc/hosts /etc/hosts.bak
-sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
-  sudo chmod 770 /opt/update_hosts.sh
-
-  sudo echo "1 * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
-
   sudo sed 's/#DNSStubListener=yes/DNSStubListener=no/' /etc/systemd/resolved.conf -i
   sudo pkill -f systemd-resolve
 
@@ -42,20 +29,6 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
 
-  #-------------------------------------------
-  #  Install SSH keys
-  #-------------------------------------------
-  sudo mkdir /opt/ssh-key
-  sudo git clone http://[[PRIVATE_GIT_SSH_USERNAME]]:[[PRIVATE_GIT_SSH_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]/massbitroute/ssh.git -b main /opt/ssh-key
-  sudo cp /opt/ssh-key/id_rsa*  /root/.ssh/
-  sudo chmod og-rwx /root/.ssh/id_rsa
-  sudo cat /opt/ssh-key/ci-ssh-key.pub >> /home/hoang/.ssh/authorized_keys
-  
-  ssh-keyscan github.com >> ~/.ssh/known_hosts
-  
-  #-------------------------------------------
-  #  Install massbitroute PORTAL components
-  #-------------------------------------------
   export PRIVATE_GIT_DOMAIN='[[PRIVATE_GIT_DOMAIN]]'
   export PRIVATE_GIT_READ_PASSWORD='[[PRIVATE_GIT_READ_PASSWORD]]'
   export PRIVATE_GIT_READ_USERNAME='[[PRIVATE_GIT_READ_USERNAME]]'
@@ -63,28 +36,15 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
   export PRIVATE_GIT_SSL_PASSWORD='[[PRIVATE_GIT_SSL_PASSWORD]]'
   export PRIVATE_GIT_SSH_USERNAME='[[PRIVATE_GIT_SSH_USERNAME]]'
   export PRIVATE_GIT_SSH_PASSWORD='[[PRIVATE_GIT_SSH_PASSWORD]]'
-
-  #-------------------------------------------
-  #  Install packages
-  #-------------------------------------------
-  sudo apt update
-  sudo apt install redis-server npm -y
-  sudo systemctl enable redis-server
-  sudo npm install --global yarn
-  sudo npm cache clean -f
-  sudo npm install -g n
-  sudo n stable
-  sudo yarn global add pm2
   
   #-------------------------------------------
   #  Install PORTAL API
   #-------------------------------------------
-  sudo mkdir /opt/user-management
-  sudo git clone git@github.com:massbitprotocol/user-management.git -b staging /opt/user-management
   cd /opt/user-management
-  cp /opt/ssh-key/.env.portal /opt/user-management/.env
-  cp /opt/ssh-key/.env.api /opt/user-management/.env.api
-  cp /opt/ssh-key/.env.worker /opt/user-management/.env.worker
+  git pull
+  cp .env.admin.sample .env.admin
+  cp .env.api.sample .env.api
+  cp .env.worker.sample .env.worker
   sudo yarn
   sudo yarn build
   sudo pm2 start
@@ -92,24 +52,13 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
   #-------------------------------------------
   #  Install STAKING API
   #-------------------------------------------
-  sudo mkdir /opt/test-massbit-staking
-  sudo git clone git@github.com:mison201/test-massbit-staking.git  /opt/test-massbit-staking
   cd /opt/test-massbit-staking
-  cp /opt/ssh-key/.env.staking /opt/test-massbit-staking/.env
+  git pull
+  cp .env.sample .env
   sudo yarn
   sudo yarn build
   sudo pm2 start
 
-  #-------------------------------------------
-  #  Install NGINX
-  #-------------------------------------------
-  sudo mkdir -p /opt/ssl
-  git clone http://$PRIVATE_GIT_SSL_USERNAME:$PRIVATE_GIT_SSL_PASSWORD@$PRIVATE_GIT_DOMAIN/massbitroute/ssl.git /etc/letsencrypt
-  sudo apt update && sudo apt upgrade -y && sudo apt install curl nginx -y
-  sudo apt install software-properties-common
-  cp /opt/ssh-key/portal.nginx /etc/nginx/sites-enabled/portal
-  cp /opt/ssh-key/staking.nginx /etc/nginx/sites-enabled/staking
-  sudo service nginx reload
 
   EOH
 
@@ -124,5 +73,5 @@ sudo cp /etc/test-hosts-file /etc/hosts" >> /opt/update_hosts.sh
 
 output "mbr_portal_public_ip" {
   description = "Public IP of new.massbitroute.devPI VM"
-  value = google_compute_instance.mbr-portal-new-commit-test.network_interface.0.access_config.0.nat_ip
+  value = google_compute_instance_from_machine_image.mbr-portal-new-commit-test.network_interface.0.access_config.0.nat_ip
 }

@@ -14,9 +14,14 @@ if [ -z "$1" ]
     echo "ERROR: Git branch name is required"
     exit 1
 fi
-DEPLOY_BRANCH=$1
+GIT_BRANCH=$1
 
-
+if [ -z "$2" ]
+  then
+    echo "ERROR: Git MERGE branch name is required"
+    exit 1
+fi
+GIT_MERGE_BRANCH=$2
 
 
 #-------------------------------------------

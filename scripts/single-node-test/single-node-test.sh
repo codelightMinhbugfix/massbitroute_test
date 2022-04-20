@@ -13,6 +13,11 @@ fi
 blockchain="$1"
 
 source .env
+export MEMONIC="peanut thank prevent burden erode welcome dust one develop code lamp rule"
+export TEST_USERNAME="Juanito"
+export TEST_PASSWORD="Defense22"
+export USER_ID="772efcb1-f14e-4e7b-a5a7-d17d97fff8e5"
+export WALLET_ADDRESS="5DHumimsr4XjcJCmKY7Ei8MAtxrradcZqTdPha4XqGbjmpyJ"
 
 if [ "$blockchain" = "eth" ]
 then
@@ -128,6 +133,8 @@ while IFS="," read -r nodeId appId zone; do
     sed "s/\[\[ZONE\]\]/$zone/g" | \
     sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
     sed "s/\[\[MASSBITROUTE_CORE_IP\]\]/$MASSBITROUTE_CORE_IP/g" | \
+    sed "s/\[\[MASSBITROUTE_PORTAL_IP\]\]/$MASSBITROUTE_PORTAL_IP/g" | \
+    sed "s/\[\[MASSBITROUTE_RUST_IP\]\]/$MASSBITROUTE_RUST_IP/g" | \
     sed "s/\[\[USER_ID\]\]/$USER_ID/g" >>test-nodes.tf
 done < <(tail gatewaylist.csv)
 
@@ -138,6 +145,8 @@ while IFS="," read -r nodeId appId zone; do
     sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
     sed "s/\[\[DATASOURCE\]\]/$dataSource/g" | \
     sed "s/\[\[MASSBITROUTE_CORE_IP\]\]/$MASSBITROUTE_CORE_IP/g" | \
+    sed "s/\[\[MASSBITROUTE_PORTAL_IP\]\]/$MASSBITROUTE_PORTAL_IP/g" | \
+    sed "s/\[\[MASSBITROUTE_RUST_IP\]\]/$MASSBITROUTE_RUST_IP/g" | \
     sed "s/\[\[USER_ID\]\]/$USER_ID/g" >>test-nodes.tf
 done < <(tail nodelist.csv)
 
