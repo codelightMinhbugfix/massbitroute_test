@@ -47,29 +47,29 @@ if [[ "$bearer" == "null" ]]; then
 fi
 
 
-sudo echo -n >gatewaylist.csv
-sudo echo -n >nodelist.csv
+# sudo echo -n >gatewaylist.csv
+# sudo echo -n >nodelist.csv
 
-sudo echo 'variable "project_prefix" {
-  type        = string
-  description = "The project prefix (mbr)."
-}
-variable "environment" {
-  type        = string
-  description = "Environment: dev, test..."
-}
-variable "default_zone" {
-  type = string
-}
-variable "network_interface" {
-  type = string
-}
-variable "email" {
-  type = string
-}
-variable "map_machine_types" {
-  type = map
-}' >test-nodes.tf
+# sudo echo 'variable "project_prefix" {
+#   type        = string
+#   description = "The project prefix (mbr)."
+# }
+# variable "environment" {
+#   type        = string
+#   description = "Environment: dev, test..."
+# }
+# variable "default_zone" {
+#   type = string
+# }
+# variable "network_interface" {
+#   type = string
+# }
+# variable "email" {
+#   type = string
+# }
+# variable "map_machine_types" {
+#   type = map
+# }' >test-nodes.tf
 
 #-------------------------------------------
 # create  node/gw in Portal
@@ -127,6 +127,9 @@ echo "Create new node in Portal: Passed"
 # create  node/gw tf files
 #-------------------------------------------
 MASSBITROUTE_CORE_IP=$(cat MASSBITROUTE_CORE_IP)
+MASSBITROUTE_PORTAL_IP=$(cat MASSBITROUTE_PORTAL_IP)
+MASSBITROUTE_RUST_IP=$(cat MASSBITROUTE_RUST_IP)
+
 while IFS="," read -r nodeId appId zone; do
   cat gateway-template-single | sed "s/\[\[GATEWAY_ID\]\]/$nodeId/g" | \
     sed "s/\[\[APP_KEY\]\]/$appId/g" | \
@@ -160,12 +163,12 @@ if [[ "$?" != "0" ]]; then
   echo "terraform init: Failed "
   exit 1
 fi
-sudo terraform plan -out=tfplan -input=false
+sudo terraform plan -out=tfplan-node-gateway -input=false
 if [[ "$?" != "0" ]]; then
   echo "terraform plan: Failed "
   exit 1
 fi
-sudo terraform apply -input=false tfplan
+sudo terraform apply -input=false tfplan-node-gateway
 if [[ "$?" != "0" ]]; then
   echo "terraform apply: Failed"
   exit 1
@@ -174,6 +177,25 @@ echo "Create node VMs on GCE: Passed"
 
 echo "Waiting for nodes to set up"
 sleep 180
+
+# #-------------------------------------------
+# # Wait for core component to finish setup
+# #-------------------------------------------
+# while [[ "$core_ready_response" != "200" ]] || [[ "$portal_ready_response" != "200" ]] || [[ "$rust_ready_response" != "200" ]] ; do
+#   core_ready_response=$(curl -o /dev/null -s -w "%{http_code}\n" --location https://dapi.massbitroute.dev/deploy/build.txt)
+#   echo "CORE response: $core_ready_response"
+  
+#   rust_ready_response=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST 'http://verify-as.massbitroute.dev/ping' )
+#   echo "RUST reponse: $rust_ready_response"
+
+#   portal_ready_response=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST 'http://portal.massbitroute.dev/health-check' )
+#   echo "PORTAL reponse: $rust_portal_response"
+
+#   staking_ready_response=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST 'http://staking.massbitroute.dev/health-check' )
+#   echo "PORTAL reponse: $staking_ready_response"
+#   sleep 10
+# done
+# echo "Massbit test env setup completion: Pass"
 
 #-------------------------------------------
 # Check if nodes are verified

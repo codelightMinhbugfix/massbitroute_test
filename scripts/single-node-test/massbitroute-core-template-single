@@ -29,14 +29,22 @@ resource "google_compute_instance_from_machine_image" "mbr-core-new-commit-test"
   sudo systemctl stop systemd-resolved
   sudo systemctl disable systemd-resolved 
   sudo echo nameserver 8.8.8.8 >/etc/resolv.conf
+  
+  sudo echo "curl https://raw.githubusercontent.com/hoanito/hosts/main/test-hosts-file > /etc/hosts" >> /opt/update_hosts.sh
+  sudo chmod 770 /opt/update_hosts.sh
 
+  sudo echo "1 * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
+  sudo echo "1 * * * * sudo bash /opt/update_hosts.sh" >> update_hosts.cron
+  sudo crontab update_hosts.cron
   #-------------------------------------------
   #  Install massbitroute core components
   #-------------------------------------------
+  sleep 30
   export API_BRANCH=[[DEPLOY_BRANCH]]
   export GIT_PRIVATE_READ_URL="http://[[PRIVATE_GIT_READ_USERNAME]]:[[PRIVATE_GIT_READ_PASSWORD]]@[[PRIVATE_GIT_DOMAIN]]"
+  git -C /massbit/massbitroute/app/src pull
   cd /massbit/massbitroute/app/src/scripts
-  bash run _refresh
+  bash run _refresh >> /home/refresh.log
   EOH
 
 
