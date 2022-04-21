@@ -1,6 +1,6 @@
 resource "google_compute_instance" "client-[[ZONE]]" {
   name         = "${var.project_prefix}-${var.environment}-client-[[ZONE]]"
-  machine_type = "e2-small"
+  machine_type = "${var.client_machine_type}"
   zone         = "[[ZONE]]"
 
   tags = ["http-server", "https-server"]

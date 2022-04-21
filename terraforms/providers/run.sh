@@ -1,13 +1,13 @@
 #!/bin/bash
 source ../../credentials/.env
 nodePrefix=$random
-staking_amount=100
+#nodePrefix=854ca
 #login
 #-------------------------------------------
 # Log into Portal
 #-------------------------------------------
 _login() {
-  bearer=$(curl --location --request POST 'https://portal.massbitroute.dev/auth/login' --header 'Content-Type: application/json' \
+  bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
           --data-raw "{\"username\": \"$TEST_USERNAME\", \"password\": \"$TEST_PASSWORD\"}"| jq  -r ". | .accessToken")
 
   if [[ "$bearer" == "null" ]]; then
@@ -15,7 +15,7 @@ _login() {
     exit 1
   fi
 
-  userId=$(curl --location --request GET 'https://portal.massbitroute.dev/user/info' \
+  userId=$(curl -s --location --request GET "https://portal.$domain/user/info" \
   --header "Authorization: Bearer $bearer" \
   --header 'Content-Type: application/json' | jq  -r ". | .id")
   echo "User ID $userId"
@@ -26,7 +26,7 @@ _create_nodes() {
   while IFS="," read -r id region zone zoneCode dataSource
   do
     # curl  node/gw
-    curl --location --request POST 'https://portal.massbitroute.dev/mbr/node' \
+    curl -s --location --request POST "https://portal.$domain/mbr/node" \
       --header "Authorization: Bearer  $bearer" \
       --header 'Content-Type: application/json' \
       --data-raw "{
@@ -35,7 +35,7 @@ _create_nodes() {
           \"zone\": \"$zoneCode\",
           \"dataSource\": \"$dataSource\",
           \"network\": \"mainnet\"
-      }" | jq -r '. | .id, .appKey, .name, .blockchain, .dataSource, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> nodelist.csv
+      }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> nodelist.csv
   done < <(tail ../../credentials/eth-sources.csv)
 }
 _create_gateways() {
@@ -43,7 +43,7 @@ _create_gateways() {
   while IFS="," read -r id region zone zoneCode dataSource
     do
       # curl  node/gw
-      curl --location --request POST 'https://portal.massbitroute.dev/mbr/gateway' \
+      curl -s --location --request POST "https://portal.$domain/mbr/gateway" \
         --header "Authorization: Bearer  $bearer" \
         --header 'Content-Type: application/json' \
         --data-raw "{
@@ -74,7 +74,7 @@ _prepare_terraform() {
     type = map
   }' > nodes.tf
   # create  node
-  while IFS="," read -r nodeId appId name blockchain dataSource zone cloudZone
+  while IFS="," read -r nodeId appId name blockchain zone cloudZone dataSource
   do
     dataSource=$(echo $dataSource | sed "s|\/|\\\/|g")
     echo $ds
@@ -95,12 +95,55 @@ _prepare_terraform() {
       | sed  "s/\[\[USER_ID\]\]/$userId/g" >> nodes.tf
   done < <(tail gatewaylist.csv)
 }
+#
+# _check_status 'created' node
+# _check_status 'verified' gateway
+#
+_check_status() {
+  _login
+  #Check node status: all is created
+  echo "Check status $1 of $2 in Portal"
+  echo -n > "${2}status.csv"
+  declare -A statuses
+  while IFS="," read -r nodeId appId name blockchain zoneCode cloudZone
+    do
+      statuses[$nodeId]=''
+    done < <(tail "${2}list.csv")
+  total=${#statuses[@]}
+  counter=0
+  while [[ $counter < $total ]]
+    do
+      echo -n > "${2}status.csv"
+      counter=0
+      for key in "${!statuses[@]}"; do
+        echo "Status of $2 $key: ${statuses[$key]}";
+        if [ "${statuses[$key]}" != "$1" ]; then
+          echo "Checking $2 $nodeId ..."
+          res=$(curl -s --location --request GET "https://portal.$domain/mbr/$2/$key" \
+            --header "Authorization: Bearer  $bearer" \
+            --header 'Content-Type: application/json' \
+            | jq -r '. | .id, .appKey, .name, .blockchain, .zone, .status, .geo.ip' \
+            | sed -z -z "s/\n/,/g")
+          IFS=$',' fields=($res)
+          IFS=, ; echo "${fields[*]}" >> "${2}status.csv"
+          statuses[$key]=${fields[5]}
+        fi
+        if [ "${statuses[$key]}" == "$1" ]; then
+          ((counter=counter+1))
+        fi
+      done
+      if [[ $counter < $total ]]; then
+        sleep 20
+      fi
+    done
+}
+
 _check_created_nodes() {
   #Check node status: all is created
   echo "Check new node status in Portal"
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
   do
-    node_reponse_code=$(curl  -o /dev/null -s -w "%{http_code}\n" "https://portal.massbitroute.dev/mbr/node/$nodeId" --header "Authorization: Bearer $bearer")
+    node_reponse_code=$(curl  -o /dev/null -s -w "%{http_code}\n" "https://portal.$domain/mbr/node/$nodeId" --header "Authorization: Bearer $bearer")
     if [[ $node_reponse_code != 200 ]]; then
       echo "Create node $nodeId in Portal: Failed"
       exit 1
@@ -112,7 +155,7 @@ _check_created_gateways() {
   #Check gateway status: all is created
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
   do
-    gateway_reponse_code=$(curl  -o /dev/null -s -w "%{http_code}\n" "https://portal.massbitroute.dev/mbr/gateway/$gatewayId" --header "Authorization: Bearer $bearer")
+    gateway_reponse_code=$(curl  -o /dev/null -s -w "%{http_code}\n" "https://portal.$domain/mbr/gateway/$gatewayId" --header "Authorization: Bearer $bearer")
     if [[ $gateway_reponse_code != 200 ]]; then
     echo "Create gw $gatewayId in Portal: Failed"
       exit 1
@@ -151,7 +194,7 @@ _check_verified_nodes() {
     for key in "${!nodeStatuses[@]}"; do
       echo "Status of node $key: ${nodeStatuses[$key]}";
       if [ "${nodeStatuses[$key]}" != "verified" ]; then
-        status=$(curl -s --location --request GET "https://portal.massbitroute.dev/mbr/node/$key" \
+        status=$(curl -s --location --request GET "https://portal.$domain/mbr/node/$key" \
           --header "Authorization: Bearer $bearer"| jq -r ". | .status")
         nodeStatuses[$key]=$status
       else
@@ -164,14 +207,14 @@ _check_verified_nodes() {
 _register_nodes() {
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
     do
-      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/admin/register-provider' \
+      staking_response=$(curl -s --location --request POST "https://staking.$domain/massbit/admin/register-provider" \
          --header 'Content-Type: application/json' --data-raw "{
            \"operator\": \"$wallet_address\",
            \"providerId\": \"$nodeId\",
            \"providerType\": \"Node\",
            \"blockchain\": \"$blockchain\",
            \"network\": \"mainnet\"
-       }" | jq .status)
+       }" | jq -r ". | .status")
        if [[ "$staking_response" != "success" ]]; then
          echo "Register node $nodeId: Failed"
        else
@@ -182,14 +225,14 @@ _register_nodes() {
 _register_gateways() {
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
     do
-      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/admin/register-provider' \
+      staking_response=$(curl -s --location --request POST "https://staking.$domain/massbit/admin/register-provider" \
          --header 'Content-Type: application/json' --data-raw "{
            \"operator\": \"$wallet_address\",
            \"providerId\": \"$gatewayId\",
            \"providerType\": \"Gateway\",
            \"blockchain\": \"$blockchain\",
            \"network\": \"mainnet\"
-       }" | jq .status)
+       }" | jq -r ". | .status")
        if [[ "$staking_response" != "success" ]]; then
          echo "Register gateway $gatewayId: Failed"
        else
@@ -200,28 +243,34 @@ _register_gateways() {
 _stake_nodes() {
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
     do
-      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
-         --header 'Content-Type: application/json' --data-raw "{
-           \"memonic\": \"$MEMONIC\",
-           \"providerId\": \"$nodeId\",
-           \"amount\": \"$staking_amount\"
-       }" | jq .status)
-       if [[ "$staking_response" != "success" ]]; then
-         echo "Staking node $nodeId: Failed"
-       else
-         echo "Staking node $nodeId: Passed"
-       fi
+      curl -s --location --request POST "https://staking.$domain/massbit/staking-provider" \
+               --header 'Content-Type: application/json' --data-raw "{
+                 \"memonic\": \"$MEMONIC\",
+                 \"providerId\": \"$nodeId\",
+                 \"amount\": \"$staking_amount\"
+             }"
+#      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
+#         --header 'Content-Type: application/json' --data-raw "{
+#           \"memonic\": \"$MEMONIC\",
+#           \"providerId\": \"$nodeId\",
+#           \"amount\": \"$staking_amount\"
+#       }" | jq -r ". | .status")
+#       if [[ "$staking_response" != "success" ]]; then
+#         echo "Staking node $nodeId: Failed"
+#       else
+#         echo "Staking node $nodeId: Passed"
+#       fi
     done < <(tail nodelist.csv)
 }
 _stake_gateways() {
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
     do
-      staking_response=$(curl -s --location --request POST 'https://staking.massbitroute.dev/massbit/staking-provider' \
+      staking_response=$(curl -s --location --request POST "https://staking.$domain/massbit/staking-provider" \
          --header 'Content-Type: application/json' --data-raw "{
            \"memonic\": \"$MEMONIC\",
            \"providerId\": \"$gatewayId\",
            \"amount\": \"$staking_amount\"
-       }" | jq .status)
+       }" | jq -r ". | .status")
        if [[ "$staking_response" != "success" ]]; then
          echo "Staking gateway $gatewayId: Failed"
        else
@@ -247,7 +296,7 @@ _check_verified_gateways() {
     for key in "${!gwStatuses[@]}"; do
       echo "Status of gateway $key: ${gwStatuses[$key]}";
       if [ "${gwStatuses[$key]}" != "verified" ]; then
-        status=$(curl -s --location --request GET "https://portal.massbitroute.dev/mbr/gateway/$key" \
+        status=$(curl -s --location --request GET "https://portal.$domain/mbr/gateway/$key" \
           --header "Authorization: Bearer $bearer"| jq -r ". | .status")
         gwStatuses[$key]=$status
       else
@@ -260,25 +309,41 @@ _check_verified_gateways() {
 _setup() {
   _login
   echo "Create test with prefix $nodePrefix"
-  _create_nodes
-  _create_gateways
-  _check_created_nodes
-  _check_created_gateways
-  _prepare_terraform
-  _create_vms
-  _check_verified_nodes
-  _check_verified_gateways
+  #_create_nodes
+  #_create_gateways
+  #_check_status created node
+  #_check_status created gateway
+  #_prepare_terraform
+  #_create_vms
+  #_check_verified_nodes
+  #_check_verified_gateways
+  _check_status verified node
+  _check_status verified gateway
   _register_nodes
   _register_gateways
+  _check_status approved node
+  _check_status approved gateway
   _stake_nodes
   _stake_gateways
+  _check_status staked node
+  _check_status staked gateway
 }
 _clean() {
   _login
   echo "Delete node from portal"
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
      do
-       status=$(curl -s --location --request DELETE "https://portal.massbitroute.dev/mbr/node/$nodeId" \
+       status=$(curl -s --location --request POST "https://staking.$domain/massbit/unregister-provider" \
+           --header 'Content-Type: application/json' --data-raw "{
+                \"memonic\": \"$MEMONIC\",
+                \"providerId\": \"$nodeId\"
+            }" | jq -r ". | .status")
+         if [[ "$status" != "success" ]]; then
+           echo "Unregister node $nodeId: Failed"
+         else
+           echo "Unregister node $nodeId: Passed"
+         fi
+       status=$(curl -s --location --request DELETE "https://portal.$domain/mbr/node/$nodeId" \
           --header "Authorization: Bearer $bearer" | jq .status)
         if [[ "$status" != "true" ]]; then
           echo "Delete node $nodeId: Failed"
@@ -289,7 +354,17 @@ _clean() {
 
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
      do
-       status=$(curl -s --location --request DELETE "https://portal.massbitroute.dev/mbr/gateway/$gatewayId" \
+       status=$(curl -s --location --request POST "https://staking.$domain/massbit/unregister-provider" \
+          --header 'Content-Type: application/json' --data-raw "{
+               \"memonic\": \"$MEMONIC\",
+               \"providerId\": \"$gatewayId\"
+           }" | jq -r ". | .status")
+        if [[ "$status" != "success" ]]; then
+          echo "Unregister gateway $gatewayId: Failed"
+        else
+          echo "Unregister gateway $gatewayId: Passed"
+        fi
+       status=$(curl -s --location --request DELETE "https://portal.$domain/mbr/gateway/$gatewayId" \
           --header "Authorization: Bearer $bearer" | jq .status)
         if [[ "$status" != "true" ]]; then
           echo "Delete gateway $gatewayId: Failed"
@@ -299,7 +374,7 @@ _clean() {
 
      done < <(tail gatewaylist.csv)
   echo "Cleaning up VMs: In Progress"
-  terraform destroy
+  sudo terraform destroy
   if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform destroy "; exit 1; fi
   echo "Cleaning up VMs: Passed"
 }
