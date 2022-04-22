@@ -203,15 +203,15 @@ sleep 180
 while [[ "$gateway_status" != "verified" ]] || [[ "$node_status" != "verified" ]]; do
   echo "Checking node status: In Progress"
 
-  if [[ "$gateway_status" = "failed" ]] || [[ "$node_status" = "failed" ]]
-  then
-    echo "---------------------------------"
-    echo "Gateway status: $gateway_status"
-    echo "Node status: $node_status"
-    echo "---------------------------------"
-    echo "Checking nodes verified status: Failed"
-    exit 1
-  fi
+  # if [[ "$gateway_status" = "failed" ]] || [[ "$node_status" = "failed" ]]
+  # then
+  #   echo "---------------------------------"
+  #   echo "Gateway status: $gateway_status"
+  #   echo "Node status: $node_status"
+  #   echo "---------------------------------"
+  #   echo "Checking nodes verified status: Failed"
+  #   exit 1
+  # fi
 
   gateway_status=$(curl -s --location --request GET "https://portal.massbitroute.dev/mbr/gateway/$GATEWAY_ID" \
     --header "Authorization: Bearer $bearer" | jq -r ". | .status")

@@ -31,9 +31,10 @@ resource "google_compute_instance" "mbr-rust-new-commit-test" {
   sudo echo "curl https://raw.githubusercontent.com/hoanito/hosts/main/test-hosts-file > /etc/hosts" >> /opt/update_hosts.sh
   sudo chmod 770 /opt/update_hosts.sh
 
-  sudo echo "1 * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
-  sudo echo "1 * * * * sudo bash /opt/update_hosts.sh" >> update_hosts.cron
+  sudo echo "* * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
+  sudo echo "* * * * * sudo bash /opt/update_hosts.sh" > update_hosts.cron
   sudo crontab update_hosts.cron
+  sudo service cron reload
 
   sudo sed 's/#DNSStubListener=yes/DNSStubListener=no/' /etc/systemd/resolved.conf -i
   sudo pkill -f systemd-resolve
@@ -95,7 +96,8 @@ stopasgroup=true" > /etc/supervisor/conf.d/verification.conf
   sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
   sudo cp /opt/ssh-key/base-endpoint.json  /opt/verification/base-endpoint.json
   sudo cp script/run.sh /opt/verification/run.sh
-  sudo cp config_check_component.json /opt/verification/config_check_component.json
+  sudo cp config_check_component_test.json /opt/verification/config_check_component.json
+  
   sudo chmod 770 /opt/verification/run.sh
   sudo supervisorctl reread
   sudo  supervisorctl update

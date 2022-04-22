@@ -33,9 +33,10 @@ resource "google_compute_instance_from_machine_image" "mbr-core-new-commit-test"
   sudo echo "curl https://raw.githubusercontent.com/hoanito/hosts/main/test-hosts-file > /etc/hosts" >> /opt/update_hosts.sh
   sudo chmod 770 /opt/update_hosts.sh
 
-  sudo echo "1 * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
-  sudo echo "1 * * * * sudo bash /opt/update_hosts.sh" >> update_hosts.cron
+  sudo echo "* * * * * root sudo bash /opt/update_hosts.sh" >> /etc/crontab
+  sudo echo "* * * * * sudo bash /opt/update_hosts.sh" > update_hosts.cron
   sudo crontab update_hosts.cron
+  sudo service cron reload
   #-------------------------------------------
   #  Install massbitroute core components
   #-------------------------------------------

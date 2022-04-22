@@ -11,7 +11,7 @@ resource "google_compute_instance" "node-[[GATEWAY_ID]]" {
   boot_disk {
     initialize_params {
       image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720"
-      size = 2000
+      size = 20
     }
   }
 
@@ -59,6 +59,7 @@ resource "google_compute_instance" "node-[[GATEWAY_ID]]" {
   #  Install script for NODE
   #-------------------------------------------
   sudo bash -c "$(curl -sSfL 'https://dapi.massbitroute.dev/api/v1/node_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=[[ZONE]]&data_url=[[DATASOURCE]]&app_key=[[APP_KEY]]&portal_url=https://portal.massbitroute.dev&env=dev')"  >> /home/verification.log
+  curl -sSfL 'https://dapi.massbitroute.dev/api/v1/node_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=[[ZONE]]&data_url=[[DATASOURCE]]&app_key=[[APP_KEY]]&portal_url=https://portal.massbitroute.dev&env=dev' > /home/install.sh
   EOH
 
   service_account {
