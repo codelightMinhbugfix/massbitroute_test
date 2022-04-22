@@ -35,7 +35,7 @@ _create_nodes() {
           \"zone\": \"$zoneCode\",
           \"dataSource\": \"$dataSource\",
           \"network\": \"mainnet\"
-      }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> nodelist.csv
+      }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> "$1/nodelist.csv"
   done < <(tail ../../credentials/eth-sources.csv)
 }
 _create_gateways() {
@@ -50,12 +50,13 @@ _create_gateways() {
           \"name\":\"mbr-gw-$nodePrefix-$id-$zone\",
           \"blockchain\":\"$blockchain\",
           \"zone\":\"$zoneCode\",
-          \"network\":\"mainnet\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> gatewaylist.csv
+          \"network\":\"mainnet\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
 
     done < <(tail ../../credentials/eth-sources.csv)
 }
 
 _prepare_terraform() {
+  output="$1/nodes.tf"
   echo 'variable "project_prefix" {
     type        = string
     description = "The project prefix (mbr)."
@@ -72,7 +73,7 @@ _prepare_terraform() {
   }
   variable "map_machine_types" {
     type = map
-  }' > nodes.tf
+  }' > "$output"
   # create  node
   while IFS="," read -r nodeId appId name blockchain zone cloudZone dataSource
   do
@@ -82,8 +83,8 @@ _prepare_terraform() {
       | sed  "s/\[\[ZONE\]\]/$zone/g" | sed  "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
       | sed  "s/\[\[DATASOURCE\]\]/$dataSource/g" | sed  "s/\[\[NAME\]\]/$name/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
-      | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" | sed  "s/\[\[USER_ID\]\]/$userId/g"  >> nodes.tf
-  done < <(tail nodelist.csv)
+      | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" | sed  "s/\[\[USER_ID\]\]/$userId/g"  >> $output
+  done < <(tail "$1/nodelist.csv")
 
   #create gw
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
@@ -92,28 +93,30 @@ _prepare_terraform() {
       | sed  "s/\[\[ZONE\]\]/$zone/g" | sed  "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
       | sed  "s/\[\[NAME\]\]/$name/g" | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
-      | sed  "s/\[\[USER_ID\]\]/$userId/g" >> nodes.tf
-  done < <(tail gatewaylist.csv)
+      | sed  "s/\[\[USER_ID\]\]/$userId/g" >> $output
+  done < <(tail "$1/gatewaylist.csv")
 }
 #
-# _check_status 'created' node
-# _check_status 'verified' gateway
+# _check_status 'created' node $dirName
+# _check_status 'verified' gateway $dirName
 #
 _check_status() {
   _login
   #Check node status: all is created
+  inputFile="$3/${2}list.csv"
+  outputFile="$3/${2}status.csv"
   echo "Check status $1 of $2 in Portal"
-  echo -n > "${2}status.csv"
+  echo -n > "$outputFile"
   declare -A statuses
   while IFS="," read -r nodeId appId name blockchain zoneCode cloudZone
     do
       statuses[$nodeId]=''
-    done < <(tail "${2}list.csv")
+    done < <(tail "$inputFile")
   total=${#statuses[@]}
   counter=0
   while [[ $counter < $total ]]
     do
-      echo -n > "${2}status.csv"
+      echo -n > "$outputFile"
       counter=0
       for key in "${!statuses[@]}"; do
         echo "Status of $2 $key: ${statuses[$key]}";
@@ -125,7 +128,7 @@ _check_status() {
             | jq -r '. | .id, .appKey, .name, .blockchain, .zone, .status, .geo.ip' \
             | sed -z -z "s/\n/,/g")
           IFS=$',' fields=($res)
-          IFS=, ; echo "${fields[*]}" >> "${2}status.csv"
+          IFS=, ; echo "${fields[*]}" >> "$outputFile"
           statuses[$key]=${fields[5]}
         fi
         if [ "${statuses[$key]}" == "$1" ]; then
@@ -166,6 +169,7 @@ _check_created_gateways() {
 _create_vms() {
   # wait for node to install script
   echo "Create node VMs on GCE: In Progress"
+  cd $1
   sudo terraform init -input=false
   if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform init "; exit 1; fi
   sudo terraform plan -out=tfplan -input=false
@@ -204,6 +208,9 @@ _check_verified_nodes() {
     sleep 20
   done
 }
+#
+# Register nodes created in directory $1
+#
 _register_nodes() {
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
     do
@@ -220,8 +227,11 @@ _register_nodes() {
        else
          echo "Register node $nodeId: Passed"
        fi
-    done < <(tail nodelist.csv)
+    done < <(tail "$1/nodelist.csv")
 }
+#
+# Register gateways created in directory $1
+#
 _register_gateways() {
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
     do
@@ -238,8 +248,11 @@ _register_gateways() {
        else
          echo "Register gateway $gatewayId: Passed"
        fi
-    done < <(tail gatewaylist.csv)
+    done < <(tail "$1/gatewaylist.csv")
 }
+#
+# Stake nodes created in directory $1
+#
 _stake_nodes() {
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
     do
@@ -260,8 +273,11 @@ _stake_nodes() {
 #       else
 #         echo "Staking node $nodeId: Passed"
 #       fi
-    done < <(tail nodelist.csv)
+    done < <(tail "$1/nodelist.csv")
 }
+#
+# Stake gateways created in directory $1
+#
 _stake_gateways() {
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
     do
@@ -276,7 +292,7 @@ _stake_gateways() {
        else
          echo "Staking gateway $gatewayId: Passed"
        fi
-    done < <(tail gatewaylist.csv)
+    done < <(tail "$1/gatewaylist.csv")
 }
 _check_verified_gateways() {
   _login
@@ -306,29 +322,40 @@ _check_verified_gateways() {
     sleep 20
   done
 }
+_prepare_env() {
+  echo "Create test with prefix $1"
+  mkdir ./$1
+  cp ./terraform.tfvars ./$1/
+  cat provider.tf |  sed "s/\[\[CREDENTIALS_PATH\]\]/$credentialsPath/g"  > "./$1/provider.tf"
+}
 _setup() {
   _login
-  echo "Create test with prefix $nodePrefix"
-  #_create_nodes
-  #_create_gateways
-  #_check_status created node
-  #_check_status created gateway
-  #_prepare_terraform
-  #_create_vms
-  #_check_verified_nodes
-  #_check_verified_gateways
-  _check_status verified node
-  _check_status verified gateway
-  _register_nodes
+  _prepare_env $nodePrefix
+  _create_nodes $nodePrefix
+  _create_gateways $nodePrefix
+  _check_status created node $nodePrefix
+  _check_status created gateway $nodePrefix
+  _prepare_terraform $nodePrefix
+  _create_vms $nodePrefix
+  # setup nodes
+  _check_status verified node $nodePrefix
+  _register_nodes $nodePrefix
+  _check_status approved node $nodePrefix
+  _stake_nodes $nodePrefix
+  _check_status staked node $nodePrefix
+
+  # setup gateways
+  _check_status verified gateway $nodePrefix
   _register_gateways
-  _check_status approved node
-  _check_status approved gateway
-  _stake_nodes
+  _check_status approved gateway $nodePrefix
   _stake_gateways
-  _check_status staked node
-  _check_status staked gateway
+  _check_status staked gateway $nodePrefix
 }
 _clean() {
+  if [ "x$1" == "x" ]; then
+    echo "Please choose a directory to clean up"
+    exit 0
+  fi
   _login
   echo "Delete node from portal"
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
@@ -350,7 +377,7 @@ _clean() {
         else
           echo "Delete node $nodeId: Passed"
         fi
-     done < <(tail nodelist.csv)
+     done < <(tail "$1/nodelist.csv")
 
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
      do
@@ -372,11 +399,14 @@ _clean() {
           echo "Delete gateway $gatewayId: Passed"
         fi
 
-     done < <(tail gatewaylist.csv)
+     done < <(tail "$1/gatewaylist.csv")
   echo "Cleaning up VMs: In Progress"
+  cd $1
   sudo terraform destroy
   if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform destroy "; exit 1; fi
   echo "Cleaning up VMs: Passed"
+  cd ..
+  sudo rm -rf $1
 }
 
 $@
