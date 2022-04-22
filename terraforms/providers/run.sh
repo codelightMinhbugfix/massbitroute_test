@@ -1,6 +1,6 @@
 #!/bin/bash
 source ../../credentials/.env
-nodePrefix=$random
+prefix=$random
 #login
 #-------------------------------------------
 # Log into Portal
@@ -140,31 +140,6 @@ _check_status() {
     done
 }
 
-_check_created_nodes() {
-  #Check node status: all is created
-  echo "Check new node status in Portal"
-  while IFS="," read -r nodeId appId name blockchain zone cloudZone
-  do
-    node_reponse_code=$(curl  -o /dev/null -s -w "%{http_code}\n" "https://portal.$domain/mbr/node/$nodeId" --header "Authorization: Bearer $bearer")
-    if [[ $node_reponse_code != 200 ]]; then
-      echo "Create node $nodeId in Portal: Failed"
-      exit 1
-    fi
-    echo "Create node $nodeId in Portal: Passed"
-  done < <(tail nodelist.csv)
-}
-_check_created_gateways() {
-  #Check gateway status: all is created
-  while IFS="," read -r gatewayId appId name blockchain zone cloudZone
-  do
-    gateway_reponse_code=$(curl  -o /dev/null -s -w "%{http_code}\n" "https://portal.$domain/mbr/gateway/$gatewayId" --header "Authorization: Bearer $bearer")
-    if [[ $gateway_reponse_code != 200 ]]; then
-    echo "Create gw $gatewayId in Portal: Failed"
-      exit 1
-    fi
-    echo "Create gw $gatewayId in Portal: Passed"
-  done < <(tail gatewaylist.csv)
-}
 _create_vms() {
   # wait for node to install script
   echo "Create node VMs on GCE: In Progress"
@@ -181,33 +156,7 @@ _create_vms() {
   cd ".."
   sleep 120
 }
-_check_verified_nodes() {
-  echo "Check if nodes are verified"
-  # loop over node list to check status
-  declare -A nodeStatuses
-  while IFS="," read -r nodeId appId name blockchain zone cloudZone
-  do
-    nodeStatuses[$nodeId]='created'
-  done < <(tail nodelist.csv)
 
-  total=${#nodeStatuses[@]}
-  verified_counter=0
-  while [[ $verified_counter < $total ]]
-  do
-    verified_counter=0
-    for key in "${!nodeStatuses[@]}"; do
-      echo "Status of node $key: ${nodeStatuses[$key]}";
-      if [ "${nodeStatuses[$key]}" != "verified" ]; then
-        status=$(curl -s --location --request GET "https://portal.$domain/mbr/node/$key" \
-          --header "Authorization: Bearer $bearer"| jq -r ". | .status")
-        nodeStatuses[$key]=$status
-      else
-        ((verified_counter=verified_counter+1))
-      fi
-    done
-    sleep 20
-  done
-}
 #
 # Register nodes created in directory $1
 #
@@ -294,34 +243,7 @@ _stake_gateways() {
        fi
     done < <(tail "$1/gatewaylist.csv")
 }
-_check_verified_gateways() {
-  _login
-  echo "Check if gateways are verified"
-  # loop over gateway list to check status
-  declare -A gwStatuses
-  while IFS="," read -r gatewayId appId name blockchain zone cloudZone
-  do
-    gwStatuses[$gatewayId]='created'
-  done < <(tail gatewaylist.csv)
 
-  total=${#gwStatuses[@]}
-  verified_counter=0
-  while [[ $verified_counter < $total ]]
-  do
-    verified_counter=0
-    for key in "${!gwStatuses[@]}"; do
-      echo "Status of gateway $key: ${gwStatuses[$key]}";
-      if [ "${gwStatuses[$key]}" != "verified" ]; then
-        status=$(curl -s --location --request GET "https://portal.$domain/mbr/gateway/$key" \
-          --header "Authorization: Bearer $bearer"| jq -r ". | .status")
-        gwStatuses[$key]=$status
-      else
-        ((verified_counter=verified_counter+1))
-      fi
-    done
-    sleep 20
-  done
-}
 _prepare_env() {
   echo "Create test with prefix $1"
   mkdir ./$1
@@ -329,6 +251,11 @@ _prepare_env() {
   cat provider.tf |  sed "s/\[\[CREDENTIALS_PATH\]\]/$credentialsPath/g"  > "./$1/provider.tf"
 }
 _setup() {
+  if [ "x$1" == "x" ]; then
+    nodePrefix=$prefix
+  else
+    nodePrefix=$1
+  fi
   _login
   _prepare_env $nodePrefix
   _create_nodes $nodePrefix
