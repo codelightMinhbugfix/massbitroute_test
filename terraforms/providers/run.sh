@@ -1,7 +1,6 @@
 #!/bin/bash
 source ../../credentials/.env
 nodePrefix=$random
-#nodePrefix=854ca
 #login
 #-------------------------------------------
 # Log into Portal
@@ -179,6 +178,7 @@ _create_vms() {
   echo "Create node VMs on GCE: Passed"
 
   echo "Waiting for nodes to set up"
+  cd ".."
   sleep 120
 }
 _check_verified_nodes() {
@@ -346,9 +346,9 @@ _setup() {
 
   # setup gateways
   _check_status verified gateway $nodePrefix
-  _register_gateways
+  _register_gateways $nodePrefix
   _check_status approved gateway $nodePrefix
-  _stake_gateways
+  _stake_gateways $nodePrefix
   _check_status staked gateway $nodePrefix
 }
 _clean() {
