@@ -94,7 +94,7 @@ _prepare_terraform() {
     fi
     _dapiURL=$(echo $dapiURL | sed "s|\/|\\\/|g")
     cat init.tpl | sed "s/\[\[BEARER\]\]/$bearer/g" \
-              | sed "s/\[\[ZONE\]\]/${cloudZone,,}/g" \
+              | sed "s/\[\[ZONE\]\]/$random-${cloudZone,,}/g" \
               | sed "s/\[\[PROJECT_ID\]\]/$projectId/g" \
               | sed "s/\[\[PROJECT_NAME\]\]/${projectName}/g" \
               | sed "s/\[\[DOMAIN\]\]/$domain/g" \
@@ -113,7 +113,8 @@ _prepare_terraform() {
     cat client.template |  sed "s/\[\[REGION\]\]/$region/g" \
                         | sed  "s/\[\[ZONE\]\]/$cloudZone/g" \
                         | sed  "s/\[\[EMAIL\]\]/$email/g" \
-                        | sed "s/\[\[INIT_FILE\]\]/$random/g" >> $outtf
+                        | sed "s/\[\[INIT_FILE\]\]/$random/g" \
+                        | sed "s/\[\[PREFIX\]\]/$random/g" >> $outtf
   done < <(tail "$CREDENTIALS_PATH/zonelist-test.csv")
 }
 _prepare_env() {
