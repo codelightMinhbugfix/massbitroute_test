@@ -21,7 +21,7 @@ _login() {
 }
 
 _create_nodes() {
-  echo -n > nodelist.csv
+  echo -n > "$1/nodelist.csv"
   while IFS="," read -r id region zone zoneCode dataSource
   do
     # curl  node/gw
@@ -38,7 +38,7 @@ _create_nodes() {
   done < <(tail ../../credentials/eth-sources.csv)
 }
 _create_gateways() {
-  echo -n > gatewaylist.csv
+  echo -n > "$1/gatewaylist.csv"
   while IFS="," read -r id region zone zoneCode dataSource
     do
       # curl  node/gw
