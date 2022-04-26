@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source ./params.sh
+source /opt/benchmark/params.sh
 
 _get_dapi_session() {
   #curl -s -X HEAD -I "$dapiURL"   --header 'Content-Type: application/json' | tr -d '\r' | sed -En 's/^location: (.*)/\1/p'
