@@ -27,7 +27,7 @@ _prepare_terraform() {
   testDapis=()
   thread=5
   connection=5
-  duration=120s
+  duration=30s
   outtf="$2/client.tf"
   request_rates="(50 100 200)"
   echo 'variable "project_prefix" {
@@ -117,6 +117,10 @@ _prepare_terraform() {
   done < <(tail "$CREDENTIALS_PATH/zonelist-test.csv")
 }
 _prepare_env() {
+  if [ "x$1" == "x" ]; then
+    echo "Please enter test dirname"
+    exit 1
+   fi
   echo "Create test in dir $1"
   if [ ! -d "$ROOT/$1" ]; then
     mkdir "$ROOT/$1"

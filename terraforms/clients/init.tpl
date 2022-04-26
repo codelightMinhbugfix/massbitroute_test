@@ -1,18 +1,16 @@
 #!/bin/bash
 sudo apt update
 sudo apt install -y jq
-sudo mkdir /opt/benchmark
-sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/scripts/benchmark/wrk -P /opt/benchmark
-sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/scripts/benchmark/benchmark.lua -P /opt/benchmark
-sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/scripts/benchmark/benchmark.sh -P /opt/benchmark
-#sudo wget https://raw.githubusercontent.com/massbitprotocol/massbitroute_monitor/master/scripts/benchmark/massbit.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/wrk -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.sh -P /opt/benchmark
+#sudo wget https://raw.githubusercontent.com/massbitprotocol/massbitroute_monitor/master/tools/wrk/massbit.lua -P /opt/benchmark
 sudo chmod +x /opt/benchmark/wrk
-sudo chmod +x /opt/*.sh
 
-
-sudo cat > /opt/params.sh <<EOL
+sudo cat > /opt/benchmark/params.sh <<EOL
 #!/bin/bash
 zone=[[ZONE]]
+blockchain=[[BLOCKCHAIN]]
 domain=[[DOMAIN]]
 nodeId=[[NODE_ID]]
 nodeIp=[[NODE_IP]]
@@ -30,6 +28,5 @@ output=/opt/benchmark/summary.txt
 wrk_dir=/opt/benchmark
 
 EOL
-
-sudo chmod +x /opt/benchmark.sh
-/opt/benchmark.sh _run
+sudo chmod +x /opt/benchmark/*.sh
+/opt/benchmark/benchmark.sh _run
