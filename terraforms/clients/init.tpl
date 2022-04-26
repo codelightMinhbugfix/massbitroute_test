@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo apt update
-sudo apt install -y jq
+sudo apt install -y jq atop
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/wrk -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.sh -P /opt/benchmark
