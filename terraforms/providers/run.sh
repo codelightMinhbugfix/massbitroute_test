@@ -35,7 +35,7 @@ _create_nodes() {
           \"dataSource\": \"$dataSource\",
           \"network\": \"mainnet\"
       }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> "$1/nodelist.csv"
-  done < <(tail ../../credentials/eth-sources.csv)
+  done < <(cat ../../credentials/eth-sources.csv)
 }
 _create_gateways() {
   echo -n > "$1/gatewaylist.csv"
@@ -51,7 +51,7 @@ _create_gateways() {
           \"zone\":\"$zoneCode\",
           \"network\":\"mainnet\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
 
-    done < <(tail ../../credentials/eth-sources.csv)
+    done < <(cat ../../credentials/eth-sources.csv)
 }
 
 _prepare_terraform() {
@@ -83,7 +83,7 @@ _prepare_terraform() {
       | sed  "s/\[\[DATASOURCE\]\]/$dataSource/g" | sed  "s/\[\[NAME\]\]/$name/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
       | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" | sed  "s/\[\[USER_ID\]\]/$userId/g"  >> $output
-  done < <(tail "$1/nodelist.csv")
+  done < <(cat "$1/nodelist.csv")
 
   #create gw
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
@@ -93,7 +93,7 @@ _prepare_terraform() {
       | sed  "s/\[\[NAME\]\]/$name/g" | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
       | sed  "s/\[\[USER_ID\]\]/$userId/g" >> $output
-  done < <(tail "$1/gatewaylist.csv")
+  done < <(cat "$1/gatewaylist.csv")
 }
 #
 # _check_status 'created' node $dirName
@@ -110,7 +110,7 @@ _check_status() {
   while IFS="," read -r nodeId appId name blockchain zoneCode cloudZone
     do
       statuses[$nodeId]=''
-    done < <(tail "$inputFile")
+    done < <(cat "$inputFile")
   total=${#statuses[@]}
   counter=0
   while [[ $counter < $total ]]
@@ -176,7 +176,7 @@ _register_nodes() {
        else
          echo "Register node $nodeId: Passed"
        fi
-    done < <(tail "$1/nodelist.csv")
+    done < <(cat "$1/nodelist.csv")
 }
 #
 # Register gateways created in directory $1
@@ -197,7 +197,7 @@ _register_gateways() {
        else
          echo "Register gateway $gatewayId: Passed"
        fi
-    done < <(tail "$1/gatewaylist.csv")
+    done < <(cat "$1/gatewaylist.csv")
 }
 #
 # Stake nodes created in directory $1
@@ -222,7 +222,7 @@ _stake_nodes() {
 #       else
 #         echo "Staking node $nodeId: Passed"
 #       fi
-    done < <(tail "$1/nodelist.csv")
+    done < <(cat "$1/nodelist.csv")
 }
 #
 # Stake gateways created in directory $1
@@ -241,7 +241,7 @@ _stake_gateways() {
        else
          echo "Staking gateway $gatewayId: Passed"
        fi
-    done < <(tail "$1/gatewaylist.csv")
+    done < <(cat "$1/gatewaylist.csv")
 }
 
 _prepare_env() {
@@ -257,13 +257,13 @@ _setup() {
     nodePrefix=$1
   fi
   _login
-  _prepare_env $nodePrefix
-  _create_nodes $nodePrefix
-  _create_gateways $nodePrefix
-  _check_status created node $nodePrefix
-  _check_status created gateway $nodePrefix
-  _prepare_terraform $nodePrefix
-  _create_vms $nodePrefix
+  # _prepare_env $nodePrefix
+  # _create_nodes $nodePrefix
+  # _create_gateways $nodePrefix
+  # _check_status created node $nodePrefix
+  # _check_status created gateway $nodePrefix
+  # _prepare_terraform $nodePrefix
+  # _create_vms $nodePrefix
   # setup nodes
   _check_status verified node $nodePrefix
   _register_nodes $nodePrefix
@@ -304,7 +304,7 @@ _clean() {
         else
           echo "Delete node $nodeId: Passed"
         fi
-     done < <(tail "$1/nodelist.csv")
+     done < <(cat "$1/nodelist.csv")
 
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
      do
@@ -326,7 +326,7 @@ _clean() {
           echo "Delete gateway $gatewayId: Passed"
         fi
 
-     done < <(tail "$1/gatewaylist.csv")
+     done < <(cat "$1/gatewaylist.csv")
   echo "Cleaning up VMs: In Progress"
   cd $1
   sudo terraform destroy
