@@ -107,7 +107,7 @@ _test_dapi() {
 _benchmark() {
   for rate in "${rates[@]}"
     do
-      $wrk_dir/wrk -t$thread -c$connection -d$duration -R$rate --latency -T$timeout -s $wrk_dir/massbit.lua $1 -- $2 $3 $4 > $output
+      $wrk_dir/wrk -t$thread -c$connection -d$duration -R$rate --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 > $output
       latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
       IFS='    ' read -ra latency <<< "$latency_row"
       req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
@@ -127,29 +127,27 @@ _benchmark() {
 }
 
 _run() {
-  echo "Get dapiURL with session"
-  _dapiURL=$(_get_dapi_session $dapiURL)
-  echo $_dapiURL
-  declare -A codes
+
+  #echo "Benchmarking datasource $datasourceUrl ..."
+  #_benchmark $datasourceUrl datasource
 
   #_test_data_source $datasourceUrl
   _test_node_api $nodeIp $nodeId $nodeKey
   echo "Node response $?"
-  _test_gateway_api $gatewayIp $gatewayId $gatewayKey
-  echo "Gateway response $?"
-  _test_dapi $_dapiURL
-
-  echo "Benchmarking datasource $datasourceUrl ..."
-  _benchmark $datasourceUrl datasource
-
   nodeUrl="https://$nodeIp"
   echo "Benchmarking node $nodeUrl ..."
   _benchmark $nodeUrl node $nodeId $nodeKey
 
+  _test_gateway_api $gatewayIp $gatewayId $gatewayKey
+  echo "Gateway response $?"
   gatewayUrl="https://$gatewayIp"
   echo "Benchmarking gateway $gatewayUrl ..."
   _benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
 
+  echo "Get dapiURL with session"
+  _dapiURL=$(_get_dapi_session $dapiURL)
+  echo "Test dapi $_dapiURL"
+  _test_dapi $_dapiURL
   echo "Benchmarking dapi $_dapiURL ..."
   _benchmark "$_dapiURL" dapi
 }
