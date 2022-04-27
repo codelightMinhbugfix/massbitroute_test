@@ -45,7 +45,7 @@ _create_gateways() {
     do
       # curl  node/gw
       for i in $( seq 1 $gateway_ratio )
-      do      
+      do
         curl -s --location --request POST "https://portal.$domain/mbr/gateway" \
           --header "Authorization: Bearer  $bearer" \
           --header 'Content-Type: application/json' \
@@ -135,6 +135,7 @@ _check_status() {
           statuses[$key]=${fields[5]}
         fi
         if [ "${statuses[$key]}" == "$1" ]; then
+          echo "Status of $2 $key: ${statuses[$key]}"
           ((counter=counter+1))
         fi
       done
@@ -180,6 +181,7 @@ _register_nodes() {
        else
          echo "Register node $nodeId: Passed"
        fi
+       sleep 5
     done < <(cat "$1/nodelist.csv")
 }
 #
@@ -201,6 +203,7 @@ _register_gateways() {
        else
          echo "Register gateway $gatewayId: Passed"
        fi
+       sleep 5
     done < <(cat "$1/gatewaylist.csv")
 }
 #
@@ -226,6 +229,7 @@ _stake_nodes() {
 #       else
 #         echo "Staking node $nodeId: Passed"
 #       fi
+      sleep 5
     done < <(cat "$1/nodelist.csv")
 }
 #
@@ -246,6 +250,7 @@ _stake_gateways() {
          echo "Staking gateway $gatewayId: Passed"
        fi
     done < <(cat "$1/gatewaylist.csv")
+    sleep 5
 }
 
 _prepare_env() {

@@ -1,6 +1,9 @@
 #!/bin/bash
 sudo apt update
 sudo apt install -y jq atop
+sudo echo 2000000 >/proc/sys/fs/nr_open
+sudo echo 2000000 >/proc/sys/fs/file-max
+sudo ulimit -n 2000000
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/wrk -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.sh -P /opt/benchmark
