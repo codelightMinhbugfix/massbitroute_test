@@ -39,18 +39,22 @@ _create_nodes() {
 }
 _create_gateways() {
   echo -n > "$1/gatewaylist.csv"
+  gateway_ratio=$2
+  echo "Node/Gateway ratio: 1/$gateway_ratio"
   while IFS="," read -r id region zone zoneCode dataSource
     do
       # curl  node/gw
-      curl -s --location --request POST "https://portal.$domain/mbr/gateway" \
-        --header "Authorization: Bearer  $bearer" \
-        --header 'Content-Type: application/json' \
-        --data-raw "{
-          \"name\":\"mbr-gw-$nodePrefix-$id-$zone\",
-          \"blockchain\":\"$blockchain\",
-          \"zone\":\"$zoneCode\",
-          \"network\":\"mainnet\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
-
+      for i in $( seq 1 $gateway_ratio )
+      do      
+        curl -s --location --request POST "https://portal.$domain/mbr/gateway" \
+          --header "Authorization: Bearer  $bearer" \
+          --header 'Content-Type: application/json' \
+          --data-raw "{
+            \"name\":\"mbr-gw-$nodePrefix-$zone-$id-$i\",
+            \"blockchain\":\"$blockchain\",
+            \"zone\":\"$zoneCode\",
+            \"network\":\"mainnet\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
+      done
     done < <(cat ../../credentials/eth-sources.csv)
 }
 
@@ -256,14 +260,19 @@ _setup() {
   else
     nodePrefix=$1
   fi
+  if [ "x$2" == "x" ]; then
+    gateway_ratio=1
+  else
+    gateway_ratio=$2
+  fi
   _login
-  # _prepare_env $nodePrefix
-  # _create_nodes $nodePrefix
-  # _create_gateways $nodePrefix
-  # _check_status created node $nodePrefix
-  # _check_status created gateway $nodePrefix
-  # _prepare_terraform $nodePrefix
-  # _create_vms $nodePrefix
+  _prepare_env $nodePrefix
+  _create_nodes $nodePrefix
+  _create_gateways $nodePrefix $gateway_ratio
+  _check_status created node $nodePrefix
+  _check_status created gateway $nodePrefix
+  _prepare_terraform $nodePrefix
+  _create_vms $nodePrefix
   # setup nodes
   _check_status verified node $nodePrefix
   _register_nodes $nodePrefix
