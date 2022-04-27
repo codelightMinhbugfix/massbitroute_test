@@ -1,6 +1,36 @@
 #!/usr/bin/env bash
 source /opt/benchmark/params.sh
 
+_login() {
+  bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
+          --data-raw "{\"username\": \"$TEST_USERNAME\", \"password\": \"$TEST_PASSWORD\"}"| jq  -r ". | .accessToken")
+
+  if [[ "$bearer" == "null" ]]; then
+    echo "Getting JWT token: Failed"
+    exit 1
+  fi
+
+  userId=$(curl -s --location --request GET "https://portal.$domain/user/info" \
+  --header "Authorization: Bearer $bearer" \
+  --header 'Content-Type: application/json' | jq  -r ". | .id")
+  echo "User ID $userId"
+}
+#
+#_get_node_info node {nodeId}
+#_get_node_info gateway {gatewayId}
+#
+_get_node_info() {
+  _login
+  res=$(curl -s --location --request GET "https://portal.$domain/mbr/$1/$2" \
+    --header "Authorization: Bearer  $bearer" \
+    --header 'Content-Type: application/json' \
+    | jq -r '. | .id, .appKey, .name, .blockchain, .zone, .status, .geo.ip' \
+    | sed -z -z "s/\n/,/g")
+  IFS=$',' fields=($res)
+  nodeId=fields[1]
+  nodeKey=fields[2]
+  nodeIp=fields[7]
+}
 _get_dapi_session() {
   #curl -s -X HEAD -I "$dapiURL"   --header 'Content-Type: application/json' | tr -d '\r' | sed -En 's/^location: (.*)/\1/p'
   #return

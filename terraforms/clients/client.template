@@ -1,5 +1,5 @@
-resource "google_compute_instance" "client-[[ZONE]]" {
-  name         = "${var.project_prefix}-${var.environment}-client-[[PREFIX]]-[[ZONE]]"
+resource "google_compute_instance" "client-[[PREFIX]]-[[ZONE]]-[[INDEX]]" {
+  name         = "${var.project_prefix}-${var.environment}-client-[[PREFIX]]-[[ZONE]]-[[INDEX]]"
   machine_type = "${var.client_machine_type}"
   zone         = "[[ZONE]]"
 
@@ -24,7 +24,7 @@ resource "google_compute_instance" "client-[[ZONE]]" {
 
   }
 
-  metadata_startup_script = "${file("init_[[INIT_FILE]].sh")}"
+  metadata_startup_script = "${file("init.sh")}"
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
@@ -43,6 +43,6 @@ resource "google_compute_instance" "client-[[ZONE]]" {
 #  }
 }
 
-output "client-[[ZONE]]_ip_addr" {
-   value = google_compute_instance.client-[[ZONE]].network_interface.0.access_config.0.nat_ip
+output "client-[[PREFIX]]-[[ZONE]]-[[INDEX]]-ip-addr" {
+   value = google_compute_instance.client-[[PREFIX]]-[[ZONE]]-[[INDEX]].network_interface.0.access_config.0.nat_ip
 }

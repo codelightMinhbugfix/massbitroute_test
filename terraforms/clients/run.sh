@@ -24,12 +24,7 @@ _login() {
 }
 
 _prepare_terraform() {
-  testDapis=()
-  thread=5
-  connection=5
-  duration=30s
   outtf="$2/client.tf"
-  request_rates="(50 100 200)"
   echo 'variable "project_prefix" {
     type        = string
     description = "The project prefix (mbr)."
@@ -63,11 +58,10 @@ _prepare_terraform() {
       gwKeys[${zoneCode,,}]=$appId
     done < <(tail "$PROVIDER_DIR/$1/gatewaystatus.csv")
 
-  while IFS="," read -r region cloudZone zone
+  while IFS="," read -r region cloudZone zone counter
   do
 #    #create dapi for each client
-    random=$(echo $RANDOM | md5sum | head -c 2)
-    testDapis+=( $random )
+    random=$(echo $RANDOM | md5sum | head -c 3)
     #-------------------------------------------
     # Create dAPI
     #-------------------------------------------
@@ -106,15 +100,18 @@ _prepare_terraform() {
               | sed "s/\[\[GATEWAY_ID\]\]/${gwIds[${zone,,}]}/g" \
               | sed "s/\[\[GATEWAY_KEY\]\]/${gwKeys[${zone,,}]}/g" \
               | sed "s/\[\[GATEWAY_IP\]\]/${gwIps[${zone,,}]}/g" \
-              | sed "s/\[\[THREAD\]\]/$thread/g" \
-              | sed "s/\[\[CONNECTION\]\]/$connection/g" \
-              | sed "s/\[\[DURATION\]\]/$duration/g" \
-              | sed "s/\[\[REQUEST_RATES\]\]/$request_rates/g" > "$2/init_$random.sh"
-    cat client.template |  sed "s/\[\[REGION\]\]/$region/g" \
-                        | sed  "s/\[\[ZONE\]\]/$cloudZone/g" \
-                        | sed  "s/\[\[EMAIL\]\]/$email/g" \
-                        | sed "s/\[\[INIT_FILE\]\]/$random/g" \
-                        | sed "s/\[\[PREFIX\]\]/$random/g" >> $outtf
+              | sed "s/\[\[THREAD\]\]/$client_thread/g" \
+              | sed "s/\[\[CONNECTION\]\]/$client_connection/g" \
+              | sed "s/\[\[DURATION\]\]/$test_duration/g" \
+              | sed "s/\[\[REQUEST_RATES\]\]/$test_rates/g" > "$2/init.sh"
+    for i in $( seq 1 $counter )
+      do
+        cat client.template | sed "s/\[\[REGION\]\]/$region/g" \
+                            | sed  "s/\[\[ZONE\]\]/$cloudZone/g" \
+                            | sed  "s/\[\[EMAIL\]\]/$email/g" \
+                            | sed "s/\[\[PREFIX\]\]/$random/g" \
+                            | sed "s/\[\[INDEX\]\]/$i/g" >> $outtf
+      done
   done < <(tail "$CREDENTIALS_PATH/zonelist-test.csv")
 }
 _prepare_env() {
@@ -125,8 +122,6 @@ _prepare_env() {
   echo "Create test in dir $1"
   if [ ! -d "$ROOT/$1" ]; then
     mkdir "$ROOT/$1"
-  else
-    rm $ROOT/$1/init_*.sh
   fi
   cp ./terraform.tfvars $ROOT/$1
   cat provider.tf |  sed "s/\[\[CREDENTIALS_PATH\]\]/$credentialsPath/g"  > "$ROOT/$1/provider.tf"
@@ -137,19 +132,14 @@ _create_vms() {
   sudo terraform plan -var-file=./terraform.tfvars -out=client.plan
   sudo terraform apply client.plan
 }
-#_clean_init_files() {
-#  for file in ${testDapis[@]}; do
-#    rm init_${file}.sh
-#  done
-#}
-#
+
 # $1 provider environment
 # $2 test environment
 _setup() {
-  if [ "x$1" == "x" ]; then
-    envdir=$prefix
+  if [ "x$2" == "x" ]; then
+    envdir=$1-$prefix
   else
-    envdir=$2
+    envdir=$1-$2
   fi
   _prepare_env $envdir
   _login
@@ -157,15 +147,17 @@ _setup() {
   _create_vms $envdir
 #  _clean_init_files
 }
+# $1 provider environment
+# $2 test environment
 _clean() {
-  _login
+  envdir=$1-$2
   echo "Cleaning up VMs: In Progress"
-  cd $1
+  cd $envdir
   sudo terraform destroy
   if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform destroy "; exit 1; fi
   echo "Cleaning up VMs: Passed"
   cd ..
-  sudo rm -rf $1
+  sudo rm -rf $envdir
 }
 
 $@

@@ -1,7 +1,7 @@
 
 resource "google_compute_instance" "node-[[GATEWAY_ID]]" {
   name         = "[[NAME]]"
-  machine_type = var.map_machine_types["gateway"]
+  machine_type = var.map_machine_types["node"]
   zone         = "[[CLOUD_ZONE]]"
 
   tags = ["http-server", "https-server", "node", "ethereum"]
