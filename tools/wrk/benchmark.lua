@@ -26,8 +26,9 @@ function init(args)
 end
 
 function request()
+    local randomId = math.random(100)
     local body =
-        '{"id": "blockNumber", "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": ["latest", true]}'
+        '{"id": "' .. randomId .. '", "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": ["latest", true]}'
     local headers = {}
     headers["Content-Type"] = "application/json"
     local type = wrk.thread:get("type")

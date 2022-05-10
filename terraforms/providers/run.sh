@@ -29,11 +29,11 @@ _create_nodes() {
       --header "Authorization: Bearer  $bearer" \
       --header 'Content-Type: application/json' \
       --data-raw "{
-          \"name\": \"mbr-node-$nodePrefix-$id-$zone\",
+          \"name\": \"mbr-node-$nodePrefix-$zone-$id\",
           \"blockchain\": \"$blockchain\",
           \"zone\": \"$zoneCode\",
           \"dataSource\": \"$dataSource\",
-          \"network\": \"mainnet\"
+          \"network\": \"$network\"
       }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> "$1/nodelist.csv"
   done < <(cat ../../credentials/eth-sources.csv)
 }
@@ -53,7 +53,7 @@ _create_gateways() {
             \"name\":\"mbr-gw-$nodePrefix-$zone-$id-$i\",
             \"blockchain\":\"$blockchain\",
             \"zone\":\"$zoneCode\",
-            \"network\":\"mainnet\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
+            \"network\":\"$network\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
       done
     done < <(cat ../../credentials/eth-sources.csv)
 }
