@@ -150,9 +150,18 @@ _benchmark() {
       IFS='    ' read -ra hdrhistogram90 <<< "$hdrhistogram90"
       hdrhistogram99=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "5 p")
       IFS='    ' read -ra hdrhistogram99 <<< "$hdrhistogram99"
+      #Request rates
+      _rate=$(cat $output | grep "Requests/sec")
+      IFS=':' read -ra fields <<< "$_rate"
+      requestRate=$(echo ${fields[1]} | tr -d " ")
+      #Transfer rates
+      _rate=$(cat $output | grep "Transfer/sec")
+      IFS=':' read -ra fields <<< "$_rate"
+      transferRate=$(echo ${fields[1]} | tr -d " ")
+
       cat $output
       curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
-        --data "entry.721172135=$2&entry.1670770464=$zone&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$rate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+        --data "entry.721172135=$2&entry.1670770464=$zone&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
     done
 }
 

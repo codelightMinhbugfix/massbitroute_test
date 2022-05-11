@@ -87,25 +87,26 @@ _prepare_terraform() {
       echo "dapiURL is defined"
     fi
     _dapiURL=$(echo $dapiURL | sed "s|\/|\\\/|g")
-    cat init.tpl | sed "s/\[\[BEARER\]\]/$bearer/g" \
-              | sed "s/\[\[ZONE\]\]/$random-${cloudZone,,}/g" \
-              | sed "s/\[\[PROJECT_ID\]\]/$projectId/g" \
-              | sed "s/\[\[PROJECT_NAME\]\]/${projectName}/g" \
-              | sed "s/\[\[DOMAIN\]\]/$domain/g" \
-              | sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
-              | sed "s/\[\[DAPI_URL\]\]/$_dapiURL/g" \
-              | sed "s/\[\[NODE_ID\]\]/${nodeIds[${zone,,}]}/g" \
-              | sed "s/\[\[NODE_KEY\]\]/${nodeKeys[${zone,,}]}/g" \
-              | sed "s/\[\[NODE_IP\]\]/${nodeIps[${zone,,}]}/g" \
-              | sed "s/\[\[GATEWAY_ID\]\]/${gwIds[${zone,,}]}/g" \
-              | sed "s/\[\[GATEWAY_KEY\]\]/${gwKeys[${zone,,}]}/g" \
-              | sed "s/\[\[GATEWAY_IP\]\]/${gwIps[${zone,,}]}/g" \
-              | sed "s/\[\[THREAD\]\]/$client_thread/g" \
-              | sed "s/\[\[CONNECTION\]\]/$client_connection/g" \
-              | sed "s/\[\[DURATION\]\]/$test_duration/g" \
-              | sed "s/\[\[REQUEST_RATES\]\]/$test_rates/g" > "$2/init.sh"
+
     for i in $( seq 1 $counter )
       do
+        cat init.tpl | sed "s/\[\[BEARER\]\]/$bearer/g" \
+                  | sed "s/\[\[ZONE\]\]/$random-${cloudZone,,}-$i/g" \
+                  | sed "s/\[\[PROJECT_ID\]\]/$projectId/g" \
+                  | sed "s/\[\[PROJECT_NAME\]\]/${projectName}/g" \
+                  | sed "s/\[\[DOMAIN\]\]/$domain/g" \
+                  | sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
+                  | sed "s/\[\[DAPI_URL\]\]/$_dapiURL/g" \
+                  | sed "s/\[\[NODE_ID\]\]/${nodeIds[${zone,,}]}/g" \
+                  | sed "s/\[\[NODE_KEY\]\]/${nodeKeys[${zone,,}]}/g" \
+                  | sed "s/\[\[NODE_IP\]\]/${nodeIps[${zone,,}]}/g" \
+                  | sed "s/\[\[GATEWAY_ID\]\]/${gwIds[${zone,,}]}/g" \
+                  | sed "s/\[\[GATEWAY_KEY\]\]/${gwKeys[${zone,,}]}/g" \
+                  | sed "s/\[\[GATEWAY_IP\]\]/${gwIps[${zone,,}]}/g" \
+                  | sed "s/\[\[THREAD\]\]/$client_thread/g" \
+                  | sed "s/\[\[CONNECTION\]\]/$client_connection/g" \
+                  | sed "s/\[\[DURATION\]\]/$test_duration/g" \
+                  | sed "s/\[\[REQUEST_RATES\]\]/$test_rates/g" > "$2/init_$i.sh"
         cat client.template | sed "s/\[\[REGION\]\]/$region/g" \
                             | sed  "s/\[\[ZONE\]\]/$cloudZone/g" \
                             | sed  "s/\[\[EMAIL\]\]/$email/g" \

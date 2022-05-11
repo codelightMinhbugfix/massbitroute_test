@@ -23,7 +23,7 @@ resource "google_compute_instance" "gateway-[[GATEWAY_ID]]" {
 
   metadata_startup_script =  <<EOH
   #!/bin/bash
-  sudo bash -c "$(curl -sSfL 'https://api.massbitroute.dev/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=[[ZONE]]&app_key=[[APP_KEY]]&portal_url=https://portal.massbitroute.dev&env=dev')"  >> /home/verification.log
+  sudo bash -c "$(curl -sSfL 'https://portal.massbitroute.dev/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=[[ZONE]]&app_key=[[APP_KEY]]&portal_url=https://portal.massbitroute.dev&env=dev')"  >> /home/verification.log
   EOH
 
   service_account {

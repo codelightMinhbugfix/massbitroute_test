@@ -24,7 +24,7 @@ resource "google_compute_instance" "client-[[PREFIX]]-[[ZONE]]-[[INDEX]]" {
 
   }
 
-  metadata_startup_script = "${file("init.sh")}"
+  metadata_startup_script = "${file("init_[[INDEX]].sh")}"
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
