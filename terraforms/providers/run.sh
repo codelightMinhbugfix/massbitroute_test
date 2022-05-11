@@ -22,7 +22,7 @@ _login() {
 
 _create_nodes() {
   echo -n > "$1/nodelist.csv"
-  while IFS="," read -r id region zone zoneCode dataSource
+  while IFS="," read -r id region zone zoneCode dataSource temp
   do
     # curl  node/gw
     curl -s --location --request POST "https://portal.$domain/mbr/node" \
@@ -124,7 +124,6 @@ _check_status() {
       for key in "${!statuses[@]}"; do
         echo "Status of $2 $key: ${statuses[$key]}";
         if [ "${statuses[$key]}" != "$1" ]; then
-          echo "Checking $2 $nodeId ..."
           res=$(curl -s --location --request GET "https://portal.$domain/mbr/$2/$key" \
             --header "Authorization: Bearer  $bearer" \
             --header 'Content-Type: application/json' \
@@ -133,6 +132,7 @@ _check_status() {
           IFS=$',' fields=($res)
           IFS=, ; echo "${fields[*]}" >> "$outputFile"
           statuses[$key]=${fields[5]}
+          echo "Checked $2 $key with status ${fields[5]}"
         fi
         if [ "${statuses[$key]}" == "$1" ]; then
           echo "Status of $2 $key: ${statuses[$key]}"
@@ -140,7 +140,8 @@ _check_status() {
         fi
       done
       if [[ $counter < $total ]]; then
-        sleep 20
+        echo "$counter / $total $2 with status $1. Sleeping for awhile..."
+        sleep 2
       fi
     done
 }
@@ -181,7 +182,7 @@ _register_nodes() {
        else
          echo "Register node $nodeId: Passed"
        fi
-       sleep 5
+       sleep 2
     done < <(cat "$1/nodelist.csv")
 }
 #
@@ -203,7 +204,7 @@ _register_gateways() {
        else
          echo "Register gateway $gatewayId: Passed"
        fi
-       sleep 5
+       sleep 2
     done < <(cat "$1/gatewaylist.csv")
 }
 #
@@ -229,7 +230,7 @@ _stake_nodes() {
 #       else
 #         echo "Staking node $nodeId: Passed"
 #       fi
-      sleep 5
+      sleep 2
     done < <(cat "$1/nodelist.csv")
 }
 #
@@ -250,7 +251,7 @@ _stake_gateways() {
          echo "Staking gateway $gatewayId: Passed"
        fi
     done < <(cat "$1/gatewaylist.csv")
-    sleep 5
+    sleep 2
 }
 
 _prepare_env() {
@@ -259,6 +260,33 @@ _prepare_env() {
   cp ./terraform.tfvars ./$1/
   cat provider.tf |  sed "s/\[\[CREDENTIALS_PATH\]\]/$credentialsPath/g"  > "./$1/provider.tf"
 }
+
+_check_gateway_response() {
+  echo -n > $1/gatewayresponse.csv
+
+  
+  while IFS="," read -r nodeId appId name blockchain zone status ip
+  do
+    # url="https://$nodeId.$blockchain-mainnet.$domain/$appId"
+
+    gateway_response=$(curl -o /dev/null -s -w "%{http_code}\n" --location --request POST $ip \
+      --header "x-api-key: $appId" \
+      --header "Host: $nodeId.gw.mbr.massbitroute.dev" \
+      --header 'Content-Type: application/json' \
+      --data-raw '{
+          "jsonrpc": "2.0",
+          "method": "eth_getBlockByNumber",
+          "params": [
+              "latest",
+              false
+          ],
+          "id": 1
+      }'
+    )
+    echo "$nodeId,$name,$gateway_response" >> $1/gatewayresponse.csv
+  done < <(cat "$1/gatewaystatus.csv")
+}
+
 _setup() {
   if [ "x$1" == "x" ]; then
     nodePrefix=$prefix
