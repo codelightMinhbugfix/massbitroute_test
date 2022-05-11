@@ -191,4 +191,10 @@ _run() {
   _benchmark "$_dapiURL" dapi
 }
 
+_loop_run() {
+  while true;
+  do
+    _run
+  done
+}
 $@
