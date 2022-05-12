@@ -183,18 +183,12 @@ _run() {
   echo "Benchmarking gateway $gatewayUrl ..."
   _benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
 
-  echo "Get dapiURL with session"
-  _dapiURL=$(_get_dapi_session $dapiURL)
+  #echo "Get dapiURL with session"
+  #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
   echo "Test dapi $_dapiURL"
   _test_dapi $_dapiURL
   echo "Benchmarking dapi $_dapiURL ..."
   _benchmark "$_dapiURL" dapi
 }
 
-_loop_run() {
-  while true;
-  do
-    _run
-  done
-}
 $@
