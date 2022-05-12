@@ -185,6 +185,7 @@ _run() {
 
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
+  _dapiURL=$dapiURL
   echo "Test dapi $_dapiURL"
   _test_dapi $_dapiURL
   echo "Benchmarking dapi $_dapiURL ..."
