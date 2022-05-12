@@ -171,17 +171,17 @@ _run() {
   #_benchmark $datasourceUrl datasource
 
   #_test_data_source $datasourceUrl
-  _test_node_api $nodeIp $nodeId $nodeKey
+  #_test_node_api $nodeIp $nodeId $nodeKey
   echo "Node response $?"
   nodeUrl="https://$nodeIp"
   echo "Benchmarking node $nodeUrl ..."
-  _benchmark $nodeUrl node $nodeId $nodeKey
+  #_benchmark $nodeUrl node $nodeId $nodeKey
 
-  _test_gateway_api $gatewayIp $gatewayId $gatewayKey
+  #_test_gateway_api $gatewayIp $gatewayId $gatewayKey
   echo "Gateway response $?"
   gatewayUrl="https://$gatewayIp"
   echo "Benchmarking gateway $gatewayUrl ..."
-  _benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
+  #_benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
 
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
