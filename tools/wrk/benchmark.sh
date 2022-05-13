@@ -164,7 +164,9 @@ _benchmark() {
         --data "entry.721172135=$2&entry.1670770464=$zone&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
     done
 }
+_get_list_dapis() {
 
+}
 _run() {
 
   #echo "Benchmarking datasource $datasourceUrl ..."
@@ -185,7 +187,14 @@ _run() {
 
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
-  _dapiURL=$dapiURL
+  #Get random dapi in projectId
+  dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
+    --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
+  len=$(echo $dApis | jq length)
+  min=0
+  randomInd=$(($RANDOM % $len + $min))
+  dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.$blockchain-$network.$domain\//g")
+  _dapiURL="https://$dApi"
   echo "Test dapi $_dapiURL"
   _test_dapi $_dapiURL
   echo "Benchmarking dapi $_dapiURL ..."

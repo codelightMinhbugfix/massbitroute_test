@@ -12,6 +12,7 @@ sudo chmod +x /opt/benchmark/wrk
 
 sudo cat > /opt/benchmark/params.sh <<EOL
 #!/bin/bash
+bearer=[[BEARER]]
 zone=[[ZONE]]
 blockchain=[[BLOCKCHAIN]]
 domain=[[DOMAIN]]
@@ -21,6 +22,7 @@ nodeKey=[[NODE_KEY]]
 gatewayId=[[GATEWAY_ID]]
 gatewayIp=[[GATEWAY_IP]]
 gatewayKey=[[GATEWAY_KEY]]
+projectId=[[PROJECT_ID]]
 dapiURL=[[DAPI_URL]]
 thread=[[THREAD]]
 connection=[[CONNECTION]]
@@ -32,4 +34,7 @@ wrk_dir=/opt/benchmark
 
 EOL
 sudo chmod +x /opt/benchmark/*.sh
-/opt/benchmark/benchmark.sh _run
+while true;
+do
+/opt/benchmark/benchmark.sh _run >> /opt/benchmark/benchmark.log
+done
