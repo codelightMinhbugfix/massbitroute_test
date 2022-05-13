@@ -35,7 +35,9 @@ _prepare_terraform() {
                     | sed "s/\[\[ZONE\]\]/$continent/g" \
                     | sed "s/\[\[BLOCKCHAIN_ENDPOINT\]\]/${blockchain_endpoint}/g" \
                     | sed "s/\[\[NODEID\]\]/$nodeId/g" \
-                    | sed "s/\[\[MNEMONIC\]\]/$mnemonic/g" > init_$continent.sh
+                    | sed "s/\[\[MNEMONIC\]\]/$mnemonic/g" \
+                    | sed "s/\[\[PORTAL_AUTHORIZATION\]\]/$PORTAL_AUTHORIZATION/g"\
+                    | sed "s/\[\[SIGNER_PHRASE\]\]/$SIGNER_PHRASE/g"> init_$continent.sh
     cat template |  sed "s/\[\[REGION\]\]/$region/g" \
                 | sed  "s/\[\[CLOUD_ZONE\]\]/$zone/g" \
                 | sed  "s/\[\[ZONE\]\]/$continent/g" \
