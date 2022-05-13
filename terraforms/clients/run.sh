@@ -96,6 +96,7 @@ _prepare_terraform() {
                   | sed "s/\[\[PROJECT_NAME\]\]/${projectName}/g" \
                   | sed "s/\[\[DOMAIN\]\]/$domain/g" \
                   | sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
+                  | sed "s/\[\[NETWORK\]\]/$network/g" \
                   | sed "s/\[\[DAPI_URL\]\]/$_dapiURL/g" \
                   | sed "s/\[\[NODE_ID\]\]/${nodeIds[${zone,,}]}/g" \
                   | sed "s/\[\[NODE_KEY\]\]/${nodeKeys[${zone,,}]}/g" \
@@ -160,5 +161,20 @@ _clean() {
   cd ..
   sudo rm -rf $envdir
 }
-
+_get_list_dapis() {
+  _login
+  dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
+    --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
+  len=$(echo $dApis | jq length)
+  min=0
+  randomInd=$(($RANDOM % $len + $min))
+  dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.eth-mainnet.massbitroute.dev\//g")
+  _dapiURL="https://$dApi"
+  echo $_dapiURL
+  #((len=len - 1))
+  #for i in $( seq 0 $len); do
+  # dApi=$(echo "$dApis" | jq ".[$i]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.eth-mainnet.massbitroute.dev\//g")
+  #  echo "https://$dApi"
+  #done
+}
 $@

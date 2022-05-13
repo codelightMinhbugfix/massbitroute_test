@@ -15,6 +15,7 @@ sudo cat > /opt/benchmark/params.sh <<EOL
 bearer=[[BEARER]]
 zone=[[ZONE]]
 blockchain=[[BLOCKCHAIN]]
+network=[[NETWORK]]
 domain=[[DOMAIN]]
 nodeId=[[NODE_ID]]
 nodeIp=[[NODE_IP]]
