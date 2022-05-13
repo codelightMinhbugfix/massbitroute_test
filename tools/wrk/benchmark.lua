@@ -26,7 +26,7 @@ function init(args)
 end
 
 function request()
-    local randomId = math.random(100)
+    local randomId = math.random(10)
     local body =
         '{"id": "' .. randomId .. '", "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": ["latest", true]}'
     local headers = {}
