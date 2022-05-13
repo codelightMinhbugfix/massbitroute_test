@@ -69,7 +69,7 @@ sudo service nginx restart
 sudo mkdir -p /massbit/massbitroute/app/src/sites/services/monitor
 sudo git clone https://github.com/massbitprotocol/massbitroute_monitor.git -b dev /massbit/massbitroute/app/src/sites/services/monitor
 cd /massbit/massbitroute/app/src/sites/services/monitor/check_component
-# /root/.cargo/bin/cargo build --release >> /home/verification.log
+/root/.cargo/bin/cargo build --release >> /home/verification.log
 mkdir -p /opt/verification
 sudo cp target/release/mbr-check-component /opt/verification/mbr-check-component
 sudo cp src/archive/check-flow.json /opt/verification/check-flow.json
@@ -110,6 +110,11 @@ ZONE=[[ZONE]] RUST_LOG=info RUST_LOG_TYPE=file
     -b base-endpoint.json -c check-flow.json --domain [[DOMAIN]]
 EOL
 
+sudo cat > /opt/verification/.env <<EOL
+export PORTAL_AUTHORIZATION="[[PORTAL_AUTHORIZATION]]"
+export SIGNER_PHRASE="[[SIGNER_PHRASE]]"
+EOL
+
 sudo chmod 770 /opt/verification/run.sh
 #-------------------------------------------
 #  Install FISHERMAN (RUST)
@@ -118,6 +123,7 @@ cd /massbit/massbitroute/app/src/sites/services/monitor/fisherman
 # /root/.cargo/bin/cargo build --release >> /home/fisherman.log
 
 mkdir -p /opt/fisherman
+/root/.cargo/bin/cargo build --release
 sudo cp target/release/mbr-fisherman /opt/fisherman/mbr-fisherman
 sudo cp ../check_component/src/archive/check-flow.json      /opt/fisherman/check-flow.json
 sudo cp config_check_component.json                         /opt/fisherman/config_check_component.json
@@ -132,8 +138,14 @@ ZONE=[[ZONE]] RUST_LOG=info RUST_LOG_TYPE=file
 ./mbr-fisherman run-fisherman -n https://portal.[[DOMAIN]]/mbr/node/list/verify \
     -g https://portal.[[DOMAIN]]/mbr/gateway/list/verify \
     -b base-endpoint.json -c check-flow.json \
-    -m  wss://[[BLOCKCHAIN_ENDPOINT]] --signer-phrase "[[MNEMONIC]]"  --domain [[DOMAIN]]
+    -m  wss://[[BLOCKCHAIN_ENDPOINT]]  --domain [[DOMAIN]]
 EOL
+
+sudo cat > /opt/fisherman/.env <<EOL
+export PORTAL_AUTHORIZATION="[[PORTAL_AUTHORIZATION]]"
+export SIGNER_PHRASE="[[SIGNER_PHRASE]]"
+EOL
+
 sudo chmod 770 /opt/fisherman/run.sh
 sudo supervisorctl reread
 sudo supervisorctl update
