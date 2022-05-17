@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-source /opt/benchmark/params.sh
+#source /opt/benchmark/params.sh
+source ./params.sh
 
 _login() {
   bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
@@ -161,8 +162,44 @@ _benchmark() {
 
       cat $output
       curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
-        --data "entry.721172135=$2&entry.1670770464=$zone&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+        --data "entry.721172135=$2&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
     done
+}
+# $1 - Type
+_ping_nodes() {
+  if [ "$1" == "node" ]; then
+    type=node
+  else
+    type=gateway
+  fi
+  nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/$type/list/verify" --header "Authorization: $bearer")
+  echo $nodes | jq
+  len=$(echo $nodes | jq length)
+  ((len=len-1))
+  for i in $( seq 0 $len )
+  do
+    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name" | sed -z "s/\"//g; s/\n/,/g;")
+    IFS=$',' fields=($node);
+    nodeZone=${fields[3]^^}
+    zone=${zone^^}
+    #if [ "$zone" == "$nodeZone" ]; then
+      url="http://${fields[1]}/ping"
+      response=$(timeout 1 curl -s --location --request GET "$url"\
+        --header "X-Api-Key: ${fields[2]}" \
+        --header "Host: ${fields[0]}.$1.mbr.$domain")
+      if [ "x$response" == "x" ]; then
+        formUrl=https://docs.google.com/forms/u/0/d/e/1FAIpQLScPA35h5VJhA-959KC_7vWm6UHqzvmM8wucRp2ilqSbKFViGg/formResponse
+        curl "$formUrl" --silent >/dev/null \
+          --data "entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
+
+        echo "ping $url fail"
+        echo ${fields[@]};
+      else
+        echo "ping $url success"
+      fi
+
+    #fi
+  done
 }
 
 _run() {
@@ -172,17 +209,18 @@ _run() {
 
   #_test_data_source $datasourceUrl
   #_test_node_api $nodeIp $nodeId $nodeKey
-  echo "Node response $?"
-  nodeUrl="https://$nodeIp"
-  echo "Benchmarking node $nodeUrl ..."
+  #echo "Node response $?"
+  #nodeUrl="https://$nodeIp"
+  #echo "Benchmarking node $nodeUrl ..."
   #_benchmark $nodeUrl node $nodeId $nodeKey
 
   #_test_gateway_api $gatewayIp $gatewayId $gatewayKey
-  echo "Gateway response $?"
-  gatewayUrl="https://$gatewayIp"
-  echo "Benchmarking gateway $gatewayUrl ..."
+  #echo "Gateway response $?"
+  #gatewayUrl="https://$gatewayIp"
+  #echo "Benchmarking gateway $gatewayUrl ..."
   #_benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
-
+  _ping_nodes node
+  _ping_nodes gw
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
   #Get random dapi in projectId
@@ -190,13 +228,15 @@ _run() {
     --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
   len=$(echo $dApis | jq length)
   min=0
-  randomInd=$(($RANDOM % $len + $min))
-  dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.$blockchain-$network.$domain\//g")
-  _dapiURL="https://$dApi"
-  echo "Test dapi $_dapiURL"
-  _test_dapi $_dapiURL
-  echo "Benchmarking dapi $_dapiURL ..."
-  _benchmark "$_dapiURL" dapi
+  if [ $len -gt 0 ]; then
+    randomInd=$(($RANDOM % $len + $min))
+    dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.$blockchain-$network.$domain\//g")
+    _dapiURL="https://$dApi"
+    echo "Test dapi $_dapiURL"
+    _test_dapi $_dapiURL
+    echo "Benchmarking dapi $_dapiURL ..."
+    _benchmark "$_dapiURL" dapi
+  fi
 }
 
 $@
