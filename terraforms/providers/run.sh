@@ -1,5 +1,10 @@
 #!/bin/bash
-source ../../credentials/.env
+if [ "x$4" == "xnet" ]; then
+  source ../../credentials/.env.net
+else
+  source ../../credentials/.env
+fi
+
 prefix=$random
 #login
 #-------------------------------------------
@@ -29,7 +34,7 @@ _create_nodes() {
       --header "Authorization: Bearer  $bearer" \
       --header 'Content-Type: application/json' \
       --data-raw "{
-          \"name\": \"mbr-node-$nodePrefix-$zone-$id\",
+          \"name\": \"node-$nodePrefix-$zone-$id\",
           \"blockchain\": \"$blockchain\",
           \"zone\": \"$zoneCode\",
           \"dataSource\": \"$dataSource\",
@@ -50,7 +55,7 @@ _create_gateways() {
           --header "Authorization: Bearer  $bearer" \
           --header 'Content-Type: application/json' \
           --data-raw "{
-            \"name\":\"mbr-gw-$nodePrefix-$zone-$id-$i\",
+            \"name\":\"gw-$nodePrefix-$zone-$id-$i\",
             \"blockchain\":\"$blockchain\",
             \"zone\":\"$zoneCode\",
             \"network\":\"$network\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
@@ -83,6 +88,7 @@ _prepare_terraform() {
     dataSource=$(echo $dataSource | sed "s|\/|\\\/|g")
     echo $ds
     cat node-template |  sed "s/\[\[GATEWAY_ID\]\]/$nodeId/g" | sed  "s/\[\[APP_KEY\]\]/$appId/g" \
+      | sed  "s/\[\[DOMAIN\]\]/$domain/g" | sed  "s/\[\[ENV\]\]/$env/g" \
       | sed  "s/\[\[ZONE\]\]/$zone/g" | sed  "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
       | sed  "s/\[\[DATASOURCE\]\]/$dataSource/g" | sed  "s/\[\[NAME\]\]/$name/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
@@ -93,6 +99,7 @@ _prepare_terraform() {
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
   do
     cat gateway-template |  sed "s/\[\[GATEWAY_ID\]\]/$nodeId/g" | sed  "s/\[\[APP_KEY\]\]/$appId/g" \
+      | sed  "s/\[\[DOMAIN\]\]/$domain/g" | sed  "s/\[\[ENV\]\]/$env/g" \
       | sed  "s/\[\[ZONE\]\]/$zone/g" | sed  "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
       | sed  "s/\[\[NAME\]\]/$name/g" | sed  "s/\[\[CLOUD_ZONE\]\]/$cloudZone/g" \
       | sed  "s/\[\[EMAIL\]\]/$email/g" \
@@ -264,7 +271,7 @@ _prepare_env() {
 _check_gateway_response() {
   echo -n > $1/gatewayresponse.csv
 
-  
+
   while IFS="," read -r nodeId appId name blockchain zone status ip
   do
     # url="https://$nodeId.$blockchain-mainnet.$domain/$appId"

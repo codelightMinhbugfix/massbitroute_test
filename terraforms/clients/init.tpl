@@ -13,6 +13,7 @@ sudo chmod +x /opt/benchmark/wrk
 sudo cat > /opt/benchmark/params.sh <<EOL
 #!/bin/bash
 bearer=[[BEARER]]
+client=[[client]]
 zone=[[ZONE]]
 blockchain=[[BLOCKCHAIN]]
 network=[[NETWORK]]

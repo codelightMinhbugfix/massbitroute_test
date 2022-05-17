@@ -1,5 +1,9 @@
 #! /bin/bash
-source ../../credentials/.env
+if [ "x$1" == "xnet" ]; then
+  source ../../credentials/.env.net
+else
+  source ../../credentials/.env
+fi
 prefix=$random
 ROOT=$(realpath $(dirname $(realpath $0))/)
 PROVIDER_DIR=$ROOT/../providers
@@ -9,7 +13,7 @@ CREDENTIALS_PATH=$ROOT/../../credentials
 # Log into Portal
 #-------------------------------------------
 _login() {
-  bearer=$(curl -s --location --request POST 'https://portal.massbitroute.dev/auth/login' --header 'Content-Type: application/json' \
+  bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
           --data-raw "{\"username\": \"$TEST_USERNAME\", \"password\": \"$TEST_PASSWORD\"}"| jq  -r ". | .accessToken")
 
   if [[ "$bearer" == "null" ]]; then
@@ -17,12 +21,68 @@ _login() {
     exit 1
   fi
 
-  userId=$(curl -s --location --request GET 'https://portal.massbitroute.dev/user/info' \
+  userId=$(curl -s --location --request GET "https://portal.$domain/user/info" \
   --header "Authorization: Bearer $bearer" \
   --header 'Content-Type: application/json' | jq  -r ". | .id")
   echo "User ID $userId"
 }
-
+_prepare_dapis() {
+    if [ "x$1" == "xnet" ]; then
+      source ../../credentials/.env.net
+    else
+      source ../../credentials/.env
+    fi
+    _login
+    #-------------------------------------------
+    # Create dAPI
+    #-------------------------------------------
+    dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
+      --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
+    len=$(echo $dApis | jq length)
+    if [ $len -lt 10 ]; then
+      for i in $( seq $len 9 );
+      do
+        random=$(echo $RANDOM | md5sum | head -c 3)
+        create_dapi_response=$(curl -s --location --request POST "https://portal.$domain/mbr/d-apis" \
+          --header "Authorization: Bearer $bearer" \
+          --header 'Content-Type: application/json' \
+          --data-raw "{
+            \"name\": \"$projectName-$random\",
+            \"projectId\": \"$projectId\"
+          }")
+        create_dapi_status=$(echo $create_dapi_response | jq .status)
+        apiId=$(echo $create_dapi_response | jq -r '. | .entrypoints[0].apiId')
+        appKey=$(echo $create_dapi_response | jq -r '. | .appKey')
+        dapiURL="https:\/\/$apiId.${blockchain}-mainnet.$domain\/$appKey"
+        if [[ "$create_dapi_status" != "1" ]]; then
+          echo "Create new dAPI: Failed"
+          exit 1
+        else
+          echo "Create new dAPI: Passed"
+        fi
+      done
+    fi
+}
+_clean_dapis() {
+  if [ "x$1" == "xnet" ]; then
+    source ../../credentials/.env.net
+  else
+    source ../../credentials/.env
+  fi
+  _login
+  dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
+    --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
+  len=$(echo $dApis | jq length)
+  ((len=len-1))
+  for i in $( seq 0 $len );
+  do
+    dApi=$(echo "$dApis" | jq ".[$i]" | jq ". | .appId" | sed -z "s/\"//g")
+    urlL="https://portal.$domain/mbr/d-apis/$dApi"
+    status=$(curl -s --location --request DELETE "https://portal.$domain/mbr/d-apis/$dApi" \
+      --header "Authorization: Bearer $bearer" | jq -r ".status")
+    echo "Delete dapi $dApi with response status $status";
+  done
+}
 _prepare_terraform() {
   outtf="$2/client.tf"
   echo 'variable "project_prefix" {
@@ -39,71 +99,21 @@ _prepare_terraform() {
   variable "client_machine_type" {
      type = string
    }' > "$outtf"
-  declare -A nodeIds
-  declare -A nodeIps
-  declare -A nodeKeys
-  while IFS="," read -r nodeId appId name bcName zoneCode status ip
-    do
-      nodeIds[${zoneCode,,}]=$nodeId
-      nodeIps[${zoneCode,,}]=$ip
-      nodeKeys[${zoneCode,,}]=$appId
-    done < <(tail "$PROVIDER_DIR/$1/nodestatus.csv")
-  declare -A gwIds
-  declare -A gwIps
-  declare -A gwKeys
-  while IFS="," read -r gatewayId appId name bcName zoneCode status ip
-    do
-      gwIds[${zoneCode,,}]=$gatewayId
-      gwIps[${zoneCode,,}]=$ip
-      gwKeys[${zoneCode,,}]=$appId
-    done < <(tail "$PROVIDER_DIR/$1/gatewaystatus.csv")
 
   while IFS="," read -r region cloudZone zone counter
   do
-#    #create dapi for each client
     random=$(echo $RANDOM | md5sum | head -c 3)
-    #-------------------------------------------
-    # Create dAPI
-    #-------------------------------------------
-    if [ "x$dapiURL" == "x" ]; then
-      create_dapi_response=$(curl -s --location --request POST "https://portal.$domain/mbr/d-apis" \
-        --header "Authorization: Bearer $bearer" \
-        --header 'Content-Type: application/json' \
-        --data-raw "{
-          \"name\": \"$projectName-$random\",
-          \"projectId\": \"$projectId\"
-      }")
-      apiId=$(echo $create_dapi_response | jq -r '. | .entrypoints[0].apiId')
-      appKey=$(echo $create_dapi_response | jq -r '. | .appKey')
-      dapiURL="https:\/\/$apiId.${blockchain}-mainnet.$domain\/$appKey"
-      create_dapi_status=$(echo $create_dapi_response | jq .status)
-      if [[ "$create_dapi_status" != "1" ]]; then
-        echo "Create new dAPI: Failed"
-        exit 1
-      else
-        echo "Create new dAPI: Passed"
-      fi
-    else
-      echo "dapiURL is defined"
-    fi
-    _dapiURL=$(echo $dapiURL | sed "s|\/|\\\/|g")
-
     for i in $( seq 1 $counter )
       do
         cat init.tpl | sed "s/\[\[BEARER\]\]/$bearer/g" \
-                  | sed "s/\[\[ZONE\]\]/$random-${cloudZone,,}-$i/g" \
+                  | sed "s/\[\[CLIENT\]\]/$random-${cloudZone,,}-$i/g" \
+                  | sed "s/\[\[ZONE\]\]/$zone/g" \
                   | sed "s/\[\[PROJECT_ID\]\]/$projectId/g" \
                   | sed "s/\[\[PROJECT_NAME\]\]/${projectName}/g" \
                   | sed "s/\[\[DOMAIN\]\]/$domain/g" \
                   | sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" \
                   | sed "s/\[\[NETWORK\]\]/$network/g" \
                   | sed "s/\[\[DAPI_URL\]\]/$_dapiURL/g" \
-                  | sed "s/\[\[NODE_ID\]\]/${nodeIds[${zone,,}]}/g" \
-                  | sed "s/\[\[NODE_KEY\]\]/${nodeKeys[${zone,,}]}/g" \
-                  | sed "s/\[\[NODE_IP\]\]/${nodeIps[${zone,,}]}/g" \
-                  | sed "s/\[\[GATEWAY_ID\]\]/${gwIds[${zone,,}]}/g" \
-                  | sed "s/\[\[GATEWAY_KEY\]\]/${gwKeys[${zone,,}]}/g" \
-                  | sed "s/\[\[GATEWAY_IP\]\]/${gwIps[${zone,,}]}/g" \
                   | sed "s/\[\[THREAD\]\]/$client_thread/g" \
                   | sed "s/\[\[CONNECTION\]\]/$client_connection/g" \
                   | sed "s/\[\[DURATION\]\]/$test_duration/g" \
@@ -135,16 +145,18 @@ _create_vms() {
   sudo terraform apply client.plan
 }
 
-# $1 provider environment
-# $2 test environment
+# $1 environment: net or dev
+# $2 test name
+
 _setup() {
   if [ "x$2" == "x" ]; then
-    envdir=$1-$prefix
+    envdir=$prefix
   else
-    envdir=$1-$2
+    envdir=$2
   fi
   _prepare_env $envdir
   _login
+  _prepare_dapis $1
   _prepare_terraform $1 $envdir
   _create_vms $envdir
 #  _clean_init_files
@@ -168,7 +180,7 @@ _get_list_dapis() {
   len=$(echo $dApis | jq length)
   min=0
   randomInd=$(($RANDOM % $len + $min))
-  dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.eth-mainnet.massbitroute.dev\//g")
+  dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.eth-mainnet.$domain\//g")
   _dapiURL="https://$dApi"
   echo $_dapiURL
   #((len=len - 1))
