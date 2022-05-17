@@ -84,7 +84,7 @@ _clean_dapis() {
   done
 }
 _prepare_terraform() {
-  outtf="$2/client.tf"
+  outtf="$1/client.tf"
   echo 'variable "project_prefix" {
     type        = string
     description = "The project prefix (mbr)."
@@ -106,6 +106,7 @@ _prepare_terraform() {
     for i in $( seq 1 $counter )
       do
         cat init.tpl | sed "s/\[\[BEARER\]\]/$bearer/g" \
+                  | sed "s/\[\[BEARERADMIN\]\]/$bearerAdmin/g" \
                   | sed "s/\[\[CLIENT\]\]/$random-${cloudZone,,}-$i/g" \
                   | sed "s/\[\[ZONE\]\]/$zone/g" \
                   | sed "s/\[\[PROJECT_ID\]\]/$projectId/g" \
@@ -117,7 +118,7 @@ _prepare_terraform() {
                   | sed "s/\[\[THREAD\]\]/$client_thread/g" \
                   | sed "s/\[\[CONNECTION\]\]/$client_connection/g" \
                   | sed "s/\[\[DURATION\]\]/$test_duration/g" \
-                  | sed "s/\[\[REQUEST_RATES\]\]/$test_rates/g" > "$2/init_$i.sh"
+                  | sed "s/\[\[REQUEST_RATES\]\]/$test_rates/g" > "$1/init_${random}_${i}.sh"
         cat client.template | sed "s/\[\[REGION\]\]/$region/g" \
                             | sed  "s/\[\[ZONE\]\]/$cloudZone/g" \
                             | sed  "s/\[\[EMAIL\]\]/$email/g" \
@@ -157,14 +158,14 @@ _setup() {
   _prepare_env $envdir
   _login
   _prepare_dapis $1
-  _prepare_terraform $1 $envdir
+  _prepare_terraform $envdir
   _create_vms $envdir
 #  _clean_init_files
 }
 # $1 provider environment
 # $2 test environment
 _clean() {
-  envdir=$1-$2
+  envdir=$2
   echo "Cleaning up VMs: In Progress"
   cd $envdir
   sudo terraform destroy
