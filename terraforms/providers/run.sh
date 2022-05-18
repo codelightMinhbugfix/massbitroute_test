@@ -1,10 +1,4 @@
 #!/bin/bash
-if [ "x$4" == "xnet" ]; then
-  source ../../credentials/.env.net
-else
-  source ../../credentials/.env
-fi
-
 prefix=$random
 #login
 #-------------------------------------------
@@ -293,28 +287,29 @@ _check_gateway_response() {
     echo "$nodeId,$name,$gateway_response" >> $1/gatewayresponse.csv
   done < <(cat "$1/gatewaystatus.csv")
 }
-
+#
+# $1 group name
+# $2 env file (default .env)
 _setup() {
-  if [ "x$1" == "x" ]; then
-    nodePrefix=$prefix
-  else
+  if [ "x$2" == "" ]; then
+    envname=dev
     nodePrefix=$1
-  fi
-  if [ "x$2" == "x" ]; then
-    gateway_ratio=1
+    source ../../credentials/.env
   else
-    gateway_ratio=$2
+    envname=$2
+    nodePrefix=$envname-$1
+    source ../../credentials/.env.$2
   fi
   _login
-  _prepare_env $nodePrefix
-  _create_nodes $nodePrefix
-  _create_gateways $nodePrefix $gateway_ratio
-  _check_status created node $nodePrefix
-  _check_status created gateway $nodePrefix
-  _prepare_terraform $nodePrefix
-  _create_vms $nodePrefix
+  #_prepare_env $nodePrefix
+  #_create_nodes $nodePrefix
+  #_create_gateways $nodePrefix $gateway_ratio
+  #_check_status created node $nodePrefix
+  #_check_status created gateway $nodePrefix
+  #_prepare_terraform $nodePrefix
+  #_create_vms $nodePrefix
   # setup nodes
-  _check_status verified node $nodePrefix
+  #_check_status verified node $nodePrefix
   _register_nodes $nodePrefix
   _check_status approved node $nodePrefix
   _stake_nodes $nodePrefix
@@ -384,5 +379,17 @@ _clean() {
   cd ..
   sudo rm -rf $1
 }
-
+_clean_vms() {
+  if [ "x$1" == "x" ]; then
+    echo "Please choose a directory to clean up"
+    exit 0
+  fi
+  echo "Cleaning up VMs: In Progress"
+  cd $1
+  sudo terraform destroy
+  if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform destroy "; exit 1; fi
+  echo "Cleaning up VMs: Passed"
+  cd ..
+  sudo rm -rf $1
+}
 $@

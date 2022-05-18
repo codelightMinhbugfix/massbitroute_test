@@ -1,13 +1,8 @@
 #! /bin/bash
-if [ "x$1" == "xnet" ]; then
-  source ../../credentials/.env.net
-else
-  source ../../credentials/.env
-fi
-prefix=$random
 ROOT=$(realpath $(dirname $(realpath $0))/)
 PROVIDER_DIR=$ROOT/../providers
 CREDENTIALS_PATH=$ROOT/../../credentials
+
 #login
 #-------------------------------------------
 # Log into Portal
@@ -27,12 +22,6 @@ _login() {
   echo "User ID $userId"
 }
 _prepare_dapis() {
-    if [ "x$1" == "xnet" ]; then
-      source ../../credentials/.env.net
-    else
-      source ../../credentials/.env
-    fi
-    _login
     #-------------------------------------------
     # Create dAPI
     #-------------------------------------------
@@ -64,11 +53,7 @@ _prepare_dapis() {
     fi
 }
 _clean_dapis() {
-  if [ "x$1" == "xnet" ]; then
-    source ../../credentials/.env.net
-  else
-    source ../../credentials/.env
-  fi
+  _prepare_env $1 $2
   _login
   dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
     --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
@@ -128,16 +113,26 @@ _prepare_terraform() {
   done < <(tail "$CREDENTIALS_PATH/zonelist-test.csv")
 }
 _prepare_env() {
-  if [ "x$1" == "x" ]; then
-    echo "Please enter test dirname"
-    exit 1
-   fi
-  echo "Create test in dir $1"
-  if [ ! -d "$ROOT/$1" ]; then
-    mkdir "$ROOT/$1"
+  if [ "x$2" == "" ]; then
+    envname=dev
+    if [ "x$1" == "" ]; then
+      envdir=$random
+    else
+      envdir=$1
+    fi
+    source ../../credentials/.env
+  else
+    envname=$2
+    envdir=$envname-$1
+    source ../../credentials/.env.$2
   fi
-  cp ./terraform.tfvars $ROOT/$1
-  cat provider.tf |  sed "s/\[\[CREDENTIALS_PATH\]\]/$credentialsPath/g"  > "$ROOT/$1/provider.tf"
+
+  echo "Create test in dir $envdir"
+  if [ ! -d "$ROOT/$envdir" ]; then
+    mkdir "$ROOT/$envdir"
+  fi
+  cp ./terraform.tfvars $ROOT/$envdir
+  cat provider.tf |  sed "s/\[\[CREDENTIALS_PATH\]\]/$credentialsPath/g"  > "$ROOT/$envdir/provider.tf"
 }
 _create_vms() {
   cd $ROOT/$1
@@ -146,26 +141,20 @@ _create_vms() {
   sudo terraform apply client.plan
 }
 
-# $1 environment: net or dev
-# $2 test name
+# $1 test name
+# $2 environment: net or dev
 
 _setup() {
-  if [ "x$2" == "x" ]; then
-    envdir=$prefix
-  else
-    envdir=$2
-  fi
-  _prepare_env $envdir
+  _prepare_env $1 $2
   _login
-  _prepare_dapis $1
+  _prepare_dapis $2
   _prepare_terraform $envdir
   _create_vms $envdir
 #  _clean_init_files
 }
-# $1 provider environment
-# $2 test environment
+# $1 test environment
 _clean() {
-  envdir=$2
+  envdir=$1
   echo "Cleaning up VMs: In Progress"
   cd $envdir
   sudo terraform destroy

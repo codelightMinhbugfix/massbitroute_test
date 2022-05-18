@@ -174,11 +174,14 @@ _ping_nodes() {
   fi
   nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/$type/list/verify" --header "Authorization: $bearerAdmin")
   len=$(echo $nodes | jq length)
+  echo $nodes | jq length
   ((len=len-1))
   for i in $( seq 0 $len )
   do
-    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name" | sed -z "s/\"//g; s/\n/,/g;")
+    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status" | sed -z "s/\"//g; s/\n/,/g;")
+    _IFS=$IFS
     IFS=$',' fields=($node);
+    IFS=$_IFS
     nodeZone=${fields[3]^^}
     zone=${zone^^}
     #if [ "$zone" == "$nodeZone" ]; then
@@ -186,27 +189,39 @@ _ping_nodes() {
       response=$(timeout 1 curl -s --location --request GET "$url"\
         --header "X-Api-Key: ${fields[2]}" \
         --header "Host: ${fields[0]}.$1.mbr.$domain")
-      if [ "x$response" == "x" ]; then
-        formUrl="https://docs.google.com/forms/d/1FAIpQLScPA35h5VJhA-959KC_7vWm6UHqzvmM8wucRp2ilqSbKFViGg/formResponse"
+      if [ "x$response" == "xpong" ]; then
+        echo "ping $url success"
+      else
         #formUrl="https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse"
         #https://docs.google.com/forms/d/e/1FAIpQLScPA35h5VJhA-959KC_7vWm6UHqzvmM8wucRp2ilqSbKFViGg/viewform?usp=pp_url&entry.2056253786=fds&entry.2038576234=fdsa&entry.814843005=fdsa&entry.1408740996=dafs&entry.1585210645=fda&entry.1395047356=fdsa&entry.2030347037=fads&entry.1230249318=fsdafd
         data="entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
-        echo $data
         curl 'https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse'  --silent >/dev/null \
           --data "entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
 
         echo "ping $url fail"
         echo ${fields[@]};
-      else
-        echo "ping $url success"
       fi
 
     #fi
   done
 }
-
+_benchmark_dapis() {
+  #Get random dapi in projectId
+  dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
+    --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
+  len=$(echo $dApis | jq length)
+  min=0
+  if (( len > 0 )); then
+    randomInd=$(($RANDOM % $len + $min))
+    dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.$blockchain-$network.$domain\//g")
+    _dapiURL="https://$dApi"
+    echo "Test dapi $_dapiURL"
+    _test_dapi $_dapiURL
+    echo "Benchmarking dapi $_dapiURL ..."
+    _benchmark "$_dapiURL" dapi
+  fi
+}
 _run() {
-
   #echo "Benchmarking datasource $datasourceUrl ..."
   #_benchmark $datasourceUrl datasource
 
@@ -222,25 +237,12 @@ _run() {
   #gatewayUrl="https://$gatewayIp"
   #echo "Benchmarking gateway $gatewayUrl ..."
   #_benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
-  _ping_nodes node
+  _ping_nodes node;
   _ping_nodes gw
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
+  _benchmark_dapis
 
-  #Get random dapi in projectId
-  dApis=$(curl -s --location --request GET "https://portal.$domain/mbr/d-apis/list/$projectId?limit=100" \
-    --header "Authorization: Bearer $bearer" | jq  -r ". | .dApis")
-  len=$(echo $dApis | jq length)
-  min=0
-  if (( len > 0 )); then
-    randomInd=$(($RANDOM % $len + $min))
-    dApi=$(echo "$dApis" | jq ".[$randomInd]" | jq ". | .appId, .appKey" | sed -z "s/\"//g; s/\n/,/g; s/,$//g;s/,/.$blockchain-$network.$domain\//g")
-    _dapiURL="https://$dApi"
-    echo "Test dapi $_dapiURL"
-    _test_dapi $_dapiURL
-    echo "Benchmarking dapi $_dapiURL ..."
-    _benchmark "$_dapiURL" dapi
-  fi
 }
 
 $@
