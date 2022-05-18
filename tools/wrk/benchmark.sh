@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#source /opt/benchmark/params.sh
-source ./params.sh
+ROOT=$(realpath $(dirname $(realpath $0))/)
+source $ROOT/params.sh
 
 _login() {
   bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
