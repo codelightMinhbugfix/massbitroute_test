@@ -219,7 +219,7 @@ _benchmark_gateways() {
     #if [[ "$zone" == "$nodeZone" && "${fields[5]}" == "staked" ]]; then
     if [[ "${fields[5]}" == "staked" ]]; then
       echo "Benchmarking gateway ${fields[@]}"
-      _benchmark "http://${fields[1]}" gateway ${fields[0]} ${fields[2]}
+      _benchmark "http://${fields[1]}" gw-$zone ${fields[0]} ${fields[2]}
     fi
   done
 }
