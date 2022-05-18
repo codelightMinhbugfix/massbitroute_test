@@ -174,7 +174,6 @@ _ping_nodes() {
   fi
   nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/$type/list/verify" --header "Authorization: $bearerAdmin")
   len=$(echo $nodes | jq length)
-  echo $nodes | jq length
   ((len=len-1))
   for i in $( seq 0 $len )
   do
@@ -190,7 +189,7 @@ _ping_nodes() {
         --header "X-Api-Key: ${fields[2]}" \
         --header "Host: ${fields[0]}.$1.mbr.$domain")
       if [ "x$response" == "xpong" ]; then
-        echo "ping $url success"
+        echo "ping $type $url success"
       else
         #formUrl="https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse"
         #https://docs.google.com/forms/d/e/1FAIpQLScPA35h5VJhA-959KC_7vWm6UHqzvmM8wucRp2ilqSbKFViGg/viewform?usp=pp_url&entry.2056253786=fds&entry.2038576234=fdsa&entry.814843005=fdsa&entry.1408740996=dafs&entry.1585210645=fda&entry.1395047356=fdsa&entry.2030347037=fads&entry.1230249318=fsdafd
@@ -198,11 +197,30 @@ _ping_nodes() {
         curl 'https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse'  --silent >/dev/null \
           --data "entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
 
-        echo "ping $url fail"
+        echo "ping $type $url fail"
         echo ${fields[@]};
       fi
 
     #fi
+  done
+}
+_benchmark_gateways() {
+  nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/gateway/list/verify" --header "Authorization: $bearerAdmin")
+  len=$(echo $nodes | jq length)
+  ((len=len-1))
+  for i in $( seq 0 $len )
+  do
+    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status" | sed -z "s/\"//g; s/\n/,/g;")
+    _IFS=$IFS
+    IFS=$',' fields=($node);
+    IFS=$_IFS
+    nodeZone=${fields[3]^^}
+    zone=${zone^^}
+    #if [[ "$zone" == "$nodeZone" && "${fields[5]}" == "staked" ]]; then
+    if [[ "${fields[5]}" == "staked" ]]; then
+      echo "Benchmarking gateway ${fields[@]}"
+      _benchmark "http://${fields[1]}" gateway ${fields[0]} ${fields[2]}
+    fi
   done
 }
 _benchmark_dapis() {
@@ -239,6 +257,7 @@ _run() {
   #_benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
   _ping_nodes node;
   _ping_nodes gw
+  _benchmark_gateways
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
   _benchmark_dapis
