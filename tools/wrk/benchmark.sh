@@ -138,7 +138,7 @@ _test_dapi() {
 _benchmark() {
   for rate in "${rates[@]}"
     do
-      $wrk_dir/wrk -t$thread -c$connection -d$duration -R$rate --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 > $output
+      $wrk_dir/wrk -t$thread -c$connection -d$duration -R$rate --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 $domain > $output
       latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
       IFS='    ' read -ra latency <<< "$latency_row"
       req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
@@ -219,7 +219,7 @@ _benchmark_gateways() {
     #if [[ "$zone" == "$nodeZone" && "${fields[5]}" == "staked" ]]; then
     if [[ "${fields[5]}" == "staked" ]]; then
       echo "Benchmarking gateway ${fields[@]}"
-      _benchmark "http://${fields[1]}" gw-$zone ${fields[0]} ${fields[2]}
+      _benchmark "http://${fields[1]}" gw-$nodeZone ${fields[0]} ${fields[2]}
     fi
   done
 }
