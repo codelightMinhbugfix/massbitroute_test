@@ -21,6 +21,9 @@ _login() {
 
 _create_nodes() {
   echo -n > "$1/nodelist.csv"
+  if [ "x$sourcePath" == "x" ]; then
+    sourcePath=../../credentials/eth-sources.csv
+  fi
   while IFS="," read -r id region zone zoneCode dataSource temp
   do
     # curl  node/gw
@@ -34,10 +37,13 @@ _create_nodes() {
           \"dataSource\": \"$dataSource\",
           \"network\": \"$network\"
       }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> "$1/nodelist.csv"
-  done < <(cat ../../credentials/eth-sources.csv)
+  done < <(cat $sourcePath)
 }
 _create_gateways() {
   echo -n > "$1/gatewaylist.csv"
+  if [ "x$sourcePath" == "x" ]; then
+    sourcePath=../../credentials/eth-sources.csv
+  fi
   gateway_ratio=$2
   echo "Node/Gateway ratio: 1/$gateway_ratio"
   while IFS="," read -r id region zone zoneCode dataSource
@@ -54,7 +60,7 @@ _create_gateways() {
             \"zone\":\"$zoneCode\",
             \"network\":\"$network\"}" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone\n/" >> "$1/gatewaylist.csv"
       done
-    done < <(cat ../../credentials/eth-sources.csv)
+    done < <(cat $sourcePath)
 }
 
 _prepare_terraform() {
@@ -301,15 +307,15 @@ _setup() {
     source ../../credentials/.env.$2
   fi
   _login
-  #_prepare_env $nodePrefix
-  #_create_nodes $nodePrefix
-  #_create_gateways $nodePrefix $gateway_ratio
-  #_check_status created node $nodePrefix
-  #_check_status created gateway $nodePrefix
-  #_prepare_terraform $nodePrefix
-  #_create_vms $nodePrefix
+  _prepare_env $nodePrefix
+  _create_nodes $nodePrefix
+  _create_gateways $nodePrefix $gateway_ratio
+  _check_status created node $nodePrefix
+  _check_status created gateway $nodePrefix
+  _prepare_terraform $nodePrefix
+  _create_vms $nodePrefix
   # setup nodes
-  #_check_status verified node $nodePrefix
+  _check_status verified node $nodePrefix
   _register_nodes $nodePrefix
   _check_status approved node $nodePrefix
   _stake_nodes $nodePrefix
