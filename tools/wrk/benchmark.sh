@@ -135,8 +135,15 @@ _test_dapi() {
     # fi
     # echo "Calling dAPI: Pass"
 }
+# $1 url
+# $2 type: node, gateway, dAPI
+# $3 provider id
+# $4 provider appkey
+# $5 provider name
+# $6 rate
+
 _single_benchmark() {
-  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$5 --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 $domain > $output
+  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$6 --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 $domain > $output
   latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
   IFS='    ' read -ra latency <<< "$latency_row"
   req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
@@ -160,12 +167,17 @@ _single_benchmark() {
 
   cat $output
   curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
-    --data "entry.721172135=$2&entry.140673538=$3&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+    --data "entry.721172135=$2&entry.140673538=$3&entry.1145125196=$5&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
 }
+# $1 url
+# $2 type: node, gateway, dAPI
+# $3 provider id
+# $4 provider appkey
+# $5 provider name
 _benchmark() {
   for rate in "${rates[@]}"
     do
-      _single_benchmark $1 $2 $3 $4 $rate
+      _single_benchmark $1 $2 $3 $4 $5 $rate
     done
 }
 # $1 - Type
@@ -223,9 +235,9 @@ _benchmark_nodes() {
     if [[ "$zone" == "$nodeZone" && "$blockchain" == "${fields[6]}" && ( "${fields[5]}" == "staked" || "${fields[5]}" == "verified") ]]; then
       echo "Benchmarking node ${fields[@]}"
       if [ "x$1" == "x" ]; then
-        _benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]}
+        _benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]} ${fields[4]}
       else
-        _single_benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]} $1
+        _single_benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]} ${fields[4]} $1
       fi
     fi
   done
@@ -244,7 +256,7 @@ _benchmark_gateways() {
     zone=${zone^^}
     if [[ "$zone" == "$nodeZone" && "$blockchain" == "${fields[6]}" && ( "${fields[5]}" == "staked" || "${fields[5]}" == "verified" ) ]]; then
       echo "Benchmarking gateway ${fields[@]}"
-      _benchmark "http://${fields[1]}" gw-$nodeZone ${fields[0]} ${fields[2]}
+      _benchmark "http://${fields[1]}" gw-$nodeZone ${fields[0]} ${fields[2]} ${fields[4]}
     fi
   done
 }
