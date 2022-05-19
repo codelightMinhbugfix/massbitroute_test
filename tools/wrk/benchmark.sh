@@ -135,34 +135,37 @@ _test_dapi() {
     # fi
     # echo "Calling dAPI: Pass"
 }
+_single_benchmark() {
+  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$5 --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 $domain > $output
+  latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
+  IFS='    ' read -ra latency <<< "$latency_row"
+  req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
+  IFS='    ' read -ra req_sec <<< "$req_sec_row"
+  hdrhistogram50=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "2 p")
+  IFS='    ' read -ra hdrhistogram50 <<< "$hdrhistogram50"
+  hdrhistogram75=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "3 p")
+  IFS='    ' read -ra hdrhistogram75 <<< "$hdrhistogram75"
+  hdrhistogram90=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "4 p")
+  IFS='    ' read -ra hdrhistogram90 <<< "$hdrhistogram90"
+  hdrhistogram99=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "5 p")
+  IFS='    ' read -ra hdrhistogram99 <<< "$hdrhistogram99"
+  #Request rates
+  _rate=$(cat $output | grep "Requests/sec")
+  IFS=':' read -ra fields <<< "$_rate"
+  requestRate=$(echo ${fields[1]} | tr -d " ")
+  #Transfer rates
+  _rate=$(cat $output | grep "Transfer/sec")
+  IFS=':' read -ra fields <<< "$_rate"
+  transferRate=$(echo ${fields[1]} | tr -d " ")
+
+  cat $output
+  curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
+    --data "entry.721172135=$2&entry.140673538=$3&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+}
 _benchmark() {
   for rate in "${rates[@]}"
     do
-      $wrk_dir/wrk -t$thread -c$connection -d$duration -R$rate --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $3 $4 $domain > $output
-      latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
-      IFS='    ' read -ra latency <<< "$latency_row"
-      req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
-      IFS='    ' read -ra req_sec <<< "$req_sec_row"
-      hdrhistogram50=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "2 p")
-      IFS='    ' read -ra hdrhistogram50 <<< "$hdrhistogram50"
-      hdrhistogram75=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "3 p")
-      IFS='    ' read -ra hdrhistogram75 <<< "$hdrhistogram75"
-      hdrhistogram90=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "4 p")
-      IFS='    ' read -ra hdrhistogram90 <<< "$hdrhistogram90"
-      hdrhistogram99=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "5 p")
-      IFS='    ' read -ra hdrhistogram99 <<< "$hdrhistogram99"
-      #Request rates
-      _rate=$(cat $output | grep "Requests/sec")
-      IFS=':' read -ra fields <<< "$_rate"
-      requestRate=$(echo ${fields[1]} | tr -d " ")
-      #Transfer rates
-      _rate=$(cat $output | grep "Transfer/sec")
-      IFS=':' read -ra fields <<< "$_rate"
-      transferRate=$(echo ${fields[1]} | tr -d " ")
-
-      cat $output
-      curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
-        --data "entry.721172135=$2&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+      _single_benchmark $1 $2 $3 $4 $rate
     done
 }
 # $1 - Type
@@ -184,6 +187,7 @@ _ping_nodes() {
     nodeZone=${fields[3]^^}
     zone=${zone^^}
     #if [ "$zone" == "$nodeZone" ]; then
+    if [ "x${fields[1]}" != "x" ]; then
       url="http://${fields[1]}/ping"
       response=$(timeout 1 curl -s --location --request GET "$url"\
         --header "X-Api-Key: ${fields[2]}" \
@@ -200,8 +204,30 @@ _ping_nodes() {
         echo "ping $type $url fail"
         echo ${fields[@]};
       fi
-
-    #fi
+    fi
+  done
+}
+# $1 - rate
+_benchmark_nodes() {
+  nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/node/list/verify" --header "Authorization: $bearerAdmin")
+  len=$(echo $nodes | jq length)
+  ((len=len-1))
+  for i in $( seq 0 $len )
+  do
+    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status, .blockchain" | sed -z "s/\"//g; s/\n/,/g;")
+    _IFS=$IFS
+    IFS=$',' fields=($node);
+    IFS=$_IFS
+    nodeZone=${fields[3]^^}
+    zone=${zone^^}
+    if [[ "$zone" == "$nodeZone" && "$blockchain" == "${fields[6]}" && ( "${fields[5]}" == "staked" || "${fields[5]}" == "verified") ]]; then
+      echo "Benchmarking node ${fields[@]}"
+      if [ "x$1" == "x" ]; then
+        _benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]}
+      else
+        _single_benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]} $1
+      fi
+    fi
   done
 }
 _benchmark_gateways() {
@@ -210,14 +236,13 @@ _benchmark_gateways() {
   ((len=len-1))
   for i in $( seq 0 $len )
   do
-    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status" | sed -z "s/\"//g; s/\n/,/g;")
+    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status, .blockchain" | sed -z "s/\"//g; s/\n/,/g;")
     _IFS=$IFS
     IFS=$',' fields=($node);
     IFS=$_IFS
     nodeZone=${fields[3]^^}
     zone=${zone^^}
-    #if [[ "$zone" == "$nodeZone" && "${fields[5]}" == "staked" ]]; then
-    if [[ "${fields[5]}" == "staked" ]]; then
+    if [[ "$zone" == "$nodeZone" && "$blockchain" == "${fields[6]}" && ( "${fields[5]}" == "staked" || "${fields[5]}" == "verified" ) ]]; then
       echo "Benchmarking gateway ${fields[@]}"
       _benchmark "http://${fields[1]}" gw-$nodeZone ${fields[0]} ${fields[2]}
     fi
@@ -257,6 +282,7 @@ _run() {
   #_benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
   _ping_nodes node;
   _ping_nodes gw
+  _benchmark_nodes
   _benchmark_gateways
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
