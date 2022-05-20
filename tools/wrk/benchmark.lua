@@ -21,21 +21,24 @@ function init(args)
     if #args > 3 then
         domain = args[4]
     end
+    if #args > 4 then
+        blockchain = args[5]
+    end
     local msg = "thread addr: %s"
     --print(msg:format(wrk.thread.addr))
 end
 
 function request()
     local randomId = math.random(10)
-    local body =
-        '{"id": "' .. randomId .. '", "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": ["latest", true]}'
+    -- local body = '{"id": "' .. randomId .. '", "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": ["latest", false]}'
     local headers = {}
     headers["Content-Type"] = "application/json"
     local type = wrk.thread:get("type")
     local id = wrk.thread:get("id")
     local domain = wrk.thread:get("domain") or "massbitroute.dev"
+    local blockchain = wrk.thread:get("blockchain")
     local token = wrk.thread:get("token")
-
+    local body = _getBody(blockchain)
     if token then
         headers["X-Api-Key"] = token
     end
@@ -46,7 +49,18 @@ function request()
             headers["Host"] = id .. ".gw.mbr." .. domain
         end
     end
+    local body = _getBody(blockchain)
     return wrk.format("POST", wrk.path, headers, body)
+end
+
+function _getBody(blockchain)
+  local randomId = math.random(10)
+  if blockchain == 'eth' then
+    return '{"id": "' .. randomId .. '", "jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": ["latest", false]}'
+  end
+  if blockchain == 'dot' then
+    return '{"id": "' .. randomId .. '", "jsonrpc": "2.0", "method": "chain_getBlock", "params": []}'
+  end
 end
 
 function response(status, headers, body)

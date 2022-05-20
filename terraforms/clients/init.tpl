@@ -16,7 +16,7 @@ bearer=[[BEARER]]
 bearerAdmin=[[BEARERADMIN]]
 client=[[CLIENT]]
 zone=[[ZONE]]
-blockchain=[[BLOCKCHAIN]]
+#blockchain=[[BLOCKCHAIN]]
 network=[[NETWORK]]
 domain=[[DOMAIN]]
 projectId=[[PROJECT_ID]]
@@ -30,8 +30,14 @@ output=/opt/benchmark/summary.txt
 wrk_dir=/opt/benchmark
 
 EOL
-sudo chmod +x /opt/benchmark/*.sh
 while true;
 do
+rm /opt/benchmark/benchmark.lua
+rm /opt/benchmark/benchmark.sh
+
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.sh -P /opt/benchmark
+sudo chmod +x /opt/benchmark/*.sh
 /opt/benchmark/benchmark.sh _run >> /opt/benchmark/benchmark.log
+sleep 60
 done

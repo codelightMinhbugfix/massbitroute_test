@@ -2,6 +2,49 @@
 ROOT=$(realpath $(dirname $(realpath $0))/)
 source $ROOT/params.sh
 
+_parse_args() {
+  POSITIONAL_ARGS=()
+
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -e|--extension)
+        EXTENSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      -s|--searchpath)
+        SEARCHPATH="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      --default)
+        DEFAULT=YES
+        shift # past argument
+        ;;
+      -*|--*)
+        echo "Unknown option $1"
+        exit 1
+        ;;
+      *)
+        POSITIONAL_ARGS+=("$1") # save positional arg
+        shift # past argument
+        ;;
+    esac
+  done
+
+  set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+  echo "FILE EXTENSION  = ${EXTENSION}"
+  echo "SEARCH PATH     = ${SEARCHPATH}"
+  echo "DEFAULT         = ${DEFAULT}"
+  echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
+
+  if [[ -n $1 ]]; then
+      echo "Last line of file specified as non-opt/last argument:"
+      tail -1 "$1"
+  fi
+}
+
 _login() {
   bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
           --data-raw "{\"username\": \"$TEST_USERNAME\", \"password\": \"$TEST_PASSWORD\"}"| jq  -r ". | .accessToken")
@@ -141,9 +184,16 @@ _test_dapi() {
 # $4 provider id
 # $5 provider appkey
 # $6 provider name
-
+# $7 blockchain
 _single_benchmark() {
-  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$3 --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $4 $5 $domain > $output
+  url=$1
+  type=$2
+  rate=$3
+  providerId=$4
+  appKey=$5
+  providerName=$6
+  blockchain=$7
+  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$3 --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $4 $5 $domain $blockchain > $output
   latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
   IFS='    ' read -ra latency <<< "$latency_row"
   req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
@@ -167,17 +217,18 @@ _single_benchmark() {
 
   cat $output
   curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
-    --data "entry.721172135=$2&entry.140673538=$4&entry.1145125196=$6&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+    --data "entry.721172135=$type&entry.140673538=$providerId&entry.1145125196=$providerName&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
 }
 # $1 url
 # $2 type: node, gateway, dAPI
 # $3 provider id
 # $4 provider appkey
 # $5 provider name
+# $6 blockchain
 _benchmark() {
   for rate in "${rates[@]}"
     do
-      _single_benchmark $1 $2 $rate $3 $4 $5
+      _single_benchmark $1 $2 $rate $3 $4 $5 $6
     done
 }
 # $1 - Type
@@ -221,43 +272,56 @@ _ping_nodes() {
 }
 # $1 - rate
 _benchmark_nodes() {
-  nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/node/list/verify" --header "Authorization: $bearerAdmin")
-  len=$(echo $nodes | jq length)
-  ((len=len-1))
-  for i in $( seq 0 $len )
-  do
-    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status, .blockchain" | sed -z "s/\"//g; s/\n/,/g;")
-    _IFS=$IFS
-    IFS=$',' fields=($node);
-    IFS=$_IFS
-    nodeZone=${fields[3]^^}
-    zone=${zone^^}
-    if [[ "$zone" == "$nodeZone" && "$blockchain" == "${fields[6]}" && ( "${fields[5]}" == "staked" || "${fields[5]}" == "verified") ]]; then
-      echo "Benchmarking node ${fields[@]}"
-      if [ "x$1" == "x" ]; then
-        _benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]} ${fields[4]}
-      else
-        _single_benchmark "http://${fields[1]}" node ${fields[0]} ${fields[2]} ${fields[4]} $1
+  statuses=("staked" "verified")
+  for status in ${statuses[@]}; do
+    nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/node/list/verify?status=$status" --header "Authorization: $bearerAdmin")
+    len=$(echo $nodes | jq length)
+    ((len=len-1))
+    for i in $( seq 0 $len )
+    do
+      node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip" | sed -z "s/\"//g;")
+      fields=($node);
+      id=${fields[0]}
+      appKey=${fields[1]}
+      nodeZone=${fields[2]^^}
+      name=${fields[3]}
+      blockchain=${fields[4]}
+      ip=${fields[5]}
+      rate=$1
+      zone=${zone^^}
+      if [[ "$zone" == "$nodeZone" ]]; then
+        echo "Benchmarking node ${fields[@]}"
+        if [ "x$rate" == "x" ]; then
+          _benchmark "http://$ip" node $id $appKey $name $blockchain
+        else
+          _single_benchmark "http://$ip" node $rate $id $appKey $name $blockchain
+        fi
       fi
-    fi
+    done
   done
 }
 _benchmark_gateways() {
-  nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/gateway/list/verify" --header "Authorization: $bearerAdmin")
-  len=$(echo $nodes | jq length)
-  ((len=len-1))
-  for i in $( seq 0 $len )
-  do
-    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .status, .blockchain" | sed -z "s/\"//g; s/\n/,/g;")
-    _IFS=$IFS
-    IFS=$',' fields=($node);
-    IFS=$_IFS
-    nodeZone=${fields[3]^^}
-    zone=${zone^^}
-    if [[ "$zone" == "$nodeZone" && "$blockchain" == "${fields[6]}" && ( "${fields[5]}" == "staked" || "${fields[5]}" == "verified" ) ]]; then
-      echo "Benchmarking gateway ${fields[@]}"
-      _benchmark "http://${fields[1]}" gw-$nodeZone ${fields[0]} ${fields[2]} ${fields[4]}
-    fi
+  statuses=("staked" "verified")
+  for status in ${statuses[@]}; do
+    nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/gateway/list/verify?status=$status" --header "Authorization: $bearerAdmin")
+    len=$(echo $nodes | jq length)
+    ((len=len-1))
+    for i in $( seq 0 $len )
+    do
+      node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip" | sed -z "s/\"//g;")
+      fields=($node);
+      id=${fields[0]}
+      appKey=${fields[1]}
+      nodeZone=${fields[2]^^}
+      name=${fields[3]}
+      blockchain=${fields[4]}
+      ip=${fields[5]}
+      zone=${zone^^}
+      if [[ "$zone" == "$nodeZone" ]]; then
+        echo "Benchmarking gateway ${fields[@]}"
+        _benchmark "http://ip" gw-$nodeZone $id $appKey $name $blockchain
+      fi
+    done
   done
 }
 _benchmark_dapis() {
