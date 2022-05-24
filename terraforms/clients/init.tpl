@@ -12,11 +12,13 @@ sudo chmod +x /opt/benchmark/wrk
 
 sudo cat > /opt/benchmark/params.sh <<EOL
 #!/bin/bash
+USERNAME=[[USERNAME]]
+PASSWORD=[[PASSWORD]]
 bearer=[[BEARER]]
 bearerAdmin=[[BEARERADMIN]]
 client=[[CLIENT]]
 zone=[[ZONE]]
-#blockchain=[[BLOCKCHAIN]]
+blockchain=[[BLOCKCHAIN]]
 network=[[NETWORK]]
 domain=[[DOMAIN]]
 projectId=[[PROJECT_ID]]

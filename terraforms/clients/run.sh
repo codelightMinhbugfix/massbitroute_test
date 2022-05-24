@@ -90,7 +90,9 @@ _prepare_terraform() {
     random=$(echo $RANDOM | md5sum | head -c 3)
     for i in $( seq 1 $counter )
       do
-        cat init.tpl | sed "s/\[\[BEARER\]\]/$bearer/g" \
+        cat init.tpl | sed "s/\[\[USERNAME\]\]/$TEST_USERNAME/g" \
+                  | sed "s/\[\[PASSWORD\]\]/$TEST_PASSWORD/g" \
+                  | sed "s/\[\[BEARER\]\]/$bearer/g" \
                   | sed "s/\[\[BEARERADMIN\]\]/$bearerAdmin/g" \
                   | sed "s/\[\[CLIENT\]\]/$random-${cloudZone,,}-$i/g" \
                   | sed "s/\[\[ZONE\]\]/$zone/g" \

@@ -1,53 +1,11 @@
 #!/usr/bin/env bash
 ROOT=$(realpath $(dirname $(realpath $0))/)
 source $ROOT/params.sh
-
-_parse_args() {
-  POSITIONAL_ARGS=()
-
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -e|--extension)
-        EXTENSION="$2"
-        shift # past argument
-        shift # past value
-        ;;
-      -s|--searchpath)
-        SEARCHPATH="$2"
-        shift # past argument
-        shift # past value
-        ;;
-      --default)
-        DEFAULT=YES
-        shift # past argument
-        ;;
-      -*|--*)
-        echo "Unknown option $1"
-        exit 1
-        ;;
-      *)
-        POSITIONAL_ARGS+=("$1") # save positional arg
-        shift # past argument
-        ;;
-    esac
-  done
-
-  set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
-
-  echo "FILE EXTENSION  = ${EXTENSION}"
-  echo "SEARCH PATH     = ${SEARCHPATH}"
-  echo "DEFAULT         = ${DEFAULT}"
-  echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
-
-  if [[ -n $1 ]]; then
-      echo "Last line of file specified as non-opt/last argument:"
-      tail -1 "$1"
-  fi
-}
+_IFS=$IFS
 
 _login() {
   bearer=$(curl -s --location --request POST "https://portal.$domain/auth/login" --header 'Content-Type: application/json' \
-          --data-raw "{\"username\": \"$TEST_USERNAME\", \"password\": \"$TEST_PASSWORD\"}"| jq  -r ". | .accessToken")
+          --data-raw "{\"username\": \"$USERNAME\", \"password\": \"$PASSWORD\"}"| jq  -r ". | .accessToken")
 
   if [[ "$bearer" == "null" ]]; then
     echo "Getting JWT token: Failed"
@@ -76,15 +34,9 @@ _get_node_info() {
   nodeIp=fields[7]
 }
 _get_dapi_session() {
-  #curl -s -X HEAD -I "$dapiURL"   --header 'Content-Type: application/json' | tr -d '\r' | sed -En 's/^location: (.*)/\1/p'
-  #return
-  #dapiURL=$(curl -s -X HEAD -I "$dapiURL"   --header 'Content-Type: application/json' | grep -i "location:" | cut -d':' -f2- | awk '{print $1}')
-  #echo "|$dapiURL|"
-  #return
     #Get sessionUrl
     _dapiURL=$(curl -s -X HEAD -I "$1"   --header 'Content-Type: application/json' | awk -F': ' '/^location:/{gsub(/[\s\r]+$/,"",$2);print $2}')
     #Call sessionUrl to get dapiURL with session
-    #echo "|$dapiURL|"
     _dapiURL=$(curl -s -X HEAD -I "$_dapiURL"   --header 'Content-Type: application/json' | awk -F': ' '/^location:/{gsub(/[\s\r]+$/,"",$2);print $2}')
     echo "$_dapiURL"
 }
@@ -97,7 +49,7 @@ _test_data_source() {
         "method": "eth_getBlockByNumber",
         "params": [
             "latest",
-            true
+            false
         ],
         "id": 1
     }' -k)
@@ -117,7 +69,7 @@ _test_node_api() {
         "method": "eth_getBlockByNumber",
         "params": [
             "latest",
-            true
+            false
         ],
         "id": 1
     }' -k -vv)
@@ -129,21 +81,6 @@ _test_node_api() {
 }
 
 _test_gateway_api() {
-    #echo "|$1|$2|$3|"
-    #echo "Test host $2.gw.mbr.$domain"
-    # curl --request POST "https://$1" \
-    #   --header 'Content-Type: application/json' \
-    #   --header "Host: $2.gw.mbr.$domain" \
-    #   --header "X-Api-Key: $3" \
-    #   --data-raw '{
-    #     "jsonrpc": "2.0",
-    #     "method": "eth_getBlockByNumber",
-    #     "params": [
-    #         "latest",
-    #         true
-    #     ],
-    #     "id": 1
-    # }' -k
     response=$(curl -o /dev/null -s -w "%{http_code}:%{time_total}s\n" --request POST "https://$1" \
       --header 'Content-Type: application/json' \
       --header "Host: $2.gw.mbr.$domain" \
@@ -153,7 +90,7 @@ _test_gateway_api() {
         "method": "eth_getBlockByNumber",
         "params": [
             "latest",
-            true
+            false
         ],
         "id": 1
     }' -k -vv)
@@ -167,7 +104,7 @@ _test_dapi() {
         "method": "eth_getBlockByNumber",
         "params": [
             "latest",
-            true
+            false
         ],
         "id": 1
     }' -L)
@@ -193,7 +130,7 @@ _single_benchmark() {
   appKey=$5
   providerName=$6
   blockchain=$7
-  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$3 --latency -T$timeout -s $wrk_dir/benchmark.lua $1 -- $2 $4 $5 $domain $blockchain > $output
+  $wrk_dir/wrk -t$thread -c$connection -d$duration -R$rate --latency -T$timeout -s $wrk_dir/benchmark.lua $url -- $type $providerId $appKey $domain $blockchain > $output
   latency_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "2 p")
   IFS='    ' read -ra latency <<< "$latency_row"
   req_sec_row=$(cat $output  | grep -A 4 "Thread Stats   Avg      Stdev     Max   +/- Stdev" | sed -n "3 p")
@@ -216,9 +153,12 @@ _single_benchmark() {
   transferRate=$(echo ${fields[1]} | tr -d " ")
 
   cat $output
-  curl 'https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse' --silent >/dev/null \
-    --data "entry.721172135=$type&entry.140673538=$providerId&entry.1145125196=$providerName&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+  if [ "$formPerformance" != "x" ]; then
+    curl "$formPerformance" --silent >/dev/null \
+      --data "entry.721172135=$type&entry.140673538=$providerId&entry.1145125196=$providerName&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+  fi
 }
+
 # $1 url
 # $2 type: node, gateway, dAPI
 # $3 provider id
@@ -258,35 +198,70 @@ _ping_nodes() {
       if [ "x$response" == "xpong" ]; then
         echo "ping $type $url success"
       else
-        #formUrl="https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse"
-        #https://docs.google.com/forms/d/e/1FAIpQLScPA35h5VJhA-959KC_7vWm6UHqzvmM8wucRp2ilqSbKFViGg/viewform?usp=pp_url&entry.2056253786=fds&entry.2038576234=fdsa&entry.814843005=fdsa&entry.1408740996=dafs&entry.1585210645=fda&entry.1395047356=fdsa&entry.2030347037=fads&entry.1230249318=fsdafd
-        data="entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
-        curl 'https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse'  --silent >/dev/null \
+        if [ "x$formPingResult" != "x" ]; then
+          curl "$formPingResult"  --silent >/dev/null \
           --data "entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
-
+        fi
         echo "ping $type $url fail"
         echo ${fields[@]};
       fi
     fi
   done
 }
+_benchmark_ping() {
+  if [ "$1" == "node" ]; then
+    type=node
+  else
+    type=gateway
+  fi
+  rate=10
+  statuses=("staked" "verified")
+  for status in ${statuses[@]}; do
+    nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/$type/list/verify?status=$status" --header "Authorization: $bearerAdmin")
+    len=$(echo $nodes | jq length)
+    ((len=len-1))
+    for i in $( seq 0 $len )
+      do
+        node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .ip, .appKey, .zone, .name, .blockchain" | sed -z "s/\n/,/g;")
+        _IFS=$IFS
+        IFS=$',' fields=($node);
+        IFS=$_IFS
+
+        zone=${zone^^}
+        ip=$(echo ${fields[1]} | sed -z "s/\"//g;")
+        appKey=$(echo ${fields[2]} | sed -z "s/\"//g;")
+        nodeZone=${fields[3]^^}
+        providerId=$(echo ${fields[0]} | sed -z "s/\"//g;")
+        providerName=${fields[4]}
+        blockchain=$(echo ${fields[5]} | sed -z "s/\"//g;")
+        if [ "$zone" == "$nodeZone" ]; then
+          echo "Benchmarking node ${fields[@]}"
+          url="http://$ip/ping"
+          _single_benchmark $url $type $rate $providerId $appKey $providerName $blockchain
+        fi
+      done
+  done
+}
 # $1 - rate
 _benchmark_nodes() {
   statuses=("staked" "verified")
   for status in ${statuses[@]}; do
+    https://portal.massbitroute.net/mbr/node/list?limit=6
     nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/node/list/verify?status=$status" --header "Authorization: $bearerAdmin")
     len=$(echo $nodes | jq length)
     ((len=len-1))
     for i in $( seq 0 $len )
     do
-      node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip" | sed -z "s/\"//g;")
-      fields=($node);
-      id=${fields[0]}
-      appKey=${fields[1]}
-      nodeZone=${fields[2]^^}
+      node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip" | sed -z "s/\n/,/g;" )
+      _IFS=$IFS
+      IFS=$',' fields=($node);
+      IFS=$_IFS
+      id=$(echo ${fields[0]} | sed -z "s/\"//g;")
+      appKey=$(echo ${fields[1]} | sed -z "s/\"//g;")
+      nodeZone=$(echo ${fields[2]^^} | sed -z "s/\"//g;")
       name=${fields[3]}
-      blockchain=${fields[4]}
-      ip=${fields[5]}
+      blockchain=$(echo ${fields[4]} | sed -z "s/\"//g;")
+      ip=$(echo ${fields[5]} | sed -z "s/\"//g;")
       rate=$1
       zone=${zone^^}
       if [[ "$zone" == "$nodeZone" ]]; then
@@ -308,18 +283,20 @@ _benchmark_gateways() {
     ((len=len-1))
     for i in $( seq 0 $len )
     do
-      node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip" | sed -z "s/\"//g;")
-      fields=($node);
-      id=${fields[0]}
-      appKey=${fields[1]}
-      nodeZone=${fields[2]^^}
+      node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip" | sed -z "s/\n/,/g;")
+      _IFS=$IFS
+      IFS=$',' fields=($node);
+      IFS=$_IFS
+      id=$(echo ${fields[0]} | sed -z "s/\"//g;")
+      appKey=$(echo ${fields[1]} | sed -z "s/\"//g;")
+      nodeZone=$(echo ${fields[2]^^} | sed -z "s/\"//g;")
       name=${fields[3]}
-      blockchain=${fields[4]}
-      ip=${fields[5]}
+      blockchain=$(echo ${fields[4]} | sed -z "s/\"//g;")
+      ip=$(echo ${fields[5]} | sed -z "s/\"//g;")
       zone=${zone^^}
       if [[ "$zone" == "$nodeZone" ]]; then
         echo "Benchmarking gateway ${fields[@]}"
-        _benchmark "http://ip" gw-$nodeZone $id $appKey $name $blockchain
+        _benchmark "http://$ip" gw-$nodeZone $id $appKey $name $blockchain
       fi
     done
   done
@@ -340,22 +317,9 @@ _benchmark_dapis() {
     _benchmark "$_dapiURL" dapi
   fi
 }
+
 _run() {
-  #echo "Benchmarking datasource $datasourceUrl ..."
-  #_benchmark $datasourceUrl datasource
-
-  #_test_data_source $datasourceUrl
-  #_test_node_api $nodeIp $nodeId $nodeKey
-  #echo "Node response $?"
-  #nodeUrl="https://$nodeIp"
-  #echo "Benchmarking node $nodeUrl ..."
-  #_benchmark $nodeUrl node $nodeId $nodeKey
-
-  #_test_gateway_api $gatewayIp $gatewayId $gatewayKey
-  #echo "Gateway response $?"
-  #gatewayUrl="https://$gatewayIp"
-  #echo "Benchmarking gateway $gatewayUrl ..."
-  #_benchmark "$gatewayUrl" gateway $gatewayId $gatewayKey
+  _login
   _ping_nodes node;
   _ping_nodes gw
   _benchmark_nodes
@@ -363,7 +327,6 @@ _run() {
   #echo "Get dapiURL with session"
   #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
   _benchmark_dapis
-
 }
 
 $@
