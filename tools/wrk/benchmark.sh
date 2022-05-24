@@ -153,6 +153,7 @@ _single_benchmark() {
   transferRate=$(echo ${fields[1]} | tr -d " ")
 
   cat $output
+  formPerformance=https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse
   if [ "$formPerformance" != "x" ]; then
     curl "$formPerformance" --silent >/dev/null \
       --data "entry.721172135=$type&entry.140673538=$providerId&entry.1145125196=$providerName&entry.1670770464=$client&entry.1360977389=$blockchain&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
@@ -198,6 +199,7 @@ _ping_nodes() {
       if [ "x$response" == "xpong" ]; then
         echo "ping $type $url success"
       else
+        formPingResult=https://docs.google.com/forms/d/1tKpz_j_JS0LlDjiTOy44ym-4GWVNi9tLs1gzKSGcrA0/formResponse
         if [ "x$formPingResult" != "x" ]; then
           curl "$formPingResult"  --silent >/dev/null \
           --data "entry.2056253786=$client&entry.2038576234=$1&entry.814843005=$blockchain&entry.1408740996=$network&entry.1585210645=${fields[4]}&entry.1395047356=${fields[0]}&entry.2030347037=${fields[1]}&entry.1230249318=fail"
