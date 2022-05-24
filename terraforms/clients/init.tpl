@@ -30,7 +30,8 @@ rates=[[REQUEST_RATES]]
 timeout=3
 output=/opt/benchmark/summary.txt
 wrk_dir=/opt/benchmark
-
+formPerformance=[[FORMPERFORMANCE]]
+formPingResult=[[FORMPINGRESULT]]
 EOL
 while true;
 do

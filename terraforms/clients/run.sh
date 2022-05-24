@@ -92,6 +92,9 @@ _prepare_terraform() {
       do
         cat init.tpl | sed "s/\[\[USERNAME\]\]/$TEST_USERNAME/g" \
                   | sed "s/\[\[PASSWORD\]\]/$TEST_PASSWORD/g" \
+                  | sed "s/\[\[FORMPERFORMANCE\]\]/$formPerformance/g" \
+                  | sed "s/\[\[FORMPINGRESULT\]\]/$formPingResult/g" \
+                  | sed "s/\[\[PASSWORD\]\]/$TEST_PASSWORD/g" \
                   | sed "s/\[\[BEARER\]\]/$bearer/g" \
                   | sed "s/\[\[BEARERADMIN\]\]/$bearerAdmin/g" \
                   | sed "s/\[\[CLIENT\]\]/$random-${cloudZone,,}-$i/g" \

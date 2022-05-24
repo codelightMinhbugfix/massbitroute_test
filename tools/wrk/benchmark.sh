@@ -320,13 +320,14 @@ _benchmark_dapis() {
 
 _run() {
   _login
+  #echo "Get dapiURL with session"
+  #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
+  _benchmark_dapis
   _ping_nodes node;
   _ping_nodes gw
   _benchmark_nodes
   _benchmark_gateways
-  #echo "Get dapiURL with session"
-  #_dapiURL=$(_get_dapi_session $dapiURL)  #Temporary disable session
-  _benchmark_dapis
+
 }
 
 $@
