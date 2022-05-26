@@ -192,15 +192,17 @@ _single_benchmark() {
   hdrhistogram99=$(cat $output  | grep -A 4 "Latency Distribution (HdrHistogram - Recorded Latency)" | sed -n "5 p")
   IFS='    ' read -ra hdrhistogram99 <<< "$hdrhistogram99"
   #Request rates
+  IFS=':'
   _rate=$(cat $output | grep "Requests/sec")
-  IFS=':' read -ra fields <<< "$_rate"
+  read -ra fields <<< "$_rate"
   requestRate=$(echo ${fields[1]} | tr -d " ")
   #Transfer rates
   _rate=$(cat $output | grep "Transfer/sec")
-  IFS=':' read -ra fields <<< "$_rate"
+  read -ra fields <<< "$_rate"
   transferRate=$(echo ${fields[1]} | tr -d " ")
   addr_row=$(cat $output | grep -m 1 "thread addr:")
-  IFS=':' addr=($addr_row)
+  addr=($addr_row)
+  IFS=$_IFS
   localIp=$(curl icanhazip.com)
   result=(${addr[1]} $requestRate $transferRate ${hdrhistogram90[1]} ${hdrhistogram99[1]} ${latency_row[1]} ${latency_row[2]} ${latency_row[3]} ${req_sec[1]})
   echo "${result[@]}"
@@ -237,6 +239,7 @@ _benchmark() {
   for rate in "${rates[@]}"
     do
       args=(-url $url -t $type -r $rate -b $blockchain -n $network)
+      echo "${args[@]}"
       if [ "x$providerId" != "x" ]; then
         args+=(--providerId $providerId)
       fi
@@ -390,6 +393,7 @@ _benchmark_dapis() {
       if [[ "${fields[0]}" == "$projectId" ]]; then
         blockchain=${fields[2]}
         network=${fields[3]}
+        break
       fi
     IFS=$_IFS
   done
