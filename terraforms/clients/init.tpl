@@ -6,8 +6,10 @@ sudo echo 2000000 >/proc/sys/fs/file-max
 sudo ulimit -n 2000000
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/wrk -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/node.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/gateway.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/dapi.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.sh -P /opt/benchmark
-#sudo wget https://raw.githubusercontent.com/massbitprotocol/massbitroute_monitor/master/tools/wrk/massbit.lua -P /opt/benchmark
 sudo chmod +x /opt/benchmark/wrk
 
 sudo cat > /opt/benchmark/params.sh <<EOL

@@ -2,6 +2,10 @@
 ROOT=$(realpath $(dirname $(realpath $0))/)
 PROVIDER_DIR=$ROOT/../providers
 CREDENTIALS_PATH=$ROOT/../../credentials
+client_thread=5
+client_connection=5
+test_duration=30s
+test_rates="(10 100 300)"
 
 #login
 #-------------------------------------------

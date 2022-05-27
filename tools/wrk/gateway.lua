@@ -1,3 +1,4 @@
+require "common"
 local counter = 1
 local threads = {}
 function setup(thread)
@@ -15,22 +16,21 @@ end
 function init(args)
     nodeCache={}
     gwCache={}
-    if #args > 0 then
-        type = args[1]
+    if #args >= 1 then
+        domain = args[1]
     end
-    if #args > 1 then
-        domain = args[2]
+    if #args >= 2 then
+        blockchain = args[2]
     end
-    if #args > 2 then
-        blockchain = args[3]
+    if #args >= 3 then
+        id = args[3]
     end
-    if #args > 3 then
-        id = args[4]
+    if #args >= 4 then
+        token = args[4]
     end
-    if #args > 4 then
-        token = args[5]
+    if #args >= 5 then
+        path = args[5]
     end
-
     local msg = "thread addr:%s"
     print(msg:format(wrk.thread.addr))
 end
@@ -39,24 +39,22 @@ function request()
     local randomId = math.random(10)
     local headers = {}
     headers["Content-Type"] = "application/json"
-    local type = wrk.thread:get("type")
     local id = wrk.thread:get("id")
     local domain = wrk.thread:get("domain") or "massbitroute.dev"
     local blockchain = wrk.thread:get("blockchain")
     local token = wrk.thread:get("token")
+    local path = wrk.thread:get("path")
     local body = _getBody(blockchain)
     if token then
         headers["X-Api-Key"] = token
     end
-    if id then
-        if type == "node" then
-            headers["Host"] = id .. ".node.mbr." .. domain
-        else
-            headers["Host"] = id .. ".gw.mbr." .. domain
-        end
-    end
+    headers["Host"] = id .. ".gw.mbr." .. domain
     local body = _getBody(blockchain)
-    return wrk.format("POST", wrk.path, headers, body)
+    if path == nill or path == '' then
+      return wrk.format("POST", wrk.path, headers, body)
+    else
+      return wrk.format("POST", wrk.path .. "/" .. path, headers, body)
+    end
 end
 
 function _getBody(blockchain)
