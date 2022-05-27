@@ -5,6 +5,7 @@ sudo echo 2000000 >/proc/sys/fs/nr_open
 sudo echo 2000000 >/proc/sys/fs/file-max
 sudo ulimit -n 2000000
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/wrk -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/common.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/node.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/gateway.lua -P /opt/benchmark
@@ -35,10 +36,18 @@ wrk_dir=/opt/benchmark
 EOL
 while true;
 do
-rm /opt/benchmark/benchmark.lua
 rm /opt/benchmark/benchmark.sh
+rm /opt/benchmark/benchmark.lua
+rm /opt/benchmark/common.lua
+rm /opt/benchmark/dapi.lua
+rm /opt/benchmark/node.lua
+rm /opt/benchmark/gateway.lua
 
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/common.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/dapi.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/node.lua -P /opt/benchmark
+sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/gateway.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.sh -P /opt/benchmark
 sudo chmod +x /opt/benchmark/*.sh
 /opt/benchmark/benchmark.sh _run >> /opt/benchmark/benchmark.log

@@ -458,8 +458,8 @@ _run() {
   _benchmark_dapis
   #_ping_nodes node;
   #_ping_nodes gw
-  #_benchmark_nodes
-  #_benchmark_gateways
+  _benchmark_nodes
+  _benchmark_gateways
 
 }
 
