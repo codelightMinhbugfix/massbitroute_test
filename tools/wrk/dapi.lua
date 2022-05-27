@@ -1,4 +1,3 @@
-require "common"
 local counter = 1
 local threads = {}
 function setup(thread)
