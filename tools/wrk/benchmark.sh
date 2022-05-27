@@ -379,10 +379,10 @@ _benchmark_nodes() {
       if [[ "$zone" == "$nodeZone" ]]; then
         echo "Benchmarking node ${fields[@]}"
         if [ "x$rate" == "x" ]; then
-          _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status
+          _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
           _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
         else
-          _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r $rate
+          _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r $rate --path ""
           _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r$ rate --path "_test_20k"
         fi
       fi
@@ -411,7 +411,7 @@ _benchmark_gateways() {
       zone=${zone^^}
       if [[ "$zone" == "$nodeZone" ]]; then
         echo "Benchmarking gateway ${fields[@]}"
-        _benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status
+        _benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
         _benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
       fi
     done
