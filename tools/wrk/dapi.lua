@@ -34,10 +34,6 @@ function request()
     local domain = wrk.thread:get("domain") or "massbitroute.dev"
     local blockchain = wrk.thread:get("blockchain")
     local body = _getBody(blockchain)
-    if token then
-        headers["X-Api-Key"] = token
-    end
-    local body = _getBody(blockchain)
     return wrk.format("POST", wrk.path, headers, body)
 end
 
