@@ -237,11 +237,13 @@ _single_benchmark() {
     curl "$nodeFormResult" --silent >/dev/null \
       --data "entry.721172135=$providerIp&entry.140673538=$providerId&entry.1145125196=$providerName&entry.1670770464=$client&entry.1360977389=$blockchain-$network&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}" \
       -d entry.1577564002=$status \
+      -d entry.1262797340=$localIp \
       -d entry.385380233=$path
   else
     curl "$gwFormResult" --silent >/dev/null \
       --data "entry.721172135=$providerIp&entry.140673538=$providerId&entry.1145125196=$providerName&entry.1670770464=$client&entry.1360977389=$blockchain-$network&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}" \
       -d entry.1709266694=$status \
+      -d entry.17092450=$localIp \
       -d entry.962643896=$path
 
   fi
