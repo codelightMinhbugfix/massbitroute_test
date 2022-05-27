@@ -231,7 +231,8 @@ _single_benchmark() {
 
   if [ "$type" == "dapi" ]; then
     curl "$dapiFormResult" --silent >/dev/null \
-      --data "entry.721172135=$localIp&entry.140673538=${addr[1]}&entry.1670770464=$client&entry.1360977389=$blockchain-$network&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}"
+      --data "entry.721172135=$localIp&entry.140673538=${addr[1]}&entry.1670770464=$client&entry.1360977389=$blockchain-$network&entry.1089136036=$duration&entry.770798199=$requestRate&entry.796670045=$transferRate&entry.144814654=${latency[1]}&entry.542037870=${latency[2]}&entry.1977269592=${latency[3]}&entry.1930208986=${hdrhistogram75[1]}&entry.1037348686=${hdrhistogram90[1]}&entry.131454525=${hdrhistogram99[1]}&entry.1567713965=${req_sec[1]}" \
+
 
   elif [ "$type" == "node" ]; then
     curl "$nodeFormResult" --silent >/dev/null \
@@ -379,10 +380,10 @@ _benchmark_nodes() {
         echo "Benchmarking node ${fields[@]}"
         if [ "x$rate" == "x" ]; then
           _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status
-          _benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
+          _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
         else
           _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r $rate
-          _single_benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r$ rate --path "_test_20k"
+          _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r$ rate --path "_test_20k"
         fi
       fi
     done
@@ -457,8 +458,8 @@ _run() {
   _benchmark_dapis
   #_ping_nodes node;
   #_ping_nodes gw
-  _benchmark_nodes
-  _benchmark_gateways
+  #_benchmark_nodes
+  #_benchmark_gateways
 
 }
 
