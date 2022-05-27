@@ -348,7 +348,7 @@ _benchmark_ping() {
         blockchain=$(echo ${fields[5]} | sed -z "s/\"//g;")
         if [ "$zone" == "$nodeZone" ]; then
           echo "Benchmarking node ${fields[@]}"
-          url="http://$ip/ping"
+          url="https://$ip/ping"
           _single_benchmark -url $url -t $type -r $rate --providerId $providerId --providerKey $appKey --providerName $providerName -b $blockchain
         fi
       done
@@ -379,11 +379,11 @@ _benchmark_nodes() {
       if [[ "$zone" == "$nodeZone" ]]; then
         echo "Benchmarking node ${fields[@]}"
         if [ "x$rate" == "x" ]; then
-          _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
-          _benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
+          _benchmark -url "https://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
+          _benchmark -url "https://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
         else
-          _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r $rate --path ""
-          _single_benchmark -url "http://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r$ rate --path "_test_20k"
+          _single_benchmark -url "https://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r $rate --path ""
+          _single_benchmark -url "https://$ip" -t node --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status -r$ rate --path "_test_20k"
         fi
       fi
     done
@@ -411,8 +411,8 @@ _benchmark_gateways() {
       zone=${zone^^}
       if [[ "$zone" == "$nodeZone" ]]; then
         echo "Benchmarking gateway ${fields[@]}"
-        _benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
-        _benchmark -url "http://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
+        _benchmark -url "https://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
+        _benchmark -url "https://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
       fi
     done
   done
@@ -460,7 +460,33 @@ _run() {
   #_ping_nodes gw
   _benchmark_nodes
   _benchmark_gateways
-
 }
 
+_benchmark_gw() {
+  _login
+  gwFormResult=https://docs.google.com/forms/d/1gzn6skD5MH7D3cyIsv8qcbkbox6QRcxzhkT9AomXE8o/formResponse
+  nodes=$(curl -s --location --request GET "https://portal.$domain/mbr/gateway/list/verify" --header "Authorization: $bearerAdmin")
+  len=$(echo $nodes | jq length)
+  ((len=len-1))
+  for i in $( seq 0 $len )
+  do
+    node=$(echo "$nodes" | jq ".[$i]" | jq ". | .id, .appKey, .zone, .name, .blockchain, .ip, .status" | sed -z "s/\n/,/g;")
+    IFS=$',' fields=($node);
+    IFS=$_IFS
+    id=$(echo ${fields[0]} | sed -z "s/\"//g;")
+    appKey=$(echo ${fields[1]} | sed -z "s/\"//g;")
+    nodeZone=$(echo ${fields[2]^^} | sed -z "s/\"//g;")
+    name=${fields[3]}
+    blockchain=$(echo ${fields[4]} | sed -z "s/\"//g;")
+    ip=$(echo ${fields[5]} | sed -z "s/\"//g;")
+    status=$(echo ${fields[6]} | sed -z "s/\"//g;")
+    zone=${zone^^}
+    if [[ "$id" == "$1" ]]; then
+      echo "Benchmarking gateway ${fields[@]}"
+      _benchmark -url "https://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path ""
+      _benchmark -url "https://$ip" -t gateway --providerId $id --providerIp $ip --providerKey $appKey --providerName $name -b $blockchain -s $status --path "_test_20k"
+      break
+    fi
+  done
+}
 $@
