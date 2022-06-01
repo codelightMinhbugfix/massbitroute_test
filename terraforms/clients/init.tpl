@@ -36,12 +36,12 @@ wrk_dir=/opt/benchmark
 EOL
 while true;
 do
-rm /opt/benchmark/benchmark.sh
-rm /opt/benchmark/benchmark.lua
-rm /opt/benchmark/common.lua
-rm /opt/benchmark/dapi.lua
-rm /opt/benchmark/node.lua
-rm /opt/benchmark/gateway.lua
+sudo rm /opt/benchmark/benchmark.sh
+sudo rm /opt/benchmark/benchmark.lua
+sudo rm /opt/benchmark/common.lua
+sudo rm /opt/benchmark/dapi.lua
+sudo rm /opt/benchmark/node.lua
+sudo rm /opt/benchmark/gateway.lua
 
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/benchmark.lua -P /opt/benchmark
 sudo wget https://github.com/massbitprotocol/massbitroute_test/raw/master/tools/wrk/common.lua -P /opt/benchmark

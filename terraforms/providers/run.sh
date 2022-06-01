@@ -24,7 +24,7 @@ _create_nodes() {
   if [ "x$sourcePath" == "x" ]; then
     sourcePath=../../credentials/eth-sources.csv
   fi
-  while IFS="," read -r id region zone zoneCode dataSource temp
+  while IFS="," read -r id region zone zoneCode httpurl wsurl temp
   do
     # curl  node/gw
     curl -s --location --request POST "https://portal.$domain/mbr/node" \
@@ -34,7 +34,8 @@ _create_nodes() {
           \"name\": \"node-$nodePrefix-$zone-$id\",
           \"blockchain\": \"$blockchain\",
           \"zone\": \"$zoneCode\",
-          \"dataSource\": \"$dataSource\",
+          \"dataSource\": \"$httpurl\",
+          \"dataSourceWs\": \"$wsurl\",
           \"network\": \"$network\"
       }" | jq -r '. | .id, .appKey, .name, .blockchain, .zone' | sed -z -z "s/\n/,/g;s/,$/,$zone,$dataSource\n/" >> "$1/nodelist.csv"
   done < <(cat $sourcePath)
@@ -270,8 +271,6 @@ _prepare_env() {
 
 _check_gateway_response() {
   echo -n > $1/gatewayresponse.csv
-
-
   while IFS="," read -r nodeId appId name blockchain zone status ip
   do
     # url="https://$nodeId.$blockchain-mainnet.$domain/$appId"
@@ -333,6 +332,15 @@ _clean() {
     echo "Please choose a directory to clean up"
     exit 0
   fi
+  if [ "x$2" == "" ]; then
+    envname=dev
+    envdir=$1
+    source ../../credentials/.env
+  else
+    envname=$2
+    envdir=$envname-$1
+    source ../../credentials/.env.$2
+  fi
   _login
   echo "Delete node from portal"
   while IFS="," read -r nodeId appId name blockchain zone cloudZone
@@ -354,7 +362,7 @@ _clean() {
         else
           echo "Delete node $nodeId: Passed"
         fi
-     done < <(cat "$1/nodelist.csv")
+     done < <(cat "$envdir/nodelist.csv")
 
   while IFS="," read -r gatewayId appId name blockchain zone cloudZone
      do
@@ -376,14 +384,14 @@ _clean() {
           echo "Delete gateway $gatewayId: Passed"
         fi
 
-     done < <(cat "$1/gatewaylist.csv")
+     done < <(cat "$envdir/gatewaylist.csv")
   echo "Cleaning up VMs: In Progress"
-  cd $1
+  cd $envdir
   sudo terraform destroy
   if [[ "$?" != "0" ]]; then echo "Faile to execute: terraform destroy "; exit 1; fi
   echo "Cleaning up VMs: Passed"
   cd ..
-  sudo rm -rf $1
+  sudo rm -rf $envdir
 }
 _clean_vms() {
   if [ "x$1" == "x" ]; then
