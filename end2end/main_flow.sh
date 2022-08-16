@@ -36,7 +36,7 @@ docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sit
 docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/vars
 docker exec -it mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init
 #Get PRIVATE_GIT_READ
-PRIVATE_GIT_READ=$(docker exec -it mbr_git cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g" | sed "s|http://||g")
+PRIVATE_GIT_READ=$(docker exec -it mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g" | sed "s|http://||g")
 echo $PRIVATE_GIT_READ
 
 #cp docker-compose.yaml $ENV/docker-compose.yaml
