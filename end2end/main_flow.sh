@@ -1,7 +1,7 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 source $ROOT_DIR/base.sh
-random=$(echo $RANDOM | md5sum | head -c 5)
+
 ENV=${ENV:-$random}
 ENV=23474
 ENV_DIR=$RUNTIME_DIR/$ENV
@@ -17,6 +17,20 @@ fi
 rsync -avz migrations $ENV_DIR/
 rsync -avz scheduler $ENV_DIR/
 rsync -avz fisherman $ENV_DIR/
+
+find_string="172.24.0.0/24"
+while docker network ls -q | grep "$find_string"
+do
+    network_number=$(shuf -i 0-255 -n 1)
+    find_string="\"Subnet\": \"172.24.$network_number.0/24\","
+    echo $find_string
+done
+
+echo "--------------------------------------------"
+echo "Creating network 172.24.$network_number.0/24"
+echo "--------------------------------------------"
+docker network create -d bridge --gateway "172.24.$network_number.1" --subnet "172.24.$network_number.0/24"   mbr_test_network_$network_number
+
 cat git-docker-compose.yaml.template |  \
      #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
      #sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
@@ -39,8 +53,7 @@ cat docker-compose.yaml.template |  \
      sed "s/\[\[PROXY_TAG\]\]/$PROXY_TAG/g" | \
      sed "s/\[\[TEST_CLIENT_TAG\]\]/$TEST_CLIENT_TAG/g" | \
      sed "s/\[\[FISHERMAN_TAG\]\]/$FISHERMAN_TAG/g" | \
-     #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
-     #sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
      sed "s/\[\[STAKING_TAG\]\]/$STAKING_TAG/g" | \
      sed "s/\[\[PORTAL_TAG\]\]/$PORTAL_TAG/g" | \
      sed "s/\[\[WEB_TAG\]\]/$WEB_TAG/g" | \
