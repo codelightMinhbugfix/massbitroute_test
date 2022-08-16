@@ -3,7 +3,7 @@ ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 source $ROOT_DIR/base.sh
 
 ENV=${ENV:-$random}
-ENV=23474
+ENV=$network_number
 ENV_DIR=$RUNTIME_DIR/$ENV
 PROXY_LOGS=$ENV_DIR/proxy/logs
 #init docker-compose file
