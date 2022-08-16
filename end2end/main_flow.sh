@@ -41,7 +41,6 @@ cat docker-compose.yaml.template |  \
      sed "s/\[\[FISHERMAN_TAG\]\]/$FISHERMAN_TAG/g" | \
      #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
      #sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
-     sed "s/\[\[MASSBIT_CHAIN_TAG\]\]/$MASSBIT_CHAIN_TAG/g" | \
      sed "s/\[\[STAKING_TAG\]\]/$STAKING_TAG/g" | \
      sed "s/\[\[PORTAL_TAG\]\]/$PORTAL_TAG/g" | \
      sed "s/\[\[WEB_TAG\]\]/$WEB_TAG/g" | \
