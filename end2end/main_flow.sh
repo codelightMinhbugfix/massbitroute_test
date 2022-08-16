@@ -25,7 +25,7 @@ docker network create -d bridge --gateway "172.24.$network_number.1" --subnet "1
 
 cat git-docker-compose.yaml.template |  \
      #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
-     #sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
      sed "s/\[\[GIT_TAG\]\]/$GIT_TAG/g"  \
     > $ENV_DIR/git-docker-compose.yaml
 #cp git-docker-compose.yaml $ENV/git-docker-compose.yaml

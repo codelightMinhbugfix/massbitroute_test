@@ -18,7 +18,6 @@ export GWMAN_TAG=v0.1.0
 export STAT_TAG=v0.1.0
 export MONITOR_TAG=v0.1.0
 
-find_string="172.24.0.0/24"
 while docker network ls -q | grep "$find_string"
 do
     network_number=$(shuf -i 0-255 -n 1)
