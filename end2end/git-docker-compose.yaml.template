@@ -1,6 +1,6 @@
 version: '3.8'
 networks:
-  mbr_test_network:
+  mbr_test_network_[[NETWORK_NUMBER]]:
     driver: bridge
     external: true
     # ipam:
@@ -10,7 +10,7 @@ services:
   git_[[NETWORK_NUMBER]]:
     privileged: true
     networks:
-      mbr_test_network:
+      mbr_test_network_[[NETWORK_NUMBER]]:
         ipv4_address: "172.24.[[NETWORK_NUMBER]].207"
 
     restart: unless-stopped
@@ -65,4 +65,4 @@ volumes:
     driver: local
 
 
-#  docker network create -d bridge --gateway 172.24.[[NETWORK_NUMBER]].1 --subnet 172.24.[[NETWORK_NUMBER]].0/24   mbr_test_network
+#  docker network create -d bridge --gateway 172.24.[[NETWORK_NUMBER]].1 --subnet 172.24.[[NETWORK_NUMBER]].0/24   mbr_test_network_[[NETWORK_NUMBER]]
