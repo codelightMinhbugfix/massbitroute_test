@@ -22,7 +22,7 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_node
+    container_name: mbr_node_[[NETWORK_NUMBER]]
     volumes:
       - ./node/logs:/massbit/massbitroute/app/src/sites/services/node/logs:rw
     environment:

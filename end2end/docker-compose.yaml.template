@@ -8,7 +8,7 @@ networks:
       #     - subnet: "172.24.[[NETWORK_NUMBER]].0/16"
 services:
   proxy_[[NETWORK_NUMBER]]:
-    container_name: mbr_proxy
+    container_name: mbr_proxy_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_test_proxy:[[PROXY_TAG]]
     restart: always
     networks:
@@ -33,7 +33,7 @@ services:
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].215"
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
   test-client_[[NETWORK_NUMBER]]:
-    container_name: mbr_test_client
+    container_name: mbr_test_client_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_test_client:[[TEST_CLIENT_TAG]]
     restart: always
     networks:
@@ -53,7 +53,7 @@ services:
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].215"
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
   db_[[NETWORK_NUMBER]]:
-    container_name: mbr_db
+    container_name: mbr_db_[[NETWORK_NUMBER]]
     image: postgres:14.4-alpine
     restart: always
     networks:
@@ -95,7 +95,7 @@ services:
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
 
   redis_[[NETWORK_NUMBER]]:
-    container_name: mbr_redis
+    container_name: mbr_redis_[[NETWORK_NUMBER]]
     image: redis:7.0.2-alpine
     restart: always
     networks:
@@ -129,7 +129,7 @@ services:
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
 
   mbr_staking_[[NETWORK_NUMBER]]:
-    container_name: mbr_staking
+    container_name: mbr_staking_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_staking:[[STAKING_TAG]]
     # build: .
     depends_on:
@@ -164,7 +164,7 @@ services:
       - MODE=api
 
   mbr_portal_api_[[NETWORK_NUMBER]]:
-    container_name: mbr_portal_api
+    container_name: mbr_portal_api_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_portal:[[PORTAL_TAG]]
     # build: .
     depends_on:
@@ -202,7 +202,7 @@ services:
       - MODE=api
 
   mbr_portal_worker_[[NETWORK_NUMBER]]:
-    container_name: mbr_portal_worker
+    container_name: mbr_portal_worker_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_portal:[[PORTAL_TAG]]
     # build: .
     depends_on:
@@ -239,7 +239,7 @@ services:
 
 
   mbr_portal_admin_[[NETWORK_NUMBER]]:
-    container_name: mbr_portal_admin
+    container_name: mbr_portal_admin_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_portal:[[PORTAL_TAG]]
     # build: .
     depends_on:
@@ -278,7 +278,7 @@ services:
       - MODE=admin
 
   mbr_web_[[NETWORK_NUMBER]]:
-    container_name: mbr_web
+    container_name: mbr_web_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_web:[[WEB_TAG]]
     # build: ../mbr-app
     restart: always
@@ -314,7 +314,7 @@ services:
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
 
   fisherman_scheduler_[[NETWORK_NUMBER]]:
-    container_name: mbr_fisherman_scheduler
+    container_name: mbr_fisherman_scheduler_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_fisherman:[[FISHERMAN_TAG]]
     # build: ../massbitroute_fisherman
     restart: always
@@ -376,7 +376,7 @@ services:
       - ZONE=AS
 
   fisherman_worker_1_[[NETWORK_NUMBER]]:
-    container_name: mbr_fisherman_worker_1
+    container_name: mbr_fisherman_worker_1_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_fisherman:[[FISHERMAN_TAG]]
     # build: ../massbitroute_fisherman
     restart: always
@@ -424,7 +424,7 @@ services:
       - ZONE=AS
 
   fisherman_worker_2_[[NETWORK_NUMBER]]:
-    container_name: mbr_fisherman_worker_2
+    container_name: mbr_fisherman_worker_2_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_fisherman:[[FISHERMAN_TAG]]
     # build: ../massbitroute_fisherman
     restart: always
@@ -473,7 +473,7 @@ services:
 
 
   massbitchain_[[NETWORK_NUMBER]]:
-    container_name: mbr_chain
+    container_name: mbr_chain_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_chain:[[MASSBIT_CHAIN_TAG]]
     # build: ../massbitchain
     restart: always
@@ -499,7 +499,7 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_api
+    container_name: mbr_api_[[NETWORK_NUMBER]]
     # network_mode: "host"
     # ports:
     #   - "443:443"
@@ -555,7 +555,7 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_gwman
+    container_name: mbr_gwman_[[NETWORK_NUMBER]]
     volumes:
       - ./gwman/logs:/massbit/massbitroute/app/src/sites/services/gwman/logs:rw
       - ./gwman/vars:/massbit/massbitroute/app/src/sites/services/gwman/vars:rw
@@ -606,7 +606,7 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_stat
+    container_name: mbr_stat_[[NETWORK_NUMBER]]
     volumes:
       - ./stat/logs:/massbit/massbitroute/app/src/sites/services/stat/logs:rw
       - ./stat/vars:/massbit/massbitroute/app/src/sites/services/stat/vars:rw
@@ -658,7 +658,7 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_monitor
+    container_name: mbr_monitor_[[NETWORK_NUMBER]]
     volumes:
       - ./monitor/logs:/massbit/massbitroute/app/src/sites/services/monitor/logs:rw
       - ./monitor/vars:/massbit/massbitroute/app/src/sites/services/monitor/vars:rw

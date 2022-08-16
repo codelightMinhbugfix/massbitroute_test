@@ -22,7 +22,7 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_git
+    container_name: mbr_git_[[NETWORK_NUMBER]]
     volumes:
       - ./git/deploy:/massbit/massbitroute/app/src/sites/services/git/deploy:rw
       - ./git/logs:/massbit/massbitroute/app/src/sites/services/git/logs:rw
