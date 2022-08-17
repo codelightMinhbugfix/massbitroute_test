@@ -33,6 +33,8 @@ services:
       - GIT_PUBLIC_URL="https://github.com"
       - MBR_ENV=[[GIT_TAG]]
       - DOMAIN=massbitroute.net
+      - MKAGENT_BRANCH=shamu
+      - GIT_PRIVATE_BRANCH=shamu
 
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"

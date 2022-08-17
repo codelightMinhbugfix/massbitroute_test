@@ -1,17 +1,14 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-source $ROOT_DIR/base.sh
-ENV_DIR=$1
-NODE_ID=$(cat $ENV_DIR/docker-client/vars/NODE_ID)
-NODE_APP_KEY=$(cat $ENV_DIR/docker-client/vars/NODE_APP_KEY)
-NODE_DATASOURCE=$(cat $ENV_DIR/docker-client/vars/NODE_DATASOURCE)
-USER_ID=$(cat $ENV_DIR/docker-client/vars/USER_ID)
-cat $ROOT_DIR/git-docker-compose.yaml.template | \
-     	sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
-		sed "s/\[\[NODE_ID\]\]/$NODE_ID/g" | \
-	 	sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
-		sed "s/\[\[NODE_TAG\]\]/$NODE_TAG/g" | \
-    sed "s/\[\[DATA_URL\]\]/$NODE_DATASOURCE/g" | \
-	 	sed "s/\[\[APP_KEY\]\]/$NODE_APP_KEY/g" | \
-	 	sed "s/\[\[USER_ID\]\]/$USER_ID/g" > $ENV_DIR/git-docker-compose.yaml
+cat $ROOT_DIR/git-docker-compose.yaml.template |  \
+     #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
+     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+     sed "s/\[\[GIT_TAG\]\]/$GIT_TAG/g"  \
+    > $ENV_DIR/git-docker-compose.yaml
+#cp git-docker-compose.yaml $ENV/git-docker-compose.yaml
+#Init docker
 docker-compose -f $ENV_DIR/git-docker-compose.yaml up -d --force-recreate
+sleep 10
+docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/data
+docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/vars
+docker exec -it mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init

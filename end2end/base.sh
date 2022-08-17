@@ -1,8 +1,9 @@
 #!/bin/bash
-RUNTIME_DIR=/massbit/test_runtime
-random=$(echo $RANDOM | md5sum | head -c 5)
-ENV=${ENV:random}
-blockchain=eth
+export RUNTIME_DIR=/massbit/test_runtime
+#random=$(echo $RANDOM | md5sum | head -c 5)
+#ENV=${ENV:random}
+export SCHEDULER_AUTHORIZATION=11967d5e9addc5416ea9224eee0e91fc
+export blockchain=eth
 export PROXY_TAG=v0.1.0
 export TEST_CLIENT_TAG=v0.1.0
 export FISHERMAN_TAG=v0.1.0
@@ -12,17 +13,35 @@ export WEB_TAG=v0.1
 export MASSBIT_CHAIN_TAG=v0.1
 export NODE_TAG=v0.1.0
 export GATEWAY_TAG=v0.1.0
-export API_TAG=v0.1.4
-export GIT_TAG=v0.1.5
+export API_TAG=v0.1.6
+export GIT_TAG=v0.1.7
 export GWMAN_TAG=v0.1.0
 export STAT_TAG=v0.1.0
 export MONITOR_TAG=v0.1.0
-
-while docker network ls -q | grep "$find_string"
-do
-    network_number=$(shuf -i 0-255 -n 1)
-    find_string="\"Subnet\": \"172.24.$network_number.0/24\","
-    echo $find_string
-done
-
+export NETWORK_PREFIX=mbr_test_network
+if [ "x$network_number" == "x" ]; then
+  while docker network ls | grep "$find_string"
+  do
+      network_number=$(shuf -i 0-255 -n 1)
+      find_string="\"Subnet\": \"172.24.$network_number.0/24\","
+      echo $find_string
+  done
+fi
+ENV=$network_number
+export ENV_DIR=$RUNTIME_DIR/$ENV
+export PROXY_LOGS=$ENV_DIR/proxy/logs
+#init docker-compose file
+echo '--------------------------'
+echo '-----Init environment-----'
+echo '--------------------------'
+if [ ! -d "$PROXY_LOGS" ]
+then
+  mkdir -p $PROXY_LOGS
+fi
+if [ -f "$PROXY_LOGS/proxy_access.log" ]; then
+  truncate -s 0 "$PROXY_LOGS/proxy_access.log"
+fi
+if [ -f "$PROXY_LOGS/proxy_error.log" ]; then
+  truncate -s 0 "$PROXY_LOGS/proxy_error.log"
+fi
 export network_number=$network_number

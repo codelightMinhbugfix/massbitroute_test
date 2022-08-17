@@ -53,4 +53,4 @@ services:
       - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].201"
+      - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].253"

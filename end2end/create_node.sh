@@ -1,7 +1,5 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-source $ROOT_DIR/base.sh
-ENV_DIR=$1
 NODE_ID=$(cat $ENV_DIR/docker-client/vars/NODE_ID)
 NODE_APP_KEY=$(cat $ENV_DIR/docker-client/vars/NODE_APP_KEY)
 NODE_DATASOURCE=$(cat $ENV_DIR/docker-client/vars/NODE_DATASOURCE)

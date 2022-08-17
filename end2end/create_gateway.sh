@@ -1,7 +1,5 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-source $ROOT_DIR/base.sh
-ENV_DIR=$1
 GATEWAY_ID=$(cat $ENV_DIR/docker-client/vars/GATEWAY_ID)
 GATEWAY_APP_KEY=$(cat $ENV_DIR/docker-client/vars/GATEWAY_APP_KEY)
 USER_ID=$(cat $ENV_DIR/docker-client/vars/USER_ID)
