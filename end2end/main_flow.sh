@@ -37,7 +37,7 @@ bash -x create_gateway.sh
 #State6 waiting for gateway approval
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _check_provider_status gateway approved
 #State4: Stake gateway
-docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider gateway
+docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider Gateway
 
 bash turnoff-gateway.sh
 
