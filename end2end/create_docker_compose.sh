@@ -9,6 +9,7 @@ echo SCHEDULER_AUTHORIZATION=$SCHEDULER_AUTHORIZATION > $ENV_DIR/fisherman/.env_
 #cp docker-compose.yaml $ENV/docker-compose.yaml
 cat docker-compose.yaml.template |  \
      sed "s|\[\[ENV_DIR\]\]|$ENV_DIR|g" | \
+     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
      sed "s/\[\[PROXY_TAG\]\]/$PROXY_TAG/g" | \
      sed "s/\[\[TEST_CLIENT_TAG\]\]/$TEST_CLIENT_TAG/g" | \
      sed "s/\[\[FISHERMAN_TAG\]\]/$FISHERMAN_TAG/g" | \

@@ -2,6 +2,7 @@
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 cat $ROOT_DIR/git-docker-compose.yaml.template |  \
      #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
+     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
      sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
      sed "s/\[\[GIT_TAG\]\]/$GIT_TAG/g"  \
     > $ENV_DIR/git-docker-compose.yaml

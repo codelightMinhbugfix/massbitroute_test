@@ -5,7 +5,9 @@ NODE_APP_KEY=$(cat $ENV_DIR/docker-client/vars/NODE_APP_KEY)
 NODE_DATASOURCE=$(cat $ENV_DIR/docker-client/vars/NODE_DATASOURCE)
 USER_ID=$(cat $ENV_DIR/docker-client/vars/USER_ID)
 cat $ROOT_DIR/node-docker-compose.yaml.template | \
-     	sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+    sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
+    sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
+    sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
 		sed "s/\[\[NODE_ID\]\]/$NODE_ID/g" | \
 	 	sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
 		sed "s/\[\[NODE_TAG\]\]/$NODE_TAG/g" | \

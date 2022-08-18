@@ -41,7 +41,7 @@ services:
       mbr_test_network_[[NETWORK_NUMBER]]:
         ipv4_address: "172.24.[[NETWORK_NUMBER]].253"
     environment:
-      - DATASOURCE=http:\/\/34.81.232.186:8545
+      - DATASOURCE=[[PROTOCOL]]:\/\/34.81.232.186:8545
       - DATASOURCE_WS=ws:\/\/34.81.232.186:8546
       - DOMAIN=massbitroute.net
     volumes:
@@ -201,15 +201,15 @@ services:
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
     environment:
       - MODE=api
-      - GEO_SERVICE_API_URL=http://api.ipapi.com/api
+      - GEO_SERVICE_API_URL=[[PROTOCOL]]://api.ipapi.com/api
       - GEO_SERVICE_SECRET=GEO_SERVICE_SECRET
       - MASSBIT_ROUTE_SID=[[MASSBIT_ROUTE_SID]]
       - MASSBIT_ROUTE_PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
       - DB_HOST=db_[[NETWORK_NUMBER]]
       - REDIS_HOST=redis_[[NETWORK_NUMBER]]
-      - MASSBIT_ROUTE_API_URL=http://api.massbitroute.net/_internal_api/v2
+      - MASSBIT_ROUTE_API_URL=[[PROTOCOL]]://api.massbitroute.net/_internal_api/v2
       - MASSBIT_CHAIN_URL=ws://chain.massbitroute.net:9944
-      - VERIFICATION_SERVICE_DOMAIN=http://scheduler.fisherman.massbitroute.net/provider/verify
+      - VERIFICATION_SERVICE_DOMAIN=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/provider/verify
       - VERIFICATION_SERVICE_SECRET=VERIFICATION_SERVICE_SECRET
       - WHITELIST_DOMAIN=http://localhost:8080|http://localhost:3000|https://dapi.massbitroute.net|https://mbr-app-git-dev-massbit-team.vercel.app|https://route-staging.massbit.io|http://dapi.massbitroute.net
 
@@ -249,15 +249,15 @@ services:
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
     environment:
       - MODE=worker
-      - GEO_SERVICE_API_URL=http://api.ipapi.com/api
+      - GEO_SERVICE_API_URL=[[PROTOCOL]]://api.ipapi.com/api
       - GEO_SERVICE_SECRET=GEO_SERVICE_SECRET
       - MASSBIT_ROUTE_SID=[[MASSBIT_ROUTE_SID]]
       - MASSBIT_ROUTE_PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
       - DB_HOST=db_[[NETWORK_NUMBER]]
       - REDIS_HOST=redis_[[NETWORK_NUMBER]]
-      - MASSBIT_ROUTE_API_URL=http://api.massbitroute.net/_internal_api/v2
+      - MASSBIT_ROUTE_API_URL=[[PROTOCOL]]://api.massbitroute.net/_internal_api/v2
       - MASSBIT_CHAIN_URL=ws://chain.massbitroute.net:9944
-      - VERIFICATION_SERVICE_DOMAIN=http://scheduler.fisherman.massbitroute.net/provider/verify
+      - VERIFICATION_SERVICE_DOMAIN=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/provider/verify
       - VERIFICATION_SERVICE_SECRET=VERIFICATION_SERVICE_SECRET
       - WHITELIST_DOMAIN=http://localhost:8080|http://localhost:3000|https://dapi.massbitroute.net|https://mbr-app-git-dev-massbit-team.vercel.app|https://route-staging.massbit.io|http://dapi.massbitroute.net
 
@@ -300,15 +300,15 @@ services:
     - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
     environment:
       - MODE=admin
-      - GEO_SERVICE_API_URL=http://api.ipapi.com/api
+      - GEO_SERVICE_API_URL=[[PROTOCOL]]://api.ipapi.com/api
       - GEO_SERVICE_SECRET=GEO_SERVICE_SECRET
       - MASSBIT_ROUTE_SID=[[MASSBIT_ROUTE_SID]]
       - MASSBIT_ROUTE_PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
       - DB_HOST=db_[[NETWORK_NUMBER]]
       - REDIS_HOST=redis_[[NETWORK_NUMBER]]
-      - MASSBIT_ROUTE_API_URL=http://api.massbitroute.net/_internal_api/v2
+      - MASSBIT_ROUTE_API_URL=[[PROTOCOL]]://api.massbitroute.net/_internal_api/v2
       - MASSBIT_CHAIN_URL=ws://chain.massbitroute.net:9944
-      - VERIFICATION_SERVICE_DOMAIN=http://scheduler.fisherman.massbitroute.net/provider/verify
+      - VERIFICATION_SERVICE_DOMAIN=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/provider/verify
       - VERIFICATION_SERVICE_SECRET=VERIFICATION_SERVICE_SECRET
       - WHITELIST_DOMAIN=http://localhost:8080|http://localhost:3000|https://dapi.massbitroute.net|https://mbr-app-git-dev-massbit-team.vercel.app|https://route-staging.massbit.io|http://dapi.massbitroute.net
 
@@ -399,13 +399,13 @@ services:
       - RUST_LOG=debug
       - RUST_LOG_TYPE=console
 
-      - URL_PORTAL=https://portal.massbitroute.net
+      - URL_PORTAL=[[PROTOCOL]]://portal.massbitroute.net
       - PORTAL_AUTHORIZATION=VERIFICATION_SERVICE_SECRET
       - PATH_GATEWAYS_LIST=mbr/gateway/list/verify
       - PATH_NODES_LIST=mbr/node/list/verify
       - PATH_PORTAL_PROVIDER_REPORT=mbr/benchmark
       - PATH_PORTAL_PROVIDER_VERIFY=mbr/verify
-      - REPORT_CALLBACK=http://scheduler.fisherman.massbitroute.net/report
+      - REPORT_CALLBACK=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/report
       - ROOT=/massbit/massbitroute/app/src/sites/services/gateway/
       - SCHEDULER_AUTHORIZATION=[[SCHEDULER_AUTHORIZATION]]
       - SCHEDULER_CONFIG=/usr/local/bin/configs/scheduler.json
@@ -454,11 +454,11 @@ services:
       - DOMAIN=massbitroute.net
       - ROOT=/massbit/massbitroute/app/src/sites/services/gateway/
       - RUST_LOG=debug
-      - SCHEDULER_ENDPOINT=http://scheduler.fisherman.massbitroute.net:80
+      - SCHEDULER_ENDPOINT=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net:80
       - WORKER_SERVICE_ENDPOINT=0.0.0.0:4040
       - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].213
       - WORKER_IP=172.24.[[NETWORK_NUMBER]].213
-      - WORKER_ENDPOINT=http://worker01.fisherman.massbitroute.net:4040
+      - WORKER_ENDPOINT=[[PROTOCOL]]://worker01.fisherman.massbitroute.net:4040
       - ZONE=AS
 
   fisherman_worker_2_[[NETWORK_NUMBER]]:
@@ -503,11 +503,11 @@ services:
       - DOMAIN=massbitroute.net
       - ROOT=/massbit/massbitroute/app/src/sites/services/gateway/
       - RUST_LOG=debug
-      - SCHEDULER_ENDPOINT=http://scheduler.fisherman.massbitroute.net:80
+      - SCHEDULER_ENDPOINT=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net:80
       - WORKER_SERVICE_ENDPOINT=0.0.0.0:4040
       - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].214
       - WORKER_IP=172.24.[[NETWORK_NUMBER]].214
-      - WORKER_ENDPOINT=http://worker02.fisherman.massbitroute.net:4040
+      - WORKER_ENDPOINT=[[PROTOCOL]]://worker02.fisherman.massbitroute.net:4040
       - ZONE=AS
 
 
@@ -653,7 +653,7 @@ services:
       - STAT_NETWORK=eth
       - STAT_BLOCKCHAIN=mainnet
       - MBR_ENV=[[STAT_TAG]]
-      - PORTAL_URL=https://portal.massbitroute.net
+      - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
       - GIT_PRIVATE_READ_URL=[[PRIVATE_GIT_READ]]
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
