@@ -183,7 +183,7 @@ services:
       - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
@@ -201,8 +201,11 @@ services:
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
     environment:
       - MODE=api
+      - MASSBIT_ROUTE_SID=[[MASSBIT_ROUTE_SID]]
+      - MASSBIT_ROUTE_PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
       - DB_HOST=db_[[NETWORK_NUMBER]]
       - REDIS_HOST=redis_[[NETWORK_NUMBER]]
+      - MASSBIT_CHAIN_URL=ws://chain.massbitroute.net:9944
 
   mbr_portal_worker_[[NETWORK_NUMBER]]:
     container_name: mbr_portal_worker_[[NETWORK_NUMBER]]

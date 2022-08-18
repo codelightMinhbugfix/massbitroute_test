@@ -6,3 +6,4 @@ docker-compose -f $ENV_DIR/node-docker-compose.yaml down
 docker-compose -f $ENV_DIR/gateway-docker-compose.yaml down
 docker-compose -f $ENV_DIR/docker-compose.yaml down
 docker-compose -f $ENV_DIR/git-docker-compose.yaml down
+rm -rf $ENV_DIR
