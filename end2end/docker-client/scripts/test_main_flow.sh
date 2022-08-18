@@ -156,18 +156,18 @@ _check_provider_status() {
   fi
   status=''
   while [[ "$status" != "$2" ]]; do
-    echo "Checking node status: In Progress"
+    echo "Checking $providerType status: In Progress"
 
     status=$(curl -k --location --request GET "https://portal.$DOMAIN/mbr/$1/$providerId" \
       --header "Authorization: Bearer $bearer" | jq -r ". | .status")
     now=$(date)
     echo "---------------------------------"
-    echo "Node status at $now is $status"
+    echo "$providerType status at $now is $status"
     echo "---------------------------------"
     sleep 10
   done
   now=$(date)
-  echo "Checking node reported status: $2 at $now"
+  echo "Checking $providerType reported status: $2 at $now"
 }
 
 $@

@@ -39,6 +39,10 @@ docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _che
 #State4: Stake gateway
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider gateway
 
+bash turnoff-gateway.sh
+
+bash turnoff-node.sh
+
 touch $ENV_DIR/.deletable
 #clean up test environment
-bash -x cleanup.sh
+#bash -x cleanup.sh $network_number
