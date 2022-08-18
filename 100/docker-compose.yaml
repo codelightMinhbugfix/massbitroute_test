@@ -15,9 +15,8 @@ services:
       mbr_test_network_100:
         ipv4_address: "172.24.100.254"
     volumes:
-      - /massbit/test_runtime/100/proxy/logs:/logs
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /massbit/test_runtime/100/proxy/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./proxy/logs:/logs
+      - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.100.210"
       - "ns1.massbitroute.net:172.24.100.210"
@@ -183,7 +182,7 @@ services:
       - "api.massbitroute.net:172.24.100.254"
       - "stat.mbr.massbitroute.net:172.24.100.254"
       - "monitor.mbr.massbitroute.net:172.24.100.254"
-      - "chain.massbitroute.net:172.24.100.254"
+      - "chain.massbitroute.net:172.24.100.205"
       - "portal.massbitroute.net:172.24.100.254"
       - "admin-api.massbitroute.net:172.24.100.254"
       - "dapi.massbitroute.net:172.24.100.254"
