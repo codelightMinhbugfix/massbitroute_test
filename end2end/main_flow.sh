@@ -39,10 +39,14 @@ docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _che
 #State4: Stake gateway
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider Gateway
 
-bash turnoff-gateway.sh
+#bash turnoff-gateway.sh
 
-bash turnoff-node.sh
-
+#bash turnoff-node.sh
+cat $ROOT_DIR/runtime_start.sh | \
+  sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+  sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
+  sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
+	> $ENV_DIR/runtime_start.sh
 touch $ENV_DIR/.deletable
 #clean up test environment
 #bash -x cleanup.sh $network_number

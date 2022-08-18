@@ -1,9 +1,9 @@
 #!/bin/bash
 #Init git server
-network_number=${1:-100}
+network_number=${1:-[[NETWORK_NUMBER]]}
 ENV_DIR=.
-SID=403716b0f58a7d6ddec769f8ca6008f2c1c0cea6
-PARTNER_ID=fc78b64c5c33f3f270700b0c4d3e7998188035ab
+SID=[[MASSBIT_ROUTE_SID]]
+PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
 
 docker-compose -f $ENV_DIR/git-docker-compose.yaml up -d --force-recreate
 sleep 10
@@ -14,6 +14,9 @@ echo "export SID=$SID" > $ENV_DIR/git/data/env/api.env
 echo "export PARTNER_ID=$PARTNER_ID" >> $ENV_DIR/git/data/env/api.env
 docker exec -it mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init
 sleep 10
+PRIVATE_GIT_READ=$(docker exec -it mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g")
+echo $PRIVATE_GIT_READ
+cat $ENV_DIR/docker-compose.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/docker-compose.yaml
 docker-compose -f $ENV_DIR/docker-compose.yaml up -d --force-recreate
 sleep 30
 #docker exec mbr_api bash -c '/massbit/massbitroute/app/src/sites/services/api/cmd_server start nginx'
