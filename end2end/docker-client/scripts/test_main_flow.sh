@@ -117,10 +117,11 @@ _stake_provider() {
       \"blockchain\": \"$blockchain\",
       \"network\": \"mainnet\",
       \"amount\": \"100\"
-  }" | jq -r ". | .status")
+  }")
+  echo "Staking response $staking_response";
+  staking_status= cat $staking_response | jq -r ". | .status"
 
-
-  if [[ "$staking_response" != "success" ]]; then
+  if [[ "$staking_status" != "success" ]]; then
     echo "$providerType staking status: Failed "
     exit 1
   fi
