@@ -119,7 +119,7 @@ _stake_provider() {
       \"amount\": \"100\"
   }")
   echo "Staking response $staking_response";
-  staking_status= cat $staking_response | jq -r ". | .status"
+  staking_status= $(echo $staking_response | jq -r ". | .status");
 
   if [[ "$staking_status" != "success" ]]; then
     echo "$providerType staking status: Failed "
