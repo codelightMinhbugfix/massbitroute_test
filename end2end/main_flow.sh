@@ -47,6 +47,7 @@ cat $ROOT_DIR/runtime_start.sh | \
   sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
   sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
 	> $ENV_DIR/runtime_start.sh
+chmod +x $ENV_DIR/runtime_start.sh
 touch $ENV_DIR/.deletable
 #clean up test environment
 #bash -x cleanup.sh $network_number
