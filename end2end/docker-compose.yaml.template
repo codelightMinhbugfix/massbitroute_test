@@ -348,6 +348,15 @@ services:
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+    environment:
+      - API_USER_URL=https://portal.massbitroute.net/
+      - API_PORTAL_URL=https://portal.massbitroute.net/
+
+      - ENVIRONMENT=shamu
+      - GATEWAY_INSTALL_URL=http://portal.massbitroute.net/api/v1/gateway_install
+      - NODE_INSTALL_URL=http://portal.massbitroute.net/api/v1/node_install
+      - DAPI_PROVIDER_DOMAIN=massbitroute.net
+      - MASSBIT_CHAIN=ws://chain.massbitroute.net:9944
 
   fisherman_scheduler_[[NETWORK_NUMBER]]:
     container_name: mbr_fisherman_scheduler_[[NETWORK_NUMBER]]
