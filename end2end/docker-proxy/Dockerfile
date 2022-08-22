@@ -1,5 +1,5 @@
 FROM openresty/openresty
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+#COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80/tcp 443/tcp
 
 #FROM ubuntu:20.04

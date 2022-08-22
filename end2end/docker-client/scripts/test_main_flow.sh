@@ -117,10 +117,11 @@ _stake_provider() {
       \"blockchain\": \"$blockchain\",
       \"network\": \"mainnet\",
       \"amount\": \"100\"
-  }" | jq -r ". | .status")
+  }")
+  echo "Staking response $staking_response";
+  staking_status= $(echo $staking_response | jq -r ". | .status");
 
-
-  if [[ "$staking_response" != "success" ]]; then
+  if [[ "$staking_status" != "success" ]]; then
     echo "$providerType staking status: Failed "
     exit 1
   fi
@@ -156,18 +157,18 @@ _check_provider_status() {
   fi
   status=''
   while [[ "$status" != "$2" ]]; do
-    echo "Checking node status: In Progress"
+    echo "Checking $providerType status: In Progress"
 
     status=$(curl -k --location --request GET "https://portal.$DOMAIN/mbr/$1/$providerId" \
       --header "Authorization: Bearer $bearer" | jq -r ". | .status")
     now=$(date)
     echo "---------------------------------"
-    echo "Node status at $now is $status"
+    echo "$providerType status at $now is $status"
     echo "---------------------------------"
     sleep 10
   done
   now=$(date)
-  echo "Checking node reported status: $2 at $now"
+  echo "Checking $providerType reported status: $2 at $now"
 }
 
 $@

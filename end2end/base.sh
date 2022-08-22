@@ -2,6 +2,7 @@
 export RUNTIME_DIR=/massbit/test_runtime
 #random=$(echo $RANDOM | md5sum | head -c 5)
 #ENV=${ENV:random}
+export PROTOCOL=http
 export SCHEDULER_AUTHORIZATION=11967d5e9addc5416ea9224eee0e91fc
 export MASSBIT_ROUTE_SID=403716b0f58a7d6ddec769f8ca6008f2c1c0cea6
 export MASSBIT_ROUTE_PARTNER_ID=fc78b64c5c33f3f270700b0c4d3e7998188035ab
@@ -11,7 +12,7 @@ export TEST_CLIENT_TAG=v0.1.0
 export FISHERMAN_TAG=v0.1.0
 export STAKING_TAG=v0.1-dev
 export PORTAL_TAG=v0.1.0-dev
-export WEB_TAG=v0.1
+export WEB_TAG=v0.1.1
 export MASSBIT_CHAIN_TAG=v0.1
 export NODE_TAG=v0.1.0
 export GATEWAY_TAG=v0.1.0
@@ -20,6 +21,7 @@ export GIT_TAG=v0.1.9
 export GWMAN_TAG=v0.1.0
 export STAT_TAG=v0.1.0
 export MONITOR_TAG=v0.1.0
+export GIT_PRIVATE_BRANCH=shamu
 export NETWORK_PREFIX=mbr_test_network
 if [ "x$network_number" == "x" ]; then
   while docker network ls | grep "$find_string"

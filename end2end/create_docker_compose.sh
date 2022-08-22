@@ -9,6 +9,7 @@ echo SCHEDULER_AUTHORIZATION=$SCHEDULER_AUTHORIZATION > $ENV_DIR/fisherman/.env_
 #cp docker-compose.yaml $ENV/docker-compose.yaml
 cat docker-compose.yaml.template |  \
      sed "s|\[\[ENV_DIR\]\]|$ENV_DIR|g" | \
+     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
      sed "s/\[\[PROXY_TAG\]\]/$PROXY_TAG/g" | \
      sed "s/\[\[TEST_CLIENT_TAG\]\]/$TEST_CLIENT_TAG/g" | \
      sed "s/\[\[FISHERMAN_TAG\]\]/$FISHERMAN_TAG/g" | \
@@ -25,9 +26,9 @@ cat docker-compose.yaml.template |  \
      sed "s/\[\[STAT_TAG\]\]/$STAT_TAG/g" | \
      sed "s/\[\[MONITOR_TAG\]\]/$MONITOR_TAG/g" | \
      sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
-     sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" | \
-     sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" \
-    > $ENV_DIR/docker-compose.yaml
+     sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
+    > $ENV_DIR/docker-compose.yaml.template
+cat $ENV_DIR/docker-compose.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/docker-compose.yaml
 docker-compose -f $ENV_DIR/docker-compose.yaml up -d --force-recreate
 
 sleep 30

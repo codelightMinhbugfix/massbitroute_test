@@ -1,0 +1,16 @@
+# http://[[SERVER_NAME]]
+server {
+  #listen       443 ssl;
+  listen        9944;
+  #ssl_certificate /etc/letsencrypt/live/[[DOMAIN]]/fullchain.pem;
+  #ssl_certificate_key /etc/letsencrypt/live/[[DOMAIN]]/privkey.pem;
+  server_name [[SERVER_NAME]];
+  location / {
+      proxy_http_version 1.1;
+      proxy_pass  $scheme://[[IP]]:9944; # desired IP
+      proxy_set_header Host [[SERVER_NAME]]; # desired host
+      proxy_ssl_verify              off;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "Upgrade";
+  }
+}

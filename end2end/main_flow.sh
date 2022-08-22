@@ -19,6 +19,13 @@ bash -x prepare_proxy.sh
 bash -x create_git.sh
 #create other dockers: core + portal + admin
 bash -x create_docker_compose.sh
+#Prepare runtime start
+cat $ROOT_DIR/runtime_start.sh | \
+  sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+  sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
+  sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
+	> $ENV_DIR/runtime_start.sh
+chmod +x $ENV_DIR/runtime_start.sh
 #Exec commands in test-client
 #Stage1: Login
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _login
@@ -37,8 +44,12 @@ bash -x create_gateway.sh
 #State6 waiting for gateway approval
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _check_provider_status gateway approved
 #State4: Stake gateway
-docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider gateway
+docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider Gateway
+
+#bash turnoff-gateway.sh
+
+#bash turnoff-node.sh
 
 touch $ENV_DIR/.deletable
 #clean up test environment
-bash -x cleanup.sh
+#bash -x cleanup.sh $network_number

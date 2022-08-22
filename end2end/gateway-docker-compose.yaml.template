@@ -28,8 +28,8 @@ services:
     environment:
       - MBR_ENV=[[GATEWAY_TAG]]
       - DOMAIN=massbitroute.net
-      - PORTAL_URL=https://portal.massbitroute.net
-      - INSTALL_CMD=https://portal.massbitroute.net/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=eth&network=mainnet&zone=AS&app_key=[[APP_KEY]]&portal_url=https://portal.massbitroute.net&env=keiko
+      - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
+      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=eth&network=mainnet&zone=AS&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
 
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
@@ -53,4 +53,4 @@ services:
       - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].253"
+      - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].254"
