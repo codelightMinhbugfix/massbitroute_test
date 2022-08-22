@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Cloning Git') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "PR_ACTION", value: "opened")
+                }
+            } 
+            steps {
+                sh 'echo Triggered for $REPO_NAME on branch $BUILD_BRANCH'
+                sh 'rm -rf massbitroute_fisherman'
+                sh 'mkdir -p ${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_fisherman'
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_fisherman.git -b $BUILD_BRANCH ${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_fisherman'
+            }
+        }
+        stage('Build new docker image for PR') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "PR_ACTION", value: "opened")
+                }
+            }             
+            steps {
+                dir ("/home/massbit/jenkins/workspace/Fisherman/${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_fisherman"){
+                    sh 'docker build -t  massbit/massbitroute_fisherman:${BUILD_BRANCH}_${PR_NUMBER} .'
+                }
+            }
+        }
+        stage('Create isolated docker environment') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "PR_ACTION", value: "opened")
+                }
+            }             
+            steps {
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b dev ${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_test'
+                sh 'sed "s|export FISHERMAN_TAG=v0.1.0|export FISHERMAN_TAG=${BUILD_BRANCH}_${PR_NUMBER}|g" ${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                sh 'echo "--------------------------"; cat ${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_test/end2end/base.sh | grep "export FISHERMAN_TAG=" ; echo "--------------------------"'
+            }
+        }
+        stage('Running full flow test') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "PR_ACTION", value: "opened")
+                }
+            } 
+            steps {
+                dir ("/home/massbit/jenkins/workspace/Fisherman/${BUILD_BRANCH}_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh 'ls -la'
+                    sh 'bash -x main_flow.sh'
+                }
+            }
+        }
+    }
+}
