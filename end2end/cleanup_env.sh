@@ -14,6 +14,6 @@ rm -rf $ENV_DIR/gwman
 rm -rf $ENV_DIR/monitor
 rm -rf $ENV_DIR/node
 rm -rf $ENV_DIR/stat
-rm -rf $ENV_DIR/proxy/logs
+#rm -rf $ENV_DIR/proxy/logs
 rm $ENV_DIR/hosts
-#rm -rf $ENV_DIR
+rm -rf $ENV_DIR

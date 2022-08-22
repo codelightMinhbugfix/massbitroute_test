@@ -4,7 +4,7 @@ network_number=${1:-[[NETWORK_NUMBER]]}
 ENV_DIR=.
 SID=[[MASSBIT_ROUTE_SID]]
 PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
-
+docker network create -d bridge --gateway "172.24.[[NETWORK_NUMBER]].1" --subnet "172.24.[[NETWORK_NUMBER]].0/24"   [[NETWORK_PREFIX]]_[[NETWORK_NUMBER]]
 docker-compose -f $ENV_DIR/git-docker-compose.yaml up -d --force-recreate
 sleep 10
 docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/data

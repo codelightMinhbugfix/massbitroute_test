@@ -13,33 +13,33 @@ services:
     restart: always
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].254"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
     volumes:
       - ./proxy/logs:/logs
       #- /etc/letsencrypt:/etc/letsencrypt
       - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].210"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].210"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].210"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].206"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].201"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].200"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].200"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].204"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].201"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].215"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GWMAN_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GWMAN_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GWMAN_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[API_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PORTAL_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[WEB_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[WEB_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[FISHERMAN_SCHEDULER_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAKING_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
   test-client_[[NETWORK_NUMBER]]:
     container_name: mbr_test_client_[[NETWORK_NUMBER]]
     image: massbit/massbitroute_test_client:[[TEST_CLIENT_TAG]]
     restart: always
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].253"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[TEST_CLIENT_IP]]"
     environment:
       - DATASOURCE=[[PROTOCOL]]:\/\/34.81.232.186:8545
       - DATASOURCE_WS=ws:\/\/34.81.232.186:8546
@@ -48,18 +48,18 @@ services:
       - ./docker-client/logs:/logs
       - ./docker-client/vars:/vars
     extra_hosts:
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].201"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].200"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].215"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PORTAL_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[WEB_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAKING_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
   db_[[NETWORK_NUMBER]]:
     container_name: mbr_db_[[NETWORK_NUMBER]]
     image: postgres:14.4-alpine
     restart: always
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].203"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[POSTGRES_IP]]"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -73,27 +73,27 @@ services:
       # - db-data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
 
   redis_[[NETWORK_NUMBER]]:
     container_name: mbr_redis_[[NETWORK_NUMBER]]
@@ -101,33 +101,33 @@ services:
     restart: always
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].202"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[REDIS_IP]]"
     #ports:
     #  - '6379:6379'
     volumes:
       - redis-data:/data
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
 
   mbr_staking_[[NETWORK_NUMBER]]:
     container_name: mbr_staking_[[NETWORK_NUMBER]]
@@ -137,30 +137,30 @@ services:
       - "massbitchain_[[NETWORK_NUMBER]]"
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].215"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[STAKING_IP]]"
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
     environment:
       - MODE=api
 
@@ -173,32 +173,32 @@ services:
       - "redis_[[NETWORK_NUMBER]]"
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].201"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[PORTAL_IP]]"
     #ports:
     #  - '3001:3001'
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
     environment:
       - MODE=api
       - GEO_SERVICE_API_URL=[[PROTOCOL]]://api.ipapi.com/api
@@ -225,28 +225,28 @@ services:
       mbr_test_network_[[NETWORK_NUMBER]]:
         ipv4_address: "172.24.[[NETWORK_NUMBER]].211"
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
     environment:
       - MODE=worker
       - GEO_SERVICE_API_URL=[[PROTOCOL]]://api.ipapi.com/api
@@ -276,28 +276,28 @@ services:
     #ports:
     #  - '3006:3006'
     extra_hosts:
-    - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-    - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-    - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-    - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-    - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-    - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-    - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-    - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-    - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-    - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-    - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-    - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+    - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+    - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+    - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+    - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+    - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+    - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+    - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+    - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+    - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+    - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+    - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
     environment:
       - MODE=admin
       - GEO_SERVICE_API_URL=[[PROTOCOL]]://api.ipapi.com/api
@@ -322,32 +322,32 @@ services:
       - "mbr_portal_api_[[NETWORK_NUMBER]]"
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].200"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[WEB_IP]]"
     #ports:
     #  - '3000:3000'
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
     environment:
       - API_USER_URL=https://portal.massbitroute.net/
       - API_PORTAL_URL=https://portal.massbitroute.net/
@@ -368,37 +368,37 @@ services:
       - "mbr_portal_api_[[NETWORK_NUMBER]]"
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].204"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[FISHERMAN_SCHEDULER_IP]]"
     volumes:
       - ./scheduler/configs:/usr/local/bin/configs
       - ./scheduler/supervisor.conf:/etc/supervisor/conf.d/scheduler.conf
 #    ports:
 #      - '80:80'
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "worker01.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "worker02.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "worker01.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "worker02.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
     environment:
       - CONFIG_DIR=/usr/local/bin/configs/tasks
       - DATABASE_URL=postgres://postgres:postgres@db_[[NETWORK_NUMBER]]:5432/massbit-fisherman
@@ -432,32 +432,32 @@ services:
       - "fisherman_scheduler_[[NETWORK_NUMBER]]"
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].213"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER01_IP]]"
     volumes:
       - ./fisherman/supervisor.conf:/etc/supervisor/conf.d/fisherman.conf
       - ./fisherman/.env_fisherman:/usr/local/bin/.env_fisherman
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
     environment:
       - BENCHMARK_WRK_PATH=benchmark
       - DOMAIN=massbitroute.net
@@ -465,8 +465,8 @@ services:
       - RUST_LOG=debug
       - SCHEDULER_ENDPOINT=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net:80
       - WORKER_SERVICE_ENDPOINT=0.0.0.0:4040
-      - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].213
-      - WORKER_IP=172.24.[[NETWORK_NUMBER]].213
+      - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER01_IP]]
+      - WORKER_IP=172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER01_IP]]
       - WORKER_ENDPOINT=[[PROTOCOL]]://worker01.fisherman.massbitroute.net:4040
       - ZONE=AS
 
@@ -481,32 +481,32 @@ services:
       - "fisherman_scheduler_[[NETWORK_NUMBER]]"
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].214"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER02_IP]]"
     volumes:
       - ./fisherman/supervisor.conf:/etc/supervisor/conf.d/fisherman.conf
       - ./fisherman/.env_fisherman:/usr/local/bin/.env_fisherman
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
     environment:
       - BENCHMARK_WRK_PATH=benchmark
       - DOMAIN=massbitroute.net
@@ -514,8 +514,8 @@ services:
       - RUST_LOG=debug
       - SCHEDULER_ENDPOINT=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net:80
       - WORKER_SERVICE_ENDPOINT=0.0.0.0:4040
-      - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].214
-      - WORKER_IP=172.24.[[NETWORK_NUMBER]].214
+      - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER02_IP]]
+      - WORKER_IP=172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER02_IP]]
       - WORKER_ENDPOINT=[[PROTOCOL]]://worker02.fisherman.massbitroute.net:4040
       - ZONE=AS
 
@@ -527,7 +527,7 @@ services:
     restart: always
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].205"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
     #ports:
     #    - '9944:9944'
 
@@ -536,10 +536,10 @@ services:
     restart: unless-stopped
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].206"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[API_IP]]"
 
     image: massbit/massbitroute_api:[[API_TAG]]
-    # command: sed -i "s|export WHITELIST_PARTNERS=.*|export WHITELIST_PARTNERS=\"allow 172.24.[[NETWORK_NUMBER]].201\"|g" /massbit/massbitroute/app/src/sites/services/api/env/api.env
+    # command: sed -i "s|export WHITELIST_PARTNERS=.*|export WHITELIST_PARTNERS=\"allow 172.24.[[NETWORK_NUMBER]].[[PORTAL_IP]]\"|g" /massbit/massbitroute/app/src/sites/services/api/env/api.env
     command: "-n"
     # build:
     #   context: /massbit/massbitroute/app/src/sites/services/api
@@ -562,34 +562,34 @@ services:
       - GIT_PRIVATE_BRANCH=shamu
       - GIT_PRIVATE_READ_URL=[[PRIVATE_GIT_READ]]
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
 
   gwman_[[NETWORK_NUMBER]]:
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].210"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[GWMAN_IP]]"
 
     restart: unless-stopped
     image: massbit/massbitroute_gwman:[[GWMAN_TAG]]
@@ -614,34 +614,34 @@ services:
       - GWMANDEPLOY_BRANCH=shamu
       - GIT_PRIVATE_READ_URL=[[PRIVATE_GIT_READ]]
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
 
   stat_[[NETWORK_NUMBER]]:
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].208"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
     restart: unless-stopped
     image: massbit/massbitroute_stat:[[STAT_TAG]]
     command: "-n"
@@ -665,34 +665,34 @@ services:
       - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
       - GIT_PRIVATE_READ_URL=[[PRIVATE_GIT_READ]]
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
 
   monitor_[[NETWORK_NUMBER]]:
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].209"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
 
     restart: unless-stopped
     image: massbit/massbitroute_monitor:[[MONITOR_TAG]]
@@ -716,28 +716,28 @@ services:
       - MBR_ENV=[[MONITOR_TAG]]
       - GIT_PRIVATE_READ_URL=[[PRIVATE_GIT_READ]]
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
 
 volumes:
   db-data:
