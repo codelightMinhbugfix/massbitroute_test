@@ -24,7 +24,7 @@ _generate_test_case() {
     transaction=$(echo $latest_block_info | jq '.result.transactions[0] | del(.input, .accessList, .r, .s, .v, .chainId, .maxFeePerGas, .maxPriorityFeePerGas, .type, .nonce, .blockHash, .blockNumber)')
     is_full_data=false
 
-    if ! [[ -n "$transaction" ]]; then
+    if [[ "$block_hash" = "null" ]]; then
       continue
     fi
 
@@ -43,7 +43,7 @@ _generate_test_case() {
 
 _generate_test_case
 
-echo $all_test_case >./ethereum/input/ethereum-testcase.json
+echo $all_test_case | jq '.' >./ethereum/input/ethereum-testcase.json
 
 report="[]"
 sum_both_error=0
@@ -90,7 +90,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
 
     if [[ $response != *"result"* && $expected_response != *"result"* ]]; then
       both_error=$((both_error + 1))
-      both_error_report=$(echo $both_error_report | jq ". += [$method]")
+      both_error_report=$(echo $both_error_report | jq ". += [{\"method\":$method, \"response\":$response, \"expectedResponse\":$expected_response}]")
 
       echo "==================== BOTH ERROR ==================="
       echo "method : $method"
@@ -98,7 +98,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
       echo "expected_response : $expected_response"
     elif [[ $response != *"result"* ]]; then
       error=$((error + 1))
-      error_report=$(echo $error_report | jq ". += [$method]")
+      error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\":$response, \"expectedResponse\":$expected_response}]")
 
       echo "==================== ERROR ===================="
       echo "method : $method"
@@ -107,7 +107,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     elif [[ "$response" != "$expected_response" ]]; then
       if [[ $expect == true ]]; then
         failed=$((failed + 1))
-        failed_report=$(echo $failed_report | jq ". += [$method]")
+        failed_report=$(echo $failed_report | jq ". += [{\"method\":$method, \"response\":$response, \"expectedResponse\":$expected_response}]")
 
         echo "==================== OUTPUT DIFF ===================="
         echo "method : $method"
@@ -126,19 +126,19 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
   test_case_report="{
     \"passed\": {
       \"ratio\": \"$passed/$sum\",
-      \"method\": $passed_report
+      \"detail\": $passed_report
     },
     \"failed\": {
       \"ratio\": \"$failed/$sum\",
-      \"method\": $failed_report
+      \"detail\": $failed_report
     },
     \"error\": {
       \"ratio\": \"$error/$sum\",
-      \"method\": $error_report
+      \"detail\": $error_report
     },
     \"bothError\": {
       \"ratio\": \"$both_error/$sum\",
-      \"method\": $both_error_report
+      \"detail\": $both_error_report
     },
   }"
   report=$(echo $report | jq ". += [$test_case_report]")
@@ -165,5 +165,5 @@ fi
 
 echo "[ $report ]" >temp.json
 merge_report=$(jq -s add temp.json "$report_dir/ethereum-report.json")
-echo $merge_report | jq . >$report_dir/ethereum-report.json
+echo $merge_report | jq '.' >$report_dir/ethereum-report.json
 rm temp.json

@@ -44,5 +44,5 @@ fi
 
 echo "[ $report ]" >temp.json
 merge_report=$(jq -s add temp.json "$report_dir/ethereum-latency-report.json")
-echo $merge_report >$report_dir/ethereum-latency-report.json
+echo $merge_report | jq '.' >$report_dir/ethereum-latency-report.json
 rm temp.json

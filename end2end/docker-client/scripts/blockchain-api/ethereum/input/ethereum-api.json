@@ -27,7 +27,7 @@
   {
     "method": "eth_protocolVersion",
     "params": [],
-    "expectMatch": true
+    "expectMatch": false
   },
   {
     "method": "eth_syncing",
