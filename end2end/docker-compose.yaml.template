@@ -201,11 +201,18 @@ services:
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].207"
     environment:
       - MODE=api
+      - GEO_SERVICE_API_URL=http://api.ipapi.com/api
+      - GEO_SERVICE_SECRET=GEO_SERVICE_SECRET
       - MASSBIT_ROUTE_SID=[[MASSBIT_ROUTE_SID]]
       - MASSBIT_ROUTE_PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
       - DB_HOST=db_[[NETWORK_NUMBER]]
       - REDIS_HOST=redis_[[NETWORK_NUMBER]]
+      - MASSBIT_ROUTE_API_URL=http://api.massbitroute.net/_internal_api/v2
       - MASSBIT_CHAIN_URL=ws://chain.massbitroute.net:9944
+      - VERIFICATION_SERVICE_DOMAIN=http://scheduler.fisherman.massbitroute.net/provider/
+      - VERIFICATION_SERVICE_SECRET=VERIFICATION_SERVICE_SECRET
+      - WHITELIST_DOMAIN=http://localhost:8080|http://localhost:3000|https://dapi.massbitroute.net|https://mbr-app-git-dev-massbit-team.vercel.app|https://route-staging.massbit.io|http://dapi.massbitroute.net
+
 
   mbr_portal_worker_[[NETWORK_NUMBER]]:
     container_name: mbr_portal_worker_[[NETWORK_NUMBER]]
