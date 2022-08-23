@@ -14,9 +14,7 @@ bash -x create_git.sh
 #create other dockers: core + portal + admin
 bash -x create_docker_compose.sh
 
-#Exec commands in test-client
-#Stage1: Login
-docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _login
+bash -x run_component_api_test.sh
 
 #State2: Create node, gateway
 

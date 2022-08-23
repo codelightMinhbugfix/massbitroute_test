@@ -16,4 +16,5 @@ rm -rf $ENV_DIR/node
 rm -rf $ENV_DIR/stat
 #rm -rf $ENV_DIR/proxy/logs
 rm $ENV_DIR/hosts
-rm -rf $ENV_DIR
+#docker ps | awk '/mbr_/{print "docker rm -f",$1}' | bash
+#rm -rf $ENV_DIR

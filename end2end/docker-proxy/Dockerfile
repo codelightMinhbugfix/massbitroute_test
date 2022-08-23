@@ -1,5 +1,7 @@
 FROM openresty/openresty
 #COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN apt update && apt install curl jq vim nodejs npm -y
+RUN npm install -g newman
 EXPOSE 80/tcp 443/tcp
 
 #FROM ubuntu:20.04
