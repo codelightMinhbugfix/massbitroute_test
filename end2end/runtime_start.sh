@@ -7,14 +7,14 @@ PARTNER_ID=[[MASSBIT_ROUTE_PARTNER_ID]]
 docker network create -d bridge --gateway "172.24.[[NETWORK_NUMBER]].1" --subnet "172.24.[[NETWORK_NUMBER]].0/24"   [[NETWORK_PREFIX]]_[[NETWORK_NUMBER]]
 docker-compose -f $ENV_DIR/git-docker-compose.yaml up -d --force-recreate
 sleep 10
-docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/data
-docker exec -it mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/vars
-docker exec -it mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init
+docker exec mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/data
+docker exec mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/vars
+docker exec mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init
 echo "export SID=$SID" > $ENV_DIR/git/data/env/api.env
 echo "export PARTNER_ID=$PARTNER_ID" >> $ENV_DIR/git/data/env/api.env
 docker exec -it mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init
 sleep 10
-PRIVATE_GIT_READ=$(docker exec -it mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g")
+PRIVATE_GIT_READ=$(docker exec mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g")
 echo $PRIVATE_GIT_READ
 cat $ENV_DIR/docker-compose.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/docker-compose.yaml
 docker-compose -f $ENV_DIR/docker-compose.yaml up -d --force-recreate
