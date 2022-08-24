@@ -4,8 +4,8 @@ polkadot_api=$(jq . <./polkadot/input/polkadot-api.json)
 all_test_case="[]"
 
 _generate_test_case() {
-  while [[ $(jq length <<<$all_test_case) != $num_of_test_case ]]; do
-    latest_block_info=$(curl $polka \
+  while [[ $(jq length <<<$all_test_case) != $NUMBER_OF_TESTS ]]; do
+    latest_block_info=$(curl $ANOTHER_POLKADOT_PROVIDER \
       -H "Content-Type: application/json" \
       -s -X POST \
       --data '{
@@ -15,7 +15,7 @@ _generate_test_case() {
       "id": 1 }')
 
     block_number=$(echo $latest_block_info | jq '.result.number')
-    block_hash=$(curl $polka \
+    block_hash=$(curl $ANOTHER_POLKADOT_PROVIDER \
       -H "Content-Type: application/json" \
       -s -X POST \
       --data "{
@@ -23,7 +23,7 @@ _generate_test_case() {
       \"method\": \"chain_getBlockHash\",
       \"params\": ["$block_number"],
       \"id\": 1 }" | jq '.result')
-    extrinsic=$(curl $polka \
+    extrinsic=$(curl $ANOTHER_POLKADOT_PROVIDER \
       -H "Content-Type: application/json" \
       -s -X POST \
       --data "{
@@ -77,12 +77,12 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
 
     body="{\"id\": 1, \"jsonrpc\": \"2.0\", \"method\": "$method", \"params\": "$new_params"}"
 
-    response=$(curl $data_source_polkadot \
+    response=$(curl $MASSBIT_ROUTE_POLKADOT \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" | jq -S 'del(.jsonrpc, .id)')
-    expected_response=$(curl $polka \
+    expected_response=$(curl $ANOTHER_POLKADOT_PROVIDER \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
@@ -159,7 +159,7 @@ sum=$(($sum_both_error + $sum_error + $sum_passed + $sum_failed))
 
 report="{
   \"date\": \"$(date)\",
-  \"loopCount\": $num_of_test_case,
+  \"loopCount\": $NUMBER_OF_TESTS,
   \"passed\": \"$sum_passed/$sum\",
   \"failed\": \"$sum_failed/$sum\",
   \"error\": \"$sum_error/$sum\",
@@ -167,11 +167,11 @@ report="{
   \"result\": $report
 }"
 
-if ! [[ -f "$report_dir/polkadot-report.json" ]]; then
-  touch "$report_dir/polkadot-report.json"
+if ! [[ -f "$REPORT_DIR/polkadot-report.json" ]]; then
+  touch "$REPORT_DIR/polkadot-report.json"
 fi
 
 echo "[ $report ]" >temp.json
-merge_report=$(jq -s add temp.json "$report_dir/polkadot-report.json")
-echo $merge_report | jq '.' >$report_dir/polkadot-report.json
+merge_report=$(jq -s add temp.json "$REPORT_DIR/polkadot-report.json")
+echo $merge_report | jq '.' >$REPORT_DIR/polkadot-report.json
 rm temp.json

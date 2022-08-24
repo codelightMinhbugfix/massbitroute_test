@@ -4,9 +4,9 @@ ethereum_api=$(cat ./ethereum/input/ethereum-api.json)
 all_test_case="[]"
 
 _generate_test_case() {
-  while [[ $(echo $all_test_case | jq length) < $num_of_test_case ]]; do
+  while [[ $(echo $all_test_case | jq length) < $NUMBER_OF_TESTS ]]; do
     latest_block_info=$(
-      curl $infura \
+      curl $ANOTHER_ETHEREUM_PROVIDER \
         --silent \
         --header 'Content-Type: application/json' \
         --request POST \
@@ -77,12 +77,12 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
 
     body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": 67}"
 
-    response=$(curl $data_source_mainnet \
+    response=$(curl $MASSBIT_ROUTE_ETHEREUM \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" | jq -S 'del(.jsonrpc, .id)')
-    expected_response=$(curl $infura \
+    expected_response=$(curl $ANOTHER_ETHEREUM_PROVIDER \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
@@ -151,7 +151,7 @@ done
 sum=$(($sum_both_error + $sum_error + $sum_passed + $sum_failed))
 report="{
   \"date\": \"$(date)\",
-  \"loopCount\": $num_of_test_case,
+  \"loopCount\": $NUMBER_OF_TESTS,
   \"passed\": \"$sum_passed/$sum\",
   \"failed\": \"$sum_failed/$sum\",
   \"error\": \"$sum_error/$sum\",
@@ -159,11 +159,11 @@ report="{
   \"result\": $report
 }"
 
-if ! [[ -f "$report_dir/ethereum-report.json" ]]; then
-  touch "$report_dir/ethereum-report.json"
+if ! [[ -f "$REPORT_DIR/ethereum-report.json" ]]; then
+  touch "$REPORT_DIR/ethereum-report.json"
 fi
 
 echo "[ $report ]" >temp.json
-merge_report=$(jq -s add temp.json "$report_dir/ethereum-report.json")
-echo $merge_report | jq '.' >$report_dir/ethereum-report.json
+merge_report=$(jq -s add temp.json "$REPORT_DIR/ethereum-report.json")
+echo $merge_report | jq '.' >$REPORT_DIR/ethereum-report.json
 rm temp.json
