@@ -125,19 +125,28 @@ _stake_provider() {
     echo "$providerType staking status: Failed "
     exit 1
   fi
-  provider_status=""
-  while [[ "$provider_status" != "staked" ]]; do
-    echo "Checking $providerType status: In Progress"
-    providerType="${providerType,,}"
-    provider_status=$(curl -k --location --request GET "https://portal.$domain/mbr/$providerType/$providerId" \
-      --header "Authorization: Bearer $bearer" | jq -r ". | .status")
+  provider_status=$(curl -k --location --request GET "https://portal.$domain/mbr/$providerType/$providerId" \
+    --header "Authorization: Bearer $bearer" | jq -r ". | .status")
 
-    now=$(date)
-    echo "---------------------------------"
-    echo "$providerType status at $now is $provider_status"
-    echo "---------------------------------"
-    sleep 10
-  done
+  now=$(date)
+  echo "---------------------------------"
+  echo "$providerType status at $now is $provider_status, expected status staked"
+  echo "---------------------------------"
+
+#  provider_status=""
+#  while [[ "$provider_status" != "staked" ]]; do
+#    echo "Checking $providerType status: In Progress"
+#    providerType="${providerType,,}"
+#    provider_status=$(curl -k --location --request GET "https://portal.$domain/mbr/$providerType/$providerId" \
+#      --header "Authorization: Bearer $bearer" | jq -r ". | .status")
+#
+#    now=$(date)
+#    echo "---------------------------------"
+#    echo "$providerType status at $now is $provider_status"
+#    echo "---------------------------------"
+#    sleep 10
+#  done
+
   now=$(date)
   echo "$providerType staked: Passed at $now"
 }

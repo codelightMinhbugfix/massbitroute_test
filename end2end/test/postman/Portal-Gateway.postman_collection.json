@@ -25,7 +25,7 @@
 							"    const responseData = pm.response.json();",
 							"    pm.expect(responseData.accessToken).to.be.a(\"string\");",
 							"    pm.environment.set(\"accessToken\", responseData.accessToken);",
-							"    postman.setNextRequest(\"CreateGateway\");",
+							"    postman.setNextRequest(\"GetUserInfo\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -55,6 +55,43 @@
 					"path": [
 						"auth",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUserInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Get user info response should contain id field', () => {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.id).to.be.a(\"string\");",
+							"    pm.expect(responseData.walletAddress).to.be.a(\"string\");",
+							"    pm.environment.set(\"userId\", responseData.id);",
+							"    pm.environment.set(\"walletAddress\", responseData.walletAddress);",
+							"    postman.setNextRequest(\"CreateGateway\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{portal_url}}/user/info",
+					"host": [
+						"{{portal_url}}"
+					],
+					"path": [
+						"user",
+						"info"
 					]
 				}
 			},
@@ -97,7 +134,7 @@
 							"    for (key in providerInfo) {",
 							"        params.push(key + '=' + providerInfo[key]);",
 							"    }",
-							"    const install_url = pm.environment.get(\"portal_url\") + \"/api/v1/node_install?\" + params.join('&');",
+							"    const install_url = pm.environment.get(\"portal_url\") + \"/api/v1/gateway_install?\" + params.join('&');",
 							"    console.log(install_url);",
 							"    postman.setNextRequest(\"CheckCreatedGateway\");",
 							"});",
@@ -119,7 +156,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"{{nodePrefix}}-{{mbr-zone}}\",\n    \"blockchain\": \"{{blockchain}}\",\n    \"zone\": \"{{mbr-zone}}\",\n    \"dataSource\": \"{{datasource}}\",\n    \"dataSourceWs\": \"{{datasourcews}}\",\n    \"network\": \"{{network}}\"\n}\n"
+					"raw": "{\n    \"name\": \"{{nodePrefix}}-{{mbr-zone}}\",\n    \"blockchain\": \"{{blockchain}}\",\n    \"zone\": \"{{mbr-zone}}\",\n    \"network\": \"{{network}}\"\n}\n"
 				},
 				"url": {
 					"raw": "{{portal_url}}/mbr/gateway",
@@ -156,69 +193,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "{{portal_url}}/mbr/gateway/{{providerId}}",
-					"host": [
-						"{{portal_url}}"
-					],
-					"path": [
-						"mbr",
-						"gateway",
-						"{{providerId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DeleteGateway",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set(\"nodePrefix\", \"node\" + (Math.random() + 1).toString(36).substring(7))"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test('Delete gateway response should be contain true field', () => {",
-							"    const responseData = pm.response.json();",
-							"    pm.expect(responseData.status).to.be.a(\"string\");",
-							"    pm.expect(responseData.status).to.be.eq(\"true\");",
-							"    let url = pm.environment.get(\"portal_url\") + \"/mbr/gateway/\" + pm.environment.get(\"providerId\");",
-							"    pm.sendRequest(url, (error, response) => {",
-							"        if (error) {",
-							"            console.log(error);",
-							"        }",
-							"        let responseData = response.text();",
-							"        pm.test('response should contain serverName block', () => {",
-							"            pm.expect(responseData).contains(serverName);",
-							"        });",
-							"    });",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "\n"
-				},
 				"url": {
 					"raw": "{{portal_url}}/mbr/gateway/{{providerId}}",
 					"host": [
@@ -276,6 +250,96 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "DeleteGateway",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"nodePrefix\", \"node\" + (Math.random() + 1).toString(36).substring(7))"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Delete gateway response should be contain true field', () => {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.status).to.be.a(\"string\");",
+							"    pm.expect(responseData.status).to.be.eq(\"true\");",
+							"    let url = pm.environment.get(\"portal_url\") + \"/mbr/gateway/\" + pm.environment.get(\"providerId\");",
+							"    pm.sendRequest(url, (error, response) => {",
+							"        if (error) {",
+							"            console.log(error);",
+							"        }",
+							"        let responseData = response.text();",
+							"        pm.test('response should contain serverName block', () => {",
+							"            pm.expect(responseData).contains(serverName);",
+							"        });",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{portal_url}}/mbr/gateway/{{providerId}}",
+					"host": [
+						"{{portal_url}}"
+					],
+					"path": [
+						"mbr",
+						"gateway",
+						"{{providerId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [
