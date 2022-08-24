@@ -1,6 +1,23 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-cat $ROOT_DIR/hosts.template | sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" > $ENV_DIR/hosts
+cat $ROOT_DIR/hosts.template | \
+  sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+  sed "s/\[\[PORXY_IP\]\]/$PORXY_IP/g" | \
+  sed "s/\[\[TEST_CLIENT_IP\]\]/$TEST_CLIENT_IP/g" | \
+  sed "s/\[\[MASSBIT_CHAIN_IP\]\]/$MASSBIT_CHAIN_IP/g" | \
+  sed "s/\[\[STAKING_IP\]\]/$STAKING_IP/g" | \
+  sed "s/\[\[FISHERMAN_SCHEDULER_IP\]\]/$FISHERMAN_SCHEDULER_IP/g" | \
+  sed "s/\[\[FISHERMAN_WORKER01_IP\]\]/$FISHERMAN_WORKER01_IP/g" | \
+  sed "s/\[\[FISHERMAN_WORKER02_IP\]\]/$FISHERMAN_WORKER02_IP/g" | \
+  sed "s/\[\[PORTAL_IP\]\]/$PORTAL_IP/g" | \
+  sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
+  sed "s/\[\[WEB_IP\]\]/$WEB_IP/g" | \
+  sed "s/\[\[GWMAN_IP\]\]/$GWMAN_IP/g" | \
+  sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
+  sed "s/\[\[API_IP\]\]/$API_IP/g" | \
+  sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
+  sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" \
+  > $ENV_DIR/hosts
 PROXY_DIR=$ENV_DIR/proxy
 declare -A hosts
 #git clone http://massbit:DaTR__SGr89IjgvcwBtJyg0v_DFySDwI@git.massbitroute.net/massbitroute/ssl.git -b shamu ssl
@@ -10,7 +27,24 @@ do
   hosts[$server_name]=$ip
 done < <(cat $ENV_DIR/hosts)
 IFS=$_IFS
-cat $ROOT_DIR/docker-proxy/common.conf | sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" > $PROXY_DIR/nginx.conf
+cat $ROOT_DIR/docker-proxy/common.conf | \
+  sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
+  sed "s/\[\[PORXY_IP\]\]/$PORXY_IP/g" | \
+  sed "s/\[\[TEST_CLIENT_IP\]\]/$TEST_CLIENT_IP/g" | \
+  sed "s/\[\[MASSBIT_CHAIN_IP\]\]/$MASSBIT_CHAIN_IP/g" | \
+  sed "s/\[\[STAKING_IP\]\]/$STAKING_IP/g" | \
+  sed "s/\[\[FISHERMAN_SCHEDULER_IP\]\]/$FISHERMAN_SCHEDULER_IP/g" | \
+  sed "s/\[\[FISHERMAN_WORKER01_IP\]\]/$FISHERMAN_WORKER01_IP/g" | \
+  sed "s/\[\[FISHERMAN_WORKER02_IP\]\]/$FISHERMAN_WORKER02_IP/g" | \
+  sed "s/\[\[PORTAL_IP\]\]/$PORTAL_IP/g" | \
+  sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
+  sed "s/\[\[WEB_IP\]\]/$WEB_IP/g" | \
+  sed "s/\[\[GWMAN_IP\]\]/$GWMAN_IP/g" | \
+  sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
+  sed "s/\[\[API_IP\]\]/$API_IP/g" | \
+  sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
+  sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" \
+  > $PROXY_DIR/nginx.conf
 domain=massbitroute.net
 servers=("api" "portal" "admin-api" "dapi" "staking" "hostmaster" "ns1" "ns2")
 for server in ${servers[@]}; do

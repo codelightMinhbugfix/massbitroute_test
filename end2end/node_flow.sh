@@ -10,5 +10,5 @@ docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _cre
 bash -x create_node.sh
 #State4 waiting for node approval
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _check_provider_status node approved
-#State4: State node
+#State4: Stake node
 docker exec mbr_test_client_$network_number /test/scripts/test_main_flow.sh _stake_provider node

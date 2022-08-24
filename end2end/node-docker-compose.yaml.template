@@ -7,11 +7,11 @@ networks:
       # config:
       #     - subnet: "172.24.[[NETWORK_NUMBER]].0/16"
 services:
-  node_[[NETWORK_NUMBER]]:
+  "node_[[NETWORK_NUMBER]]_[[NODE_IP]]":
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].4"
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[NODE_IP]]"
 
     restart: unless-stopped
     image: massbit/massbitroute_node:[[NODE_TAG]]
@@ -29,7 +29,7 @@ services:
       - MBR_ENV=[[NODE_TAG]]
       - DOMAIN=massbitroute.net
       - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
-      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/node_install?id=[[NODE_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=AS&data_url=[[DATA_URL]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
+      - INSTALL_CMD="[[PROTOCOL]]://portal.massbitroute.net/api/v1/node_install?id=[[NODE_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=mainnet&zone=AS&data_url=[[DATA_URL]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]"
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
@@ -37,19 +37,19 @@ services:
       - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].205"
+      - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
       - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].209"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].208"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
       - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].254"

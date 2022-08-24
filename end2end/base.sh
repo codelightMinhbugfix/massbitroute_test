@@ -21,8 +21,35 @@ export GIT_TAG=v0.1.9
 export GWMAN_TAG=v0.1.0
 export STAT_TAG=v0.1.0
 export MONITOR_TAG=v0.1.0
+
+export NODE_TAG=v0.1.0
+export GATEWAY_TAG=v0.1.0
+
 export GIT_PRIVATE_BRANCH=shamu
 export NETWORK_PREFIX=mbr_test_network
+
+#IPs: 30-230: Node and gateway
+#Ips: 1
+export PROXY_IP=254
+export TEST_CLIENT_IP=253
+export CHAIN_IP=20
+
+export STAKING_IP=12
+export FISHERMAN_SCHEDULER_IP=15
+export FISHERMAN_WORKER01_IP=16
+export FISHERMAN_WORKER02_IP=17
+export PORTAL_IP=10
+export WEB_IP=11
+export POSTGRES_IP=13
+export REDIS_IP=14
+
+export GWMAN_IP=2
+export GIT_IP=5
+export API_IP=6
+export STAT_IP=7
+export MONITOR_IP=8
+
+
 if [ "x$network_number" == "x" ]; then
   while docker network ls | grep "$find_string"
   do
