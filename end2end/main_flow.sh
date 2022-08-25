@@ -5,10 +5,8 @@ LOOP=${1:-1}
 source $ROOT_DIR/base.sh
 
 bash -x prepare_runtime.sh
-
 #Prepare nginx config for proxy
 bash -x prepare_proxy.sh
-
 #create git docker
 bash -x create_git.sh
 #create other dockers: core + portal + admin
@@ -16,9 +14,7 @@ bash -x create_docker_compose.sh
 
 bash -x run_component_api_test.sh
 
-#State2: Create node, gateway
-
-bash -x $ENV_DIR/provider_flow.sh $LOOP
+bash -x $ENV_DIR/run_test_scenarios.sh
 
 touch $ENV_DIR/.deletable
 #clean up test environment

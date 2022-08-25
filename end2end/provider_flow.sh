@@ -61,3 +61,5 @@ do
   #docker-compose -f $ENV_DIR/node-docker-compose-${NODE_IP}.yaml down
   #docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status node investigate
 done
+
+$@
