@@ -11,7 +11,8 @@ export PROXY_TAG=v0.1.0
 export TEST_CLIENT_TAG=v0.1.0
 export FISHERMAN_TAG=v0.1.0
 export STAKING_TAG=v0.1-dev
-export PORTAL_TAG=v0.1.0-dev
+#export PORTAL_TAG=v0.1.0-dev
+export PORTAL_TAG=v0.1.0-test
 export WEB_TAG=v0.1
 export MASSBIT_CHAIN_TAG=v0.1
 export NODE_TAG=v0.1.0
@@ -76,3 +77,9 @@ if [ -f "$PROXY_LOGS/proxy_error.log" ]; then
   truncate -s 0 "$PROXY_LOGS/proxy_error.log"
 fi
 export network_number=$network_number
+
+declare -A blockchains=()
+blockchains["eth"]="mainnet rinkerby"
+blockchains["dot"]="mainnet"
+
+export blockchains

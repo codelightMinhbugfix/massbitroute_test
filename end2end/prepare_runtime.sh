@@ -15,7 +15,6 @@ cat $ROOT_DIR/node-docker-compose.yaml.template | \
     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
-	 	sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
 		sed "s/\[\[NODE_TAG\]\]/$NODE_TAG/g" | \
     sed "s/\[\[DATA_URL\]\]/$NODE_DATASOURCE/g" | \
     sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" | \
@@ -29,7 +28,6 @@ cat $ROOT_DIR/gateway-docker-compose.yaml.template | \
     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
-	 	sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
 		sed "s/\[\[GATEWAY_TAG\]\]/$GATEWAY_TAG/g" | \
     sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" | \
     sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
@@ -50,6 +48,11 @@ cat $ROOT_DIR/provider_flow.sh | \
   sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" \
   > $ENV_DIR/provider_flow.sh
 chmod +x $ENV_DIR/provider_flow.sh
+
+cat $ROOT_DIR/run_test_scenarios.sh | \
+  sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" \
+  > $ENV_DIR/run_test_scenarios.sh
+chmod +x $ENV_DIR/run_test_scenarios.sh
 
 cp $ROOT_DIR/create_node.sh $ENV_DIR/create_node.sh
 chmod +x $ENV_DIR/create_node.sh

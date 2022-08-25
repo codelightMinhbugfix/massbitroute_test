@@ -7,11 +7,10 @@ networks:
       # config:
       #     - subnet: "172.24.[[NETWORK_NUMBER]].0/16"
 services:
-  gateway_[[NETWORK_NUMBER]]_[[GATEWAY_IP]]:
+  gateway_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[SORT_ID]]:
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
-        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[GATEWAY_IP]]"
 
     restart: unless-stopped
     image: massbit/massbitroute_gateway:[[GATEWAY_TAG]]
@@ -22,14 +21,14 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_gateway_[[NETWORK_NUMBER]]
+    container_name: mbr_gateway_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[SORT_ID]]
     volumes:
       - ./gateway/logs:/massbit/massbitroute/app/src/sites/services/gateway/logs:rw
     environment:
       - MBR_ENV=[[GATEWAY_TAG]]
       - DOMAIN=massbitroute.net
       - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
-      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=eth&network=mainnet&zone=AS&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
+      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=eth&network=[[NETWORK]]&zone=[[ZONE]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
 
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
