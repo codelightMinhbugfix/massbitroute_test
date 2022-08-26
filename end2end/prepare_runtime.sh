@@ -53,9 +53,3 @@ cat $ROOT_DIR/run_test_scenarios.sh | \
   sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" \
   > $ENV_DIR/run_test_scenarios.sh
 chmod +x $ENV_DIR/run_test_scenarios.sh
-
-cp $ROOT_DIR/create_node.sh $ENV_DIR/create_node.sh
-chmod +x $ENV_DIR/create_node.sh
-
-cp $ROOT_DIR/create_gateway.sh $ENV_DIR/create_gateway.sh
-chmod +x $ENV_DIR/create_gateway.sh
