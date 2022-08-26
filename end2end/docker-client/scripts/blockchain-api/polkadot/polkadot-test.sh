@@ -1,6 +1,6 @@
 #! /bin/bash
-
-polkadot_api=$(jq . <./polkadot/input/polkadot-api.json)
+ROOT_DIR=$(realpath $(dirname $(realpath $0)))
+polkadot_api=$(cat $ROOT_DIR/input/polkadot-api.json)
 all_test_case="[]"
 
 _generate_test_case() {
@@ -43,7 +43,7 @@ _generate_test_case() {
 }
 
 _generate_test_case
-echo $all_test_case | jq '.' >./polkadot/input/polkadot-testcase.json
+echo $all_test_case | jq '.' >$ROOT_DIR/input/polkadot-testcase.json
 
 report="[]"
 sum_both_error=0
@@ -76,6 +76,30 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     done
 
     body="{\"id\": 1, \"jsonrpc\": \"2.0\", \"method\": "$method", \"params\": "$new_params"}"
+
+    massbit_http_code=$(curl $MASSBIT_ROUTE_POLKADOT \
+      --silent \
+      --header "Content-Type: application/json" \
+      --request POST \
+      --data "$body" \
+      -o /dev/null -s -w "%{http_code}\n")
+    another_provider_http_code=$(curl $ANOTHER_POLKADOT_PROVIDER \
+      --silent \
+      --header "Content-Type: application/json" \
+      --request POST \
+      --data "$body" \
+      -o /dev/null -s -w "%{http_code}\n")
+
+    if ! [[ "$massbit_http_code" =~ ^20[01]$ && "$another_provider_http_code" =~ ^20[01]$ ]]; then
+      error=$((error + 1))
+      error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\": \"Massbit http code: $massbit_http_code\", \"expectedResponse\": \"Another provider http code: $another_provider_http_code\"}]")
+
+      echo "==================== ERROR ==================="
+      echo "method : $method"
+      echo "Massbit http code: $massbit_http_code"
+      echo "Another provider http code: $another_provider_http_code"
+      continue
+    fi
 
     response=$(curl $MASSBIT_ROUTE_POLKADOT \
       --silent \

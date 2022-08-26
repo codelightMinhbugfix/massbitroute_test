@@ -1,6 +1,6 @@
 #! /bin/bash
-
-ethereum_api=$(cat ./ethereum/input/ethereum-api.json)
+ROOT_DIR=$(realpath $(dirname $(realpath $0)))
+ethereum_api=$(cat $ROOT_DIR/input/ethereum-api.json)
 all_test_case="[]"
 
 _generate_test_case() {
@@ -11,7 +11,7 @@ _generate_test_case() {
         --header 'Content-Type: application/json' \
         --request POST \
         --data '{
-        "id": 1, 
+        "id": 1,
         "jsonrpc": "2.0",
         "method": "eth_getBlockByNumber",
         "params": [ "latest", true ]
@@ -29,10 +29,10 @@ _generate_test_case() {
     fi
 
     test_case="{
-      \"data\": $data, 
-      \"blockHash\": $block_hash, 
-      \"blockNumber\": $block_number, 
-      \"object\": $transaction, 
+      \"data\": $data,
+      \"blockHash\": $block_hash,
+      \"blockNumber\": $block_number,
+      \"object\": $transaction,
       \"isFullData\": $is_full_data
     }"
 
@@ -43,7 +43,7 @@ _generate_test_case() {
 
 _generate_test_case
 
-echo $all_test_case | jq '.' >./ethereum/input/ethereum-testcase.json
+echo $all_test_case | jq '.' >$ROOT_DIR/input/ethereum-testcase.json
 
 report="[]"
 sum_both_error=0
@@ -76,6 +76,30 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     done
 
     body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": 67}"
+
+    massbit_http_code=$(curl $MASSBIT_ROUTE_ETHEREUM \
+      --silent \
+      --header "Content-Type: application/json" \
+      --request POST \
+      --data "$body" \
+      -o /dev/null -s -w "%{http_code}\n")
+    another_provider_http_code=$(curl $ANOTHER_ETHEREUM_PROVIDER \
+      --silent \
+      --header "Content-Type: application/json" \
+      --request POST \
+      --data "$body" \
+      -o /dev/null -s -w "%{http_code}\n")
+
+    if ! [[ "$massbit_http_code" =~ ^20[01]$ && "$another_provider_http_code" =~ ^20[01]$ ]]; then
+      error=$((error + 1))
+      error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\": \"Massbit http code: $massbit_http_code\", \"expectedResponse\": \"Another provider http code: $another_provider_http_code\"}]")
+
+      echo "==================== ERROR ==================="
+      echo "method : $method"
+      echo "Massbit http code: $massbit_http_code"
+      echo "Another provider http code: $another_provider_http_code"
+      continue
+    fi
 
     response=$(curl $MASSBIT_ROUTE_ETHEREUM \
       --silent \
