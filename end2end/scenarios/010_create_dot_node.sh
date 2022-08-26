@@ -1,8 +1,9 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-echo '-----------------------------------------'
-echo 'Run scenario create_dot_mainnet_node-----'
-echo '-----------------------------------------'
+SCENARIO_ID="$(echo $RANDOM | md5sum | head -c 5)"
+echo '-------------------------------------------------------';
+echo "Run scenario ${BASH_SOURCE[0]} with ID $SCENARIO_ID----";
+echo '-------------------------------------------------------';
 blockchain=dot
 network=mainnet
 zone=AS
@@ -18,7 +19,7 @@ USER_ID=$(cat $ENV_DIR/proxy/vars/USER_ID)
 if [ $NODE_ID == "null" ]; then
   echo 'Test failed'
   exit 1
-fi  
+fi
 cat $ENV_DIR/node-docker-compose.yaml.template | \
     sed "s|\[\[NODE_IP\]\]|$i|g" | \
     sed "s/\[\[APP_KEY\]\]/$NODE_APP_KEY/g" | \

@@ -379,6 +379,7 @@ services:
     volumes:
       - ./scheduler/configs:/usr/local/bin/configs
       - ./scheduler/supervisor.conf:/etc/supervisor/conf.d/scheduler.conf
+      - ./scheduler/log:/var/log
 #    ports:
 #      - '80:80'
     extra_hosts:
@@ -445,6 +446,7 @@ services:
       - ./fisherman/supervisor.conf:/etc/supervisor/conf.d/fisherman.conf
       - ./fisherman/configs:/usr/local/bin/configs
       - ./fisherman/.env_fisherman:/usr/local/bin/.env_fisherman
+      - ./fisherman/log:/var/log
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
@@ -496,6 +498,7 @@ services:
       - ./fisherman/supervisor.conf:/etc/supervisor/conf.d/fisherman.conf
       - ./fisherman/configs:/usr/local/bin/configs
       - ./fisherman/.env_fisherman:/usr/local/bin/.env_fisherman
+      - ./fisherman/log:/var/log
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"

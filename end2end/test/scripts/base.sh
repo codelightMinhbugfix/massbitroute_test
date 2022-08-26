@@ -2,8 +2,6 @@
 TEST_USERNAME=demo
 TEST_PASSWORD=Codelight123
 protocol=http
-blockchain=eth
-network=mainnet
 dataSource=$DATASOURCE
 dataSourceWs=$DATASOURCE_WS
 domain=${DOMAIN:-massbitroute.net}

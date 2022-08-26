@@ -6,7 +6,7 @@ export network_number=[[NETWORK_NUMBER]]
 for file in scenarios/*;
 do
   if [  -f $file ];then
-    bash -x $file
+    bash $file
   fi
 done
 

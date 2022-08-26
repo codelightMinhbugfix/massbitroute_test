@@ -1,7 +1,7 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 echo '---------------------------------------'
-echo 'Run scenario create_eth_mainnet_node---'
+echo "Run scenario ${BASH_SOURCE[0]}---------"
 echo '---------------------------------------'
 blockchain=eth
 network=rinkerby

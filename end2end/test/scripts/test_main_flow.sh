@@ -270,7 +270,7 @@ _check_provider_status() {
   while [[ "$status" != "$2" ]]; do
     echo "Checking $providerType status: In Progress"
     cat /logs/proxy_access.log | grep "$providerId" | grep '.10->api.' | grep 'POST' | grep "$providerType.update"
-    if [ $? -eq 0 ];then break;fi
+    #if [ $? -eq 0 ];then break;fi
 
     status=$(curl -k --location --request GET "https://portal.$DOMAIN/mbr/$providerType/$providerId" \
       --header "Authorization: Bearer $bearer" | jq -r ". | .status")
