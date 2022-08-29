@@ -112,7 +112,7 @@ pipeline {
                 // sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/PORTAL_TAG'
                 
                 
-                sh 'API_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/API_TAG);sed -i "s|export API_TAG=v0.1.7|export API_TAG=${API_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                sh 'API_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/API_TAG);sed -i "s|export API_TAG=v0.1.11|export API_TAG=${API_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
                 sh 'NODE_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/NODE_TAG);sed -i "s|export NODE_TAG=v0.1.0|export NODE_TAG=${NODE_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
                 sh 'GATEWAY_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/GATEWAY_TAG);sed -i "s|export GATEWAY_TAG=v0.1.0|export GATEWAY_TAG=${GATEWAY_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
                 sh 'MONITOR_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/MONITOR_TAG);sed -i "s|export MONITOR_TAG=v0.1.0|export MONITOR_TAG=${MONITOR_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'

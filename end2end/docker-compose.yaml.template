@@ -360,6 +360,7 @@ services:
       - API_PORTAL_URL=https://portal.massbitroute.net/
 
       - ENVIRONMENT=shamu
+      - STAT_URL=http://stat.mbr.massbitroute.net
       - GATEWAY_INSTALL_URL=http://portal.massbitroute.net/api/v1/gateway_install
       - NODE_INSTALL_URL=http://portal.massbitroute.net/api/v1/node_install
       - DAPI_PROVIDER_DOMAIN=massbitroute.net

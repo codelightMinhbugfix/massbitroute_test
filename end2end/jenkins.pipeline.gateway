@@ -5,7 +5,7 @@ pipeline {
         stage('Cloning Git') {
             when { 
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "REPO_NAME", value: "massbitroute_gateway")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -17,13 +17,13 @@ pipeline {
                 sh 'echo Triggered for $REPO_NAME on branch $BUILD_BRANCH'
                 sh 'rm -rf pr_${PR_NUMBER}'
                 sh 'mkdir -p pr_${PR_NUMBER}'
-                sh 'git clone git@github.com:massbitprotocol/massbitroute_fisherman.git -b $BUILD_BRANCH pr_${PR_NUMBER}/massbitroute_fisherman'
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_gateway.git -b $BUILD_BRANCH pr_${PR_NUMBER}/massbitroute_node'
             }
         }
-        stage('Build new docker image for PR') {
+        stage('Build new docker image for MassbitNode') {
             when { 
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "REPO_NAME", value: "massbitroute_gateway")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -31,15 +31,21 @@ pipeline {
                 }
             }             
             steps {
-                dir ("/home/massbit/jenkins/workspace/Fisherman/pr_${PR_NUMBER}/massbitroute_fisherman"){
-                    sh 'docker build -t  massbit/massbitroute_fisherman:${PR_NUMBER} .'
+                dir ("/massbit/massbitroute/app/src"){
+                    sh 'git stash; git checkout dev; git pull origin dev'
+                }
+                dir ("/massbit/massbitroute/app/src/install"){
+                    sh './docker.sh ${BUILD_BRANCH} build bare'
+                    sh './docker.sh ${BUILD_BRANCH} build basenode'
+                    sh './docker.sh ${BUILD_BRANCH} build base'
+                    sh './docker.sh ${BUILD_BRANCH} build gateway'
                 }
             }
         }
         stage('Create isolated docker environment') {
             when { 
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "REPO_NAME", value: "massbitroute_gateway")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -48,14 +54,12 @@ pipeline {
             }             
             steps {
                 sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b dev pr_${PR_NUMBER}/massbitroute_test'
-                sh 'sed -i "s|export FISHERMAN_TAG=v0.1.0|export FISHERMAN_TAG=${PR_NUMBER}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
-                sh 'echo "--------------------------"; cat pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh | grep "export FISHERMAN_TAG=" ; echo "--------------------------"'
             }
         }
         stage('Get latest stable tags') {
             when { 
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "REPO_NAME", value: "massbitroute_gateway")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -64,11 +68,12 @@ pipeline {
                 }
             }
             steps {
-                dir ("/home/massbit/jenkins/workspace/Fisherman/pr_${PR_NUMBER}/massbitroute_test"){
+                dir ("/home/massbit/jenkins/workspace/MassbitNode/pr_${PR_NUMBER}/massbitroute_test"){
                     sh 'mkdir -p build_version'
                     sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 > build_version/API_TAG' 
                     sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 > build_version/NODE_TAG'
-                    sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute_gateway.git | tail -n1 | cut -d/ -f3 > build_version/GATEWAY_TAG'
+                    sh 'echo $BUILD_BRANCH > build_version/GATEWAY_TAG'                    
+                    // sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute_gateway.git | tail -n1 | cut -d/ -f3 > build_version/GATEWAY_TAG'
                     sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 > build_version/STAT_TAG'
                     sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 > build_version/MONITOR_TAG'
                     sh 'git ls-remote --tags git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 > build_version/GIT_TAG'
@@ -85,7 +90,7 @@ pipeline {
         stage('Update stable tags') {
             when { 
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "REPO_NAME", value: "massbitroute_gateway")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -101,9 +106,9 @@ pipeline {
                 sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/GIT_TAG'
                 sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/API_TAG'
                 sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/MASSBIT_CHAIN_TAG'
-                // sh 'FISHERMAN_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/FISHERMAN_TAG);sed -i "s|export FISHERMAN_TAG=v0.1.0|export FISHERMAN_TAG=${FISHERMAN_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
-                // sh 'STAKING_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/STAKING_TAG);sed -i "s|export STAKING_TAG=v0.1.0|export STAKING_TAG=${STAKING_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
-                sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/PORTAL_TAG'
+                sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/FISHERMAN_TAG'
+                // sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/STAKING_TAG'
+                // sh 'cat pr_${PR_NUMBER}/massbitroute_test/build_version/PORTAL_TAG'
                 
                 
                 sh 'API_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/API_TAG);sed -i "s|export API_TAG=v0.1.11|export API_TAG=${API_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
@@ -113,16 +118,18 @@ pipeline {
                 sh 'GIT_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/GIT_TAG);sed -i "s|export GIT_TAG=v0.1.9|export GIT_TAG=${GIT_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
                 sh 'GWMAN_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/GWMAN_TAG);sed -i "s|export GWMAN_TAG=v0.1.0|export GWMAN_TAG=${GWMAN_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
                 sh 'MASSBIT_CHAIN_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/MASSBIT_CHAIN_TAG);sed -i "s|export MASSBIT_CHAIN_TAG=v0.1.0|export MASSBIT_CHAIN_TAG=${MASSBIT_CHAIN_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
-                // sh 'FISHERMAN_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/FISHERMAN_TAG);sed -i "s|export FISHERMAN_TAG=v0.1.0|export FISHERMAN_TAG=${FISHERMAN_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                sh 'FISHERMAN_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/FISHERMAN_TAG);sed -i "s|export FISHERMAN_TAG=v0.1.0|export FISHERMAN_TAG=${FISHERMAN_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                sh 'STAT_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/STAT_TAG);sed -i "s|export STAT_TAG=v0.1.0|export STAT_TAG=${STAT_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                
                 // sh 'STAKING_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/STAKING_TAG);sed -i "s|export STAKING_TAG=v0.1.0|export STAKING_TAG=${STAKING_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
-                sh 'PORTAL_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/PORTAL_TAG);sed -i "s|export PORTAL_TAG=v0.1.0|export PORTAL_TAG=${PORTAL_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                // sh 'PORTAL_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/PORTAL_TAG);sed -i "s|export PORTAL_TAG=v0.1.0|export PORTAL_TAG=${PORTAL_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
                 // sh 'WEB_TAG=$(cat pr_${PR_NUMBER}/massbitroute_test/build_version/WEB_TAG);sed -i "s|export WEB_TAG=v0.1.0|export WEB_TAG=${WEB_TAG}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
             }
         }      
         stage('Running full flow test') {
             when { 
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    environment(name: "REPO_NAME", value: "massbitroute_gateway")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -130,7 +137,7 @@ pipeline {
                 }
             } 
             steps {
-                dir ("/home/massbit/jenkins/workspace/Fisherman/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                dir ("/home/massbit/jenkins/workspace/MassbitNode/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh 'ls -la'
                     sh 'bash -x main_flow.sh'
                 }
