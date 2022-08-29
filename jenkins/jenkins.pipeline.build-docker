@@ -17,7 +17,7 @@ pipeline {
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 > build_version/GIT_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 > build_version/GWMAN_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3> build_version/MASSBIT_CHAIN_TAG"
-                    // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > build_version/FISHERMAN_TAG'
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > build_version/FISHERMAN_TAG"
                     // sh 'git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3> build_version/STAKING_TAG'
                     // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 > build_version/PORTAL_TAG'
                     // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 > build_version/WEB_TAG'
@@ -32,7 +32,7 @@ pipeline {
                 } 
             }
         }
-        stage('Build new docker image') {                
+        stage('Build new core docker image') {                
             parallel {
 
                 stage ('Build gw image') {
@@ -92,7 +92,7 @@ pipeline {
                 }                                                  
             }
         }
-        stage('Push new docker image') {                
+        stage('Push new core docker image') {                
             parallel {
 
                 stage ('Push gw image') {
@@ -151,7 +151,17 @@ pipeline {
                     }
                 }                                                  
             }
-        }
-        
+        } 
+
+        stage('Cloning Git') {
+            steps {
+                dir ("/home/massbit/massbit/massbitroute_fisherman"){
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > FISHERMAN_TAG"                        
+                    sh 'TAG=$(cat FISHERMAN_TAG);git reset --hard ;git checkout tags/${TAG}'
+                    sh 'TAG=$(cat FISHERMAN_TAG); docker build -t  massbit/massbitroute_fisherman:${TAG} . && docker push massbit/massbitroute_fisherman:${TAG}'
+                }
+            }
+        }                 
+           
     }
 }
