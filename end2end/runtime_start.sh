@@ -18,6 +18,8 @@ PRIVATE_GIT_READ=$(docker exec mbr_git_$network_number cat /massbit/massbitroute
 echo $PRIVATE_GIT_READ
 cat $ENV_DIR/docker-compose.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/docker-compose.yaml
 docker-compose -f $ENV_DIR/docker-compose.yaml up -d --force-recreate
+cat $ENV_DIR/stat-docker-compose.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/stat-docker-compose.yaml
+docker-compose -f $ENV_DIR/stat-docker-compose.yaml up -d --force-recreate
 sleep 30
 #docker exec mbr_api bash -c '/massbit/massbitroute/app/src/sites/services/api/cmd_server start nginx'
 docker exec mbr_portal_api_$network_number bash -c 'cd /app; npm run dbm:init'

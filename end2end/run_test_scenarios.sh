@@ -3,7 +3,7 @@ ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 export ENV_DIR=$ROOT_DIR
 export network_number=[[NETWORK_NUMBER]]
 
-for file in scenarios/*;
+for file in scenarios-enable/*;
 do
   if [  -f $file ];then
     bash $file

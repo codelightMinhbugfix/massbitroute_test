@@ -1,0 +1,1 @@
+../scenarios/002_create_eth_gateway.sh

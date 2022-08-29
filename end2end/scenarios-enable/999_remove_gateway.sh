@@ -1,0 +1,1 @@
+../scenarios/999_remove_gateway.sh

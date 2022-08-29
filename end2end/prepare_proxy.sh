@@ -15,8 +15,16 @@ cat $ROOT_DIR/hosts.template | \
   sed "s/\[\[GWMAN_IP\]\]/$GWMAN_IP/g" | \
   sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
   sed "s/\[\[API_IP\]\]/$API_IP/g" | \
-  sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
-  sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" \
+
+  sed "s/\[\[NODE_DOT_STAT_IP\]\]/$NODE_DOT_STAT_IP/g"        | \
+  sed "s/\[\[NODE_ETH_STAT_IP\]\]/$NODE_ETH_STAT_IP/g"        | \
+  sed "s/\[\[GATEWAY_DOT_STAT_IP\]\]/$GATEWAY_DOT_STAT_IP/g"  | \
+  sed "s/\[\[GATEWAY_ETH_STAT_IP\]\]/$GATEWAY_ETH_STAT_IP/g"  | \
+
+  sed "s/\[\[NODE_DOT_MONITOR_IP\]\]/$NODE_DOT_MONITOR_IP/g"  | \
+  sed "s/\[\[NODE_ETH_MONITOR_IP\]\]/$NODE_ETH_MONITOR_IP/g"  | \
+  sed "s/\[\[GATEWAY_ETH_MONITOR_IP\]\]/$GATEWAY_ETH_MONITOR_IP/g" | \
+  sed "s/\[\[GATEWAY_DOT_MONITOR_IP\]\]/$GATEWAY_DOT_MONITOR_IP/g" \
   > $ENV_DIR/hosts
 PROXY_DIR=$ENV_DIR/proxy
 declare -A hosts
@@ -41,9 +49,7 @@ cat $ROOT_DIR/docker-proxy/common.conf | \
   sed "s/\[\[WEB_IP\]\]/$WEB_IP/g" | \
   sed "s/\[\[GWMAN_IP\]\]/$GWMAN_IP/g" | \
   sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
-  sed "s/\[\[API_IP\]\]/$API_IP/g" | \
-  sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
-  sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" \
+  sed "s/\[\[API_IP\]\]/$API_IP/g" \
   > $PROXY_DIR/nginx.conf
 domain=massbitroute.net
 servers=("api" "portal" "admin-api" "dapi" "staking" "hostmaster" "ns1" "ns2")
@@ -53,9 +59,23 @@ for server in ${servers[@]}; do
   #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
   cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/${hosts[$server_name]}/g" >> $PROXY_DIR/nginx.conf
 done
+
+#stat
+servers=("node-dot-mainnet" "node-eth-mainnet" "gateway-dot-mainnet" "gateway-eth-mainnet")
+for server in ${servers[@]}; do
+  server_name=${server}.stat.mbr.$domain
+  echo "Generate server block for $server_name with ip ${hosts[$server_name]}"
+  #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
+  cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/${hosts[$server_name]}/g" >> $PROXY_DIR/nginx.conf
+done
+
+#monitor
+servers=("node-dot-mainnet" "node-eth-mainnet" "gateway-dot-mainnet" "gateway-eth-mainnet")
+for server in ${servers[@]}; do
+  server_name=${server}.monitor.mbr.$domain
+  echo "Generate server block for $server_name with ip ${hosts[$server_name]}"
+  #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
+  cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/${hosts[$server_name]}/g" >> $PROXY_DIR/nginx.conf
+done
+
 echo "nameserver 172.24.${network_number}.$GWMAN_IP" > $PROXY_DIR/resolv.conf
-#domain=fisherman.massbitroute.net
-#server_name=scheduler.$domain
-#echo "Generate server block for $server_name with ip ${hosts[$server_name]}"
-#openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
-#cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/${hosts[$server_name]}/g" >> $PROXY_DIR/nginx.conf
