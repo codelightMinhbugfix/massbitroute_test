@@ -20,6 +20,7 @@ if [ $NODE_ID == "null" ]; then
   exit 1
 fi
 cat $ENV_DIR/node-docker-compose.yaml.template | \
+    sed "s/\[\[USER_ID\]\]/$USER_ID/g" | \
     sed "s/\[\[APP_KEY\]\]/$NODE_APP_KEY/g" | \
     sed "s/\[\[NODE_ID\]\]/$NODE_ID/g" | \
     sed "s/\[\[SORT_ID\]\]/$SORT_ID/g" | \

@@ -18,8 +18,8 @@ cat $ROOT_DIR/node-docker-compose.yaml.template | \
 		sed "s/\[\[NODE_TAG\]\]/$NODE_TAG/g" | \
     sed "s/\[\[DATA_URL\]\]/$NODE_DATASOURCE/g" | \
     sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
-    sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" | \
-	 	sed "s/\[\[USER_ID\]\]/$USER_ID/g" > $ENV_DIR/node-docker-compose.yaml.template
+    sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" \
+    > $ENV_DIR/node-docker-compose.yaml.template
 
 
 #Create gateway template
@@ -29,8 +29,8 @@ cat $ROOT_DIR/gateway-docker-compose.yaml.template | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
 		sed "s/\[\[GATEWAY_TAG\]\]/$GATEWAY_TAG/g" | \
     sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
-    sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" | \
-	 	sed "s/\[\[USER_ID\]\]/$USER_ID/g" > $ENV_DIR/gateway-docker-compose.yaml.template
+    sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" \
+	 	> $ENV_DIR/gateway-docker-compose.yaml.template
 
 
 #Prepare runtime start

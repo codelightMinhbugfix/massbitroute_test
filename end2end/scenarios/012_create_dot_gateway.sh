@@ -19,6 +19,7 @@ if [ $GATEWAY_ID == "null" ]; then
   exit 1
 fi
 cat $ENV_DIR/gateway-docker-compose.yaml.template | \
+  sed "s/\[\[USER_ID\]\]/$USER_ID/g" | \
 	sed "s/\[\[APP_KEY\]\]/$GATEWAY_APP_KEY/g" | \
 	sed "s/\[\[GATEWAY_ID\]\]/$GATEWAY_ID/g" | \
   sed "s/\[\[SORT_ID\]\]/$SORT_ID/g" | \
