@@ -70,18 +70,18 @@ pipeline {
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitNode/pr_${PR_NUMBER}/massbitroute_test"){
                     sh 'mkdir -p build_version'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 > build_version/API_TAG' 
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 > build_version/NODE_TAG'
-                    sh 'echo $BUILD_BRANCH > build_version/GATEWAY_TAG'                    
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 > build_version/STAT_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 > build_version/MONITOR_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 > build_version/GIT_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 > build_version/GWMAN_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3> build_version/MASSBIT_CHAIN_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > build_version/FISHERMAN_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3> build_version/STAKING_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 > build_version/PORTAL_TAG'
-                    sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 > build_version/WEB_TAG'
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 > build_version/API_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 > build_version/NODE_TAG"
+                    sh "echo $BUILD_BRANCH > build_version/GATEWAY_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 > build_version/STAT_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 > build_version/MONITOR_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 > build_version/GIT_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 > build_version/GWMAN_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3> build_version/MASSBIT_CHAIN_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > build_version/FISHERMAN_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3> build_version/STAKING_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 > build_version/PORTAL_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 > build_version/WEB_TAG"
                     sh 'cat end2end/base.sh | grep export'
                 }
             }
