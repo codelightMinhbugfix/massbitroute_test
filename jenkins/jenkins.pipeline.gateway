@@ -20,7 +20,7 @@ pipeline {
                 sh 'git clone git@github.com:massbitprotocol/massbitroute_gateway.git -b $BUILD_BRANCH pr_${PR_NUMBER}/massbitroute_node'
             }
         }
-        stage('Build new docker image for MassbitNode') {
+        stage('Build new docker image for MassbitGateway') {
             when { 
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute_gateway")
@@ -32,13 +32,13 @@ pipeline {
             }             
             steps {
                 dir ("/massbit/massbitroute/app/src"){
-                    sh 'git stash; git checkout dev; git pull origin dev'
+                    sh 'git stash; git checkout jenkins; git pull origin jenkins'
                 }
                 dir ("/massbit/massbitroute/app/src/install"){
-                    sh './docker.sh ${BUILD_BRANCH} build bare'
-                    sh './docker.sh ${BUILD_BRANCH} build basenode'
-                    sh './docker.sh ${BUILD_BRANCH} build base'
-                    sh './docker.sh ${BUILD_BRANCH} build gateway'
+                    sh './docker.sh latest build bare'
+                    sh './docker.sh latest build basenode'
+                    sh './docker.sh latest build base'
+                    sh './docker.sh ${PR_NUMBER} build gateway'
                 }
             }
         }
@@ -68,11 +68,11 @@ pipeline {
                 }
             }
             steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitNode/pr_${PR_NUMBER}/massbitroute_test"){
+                dir ("/home/massbit/jenkins/workspace/MassbitGateway/pr_${PR_NUMBER}/massbitroute_test"){
                     sh 'mkdir -p build_version'
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 > build_version/API_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 > build_version/NODE_TAG"
-                    sh "echo $BUILD_BRANCH > build_version/GATEWAY_TAG"
+                    sh "echo $PR_NUMBER > build_version/GATEWAY_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 > build_version/STAT_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 > build_version/MONITOR_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 > build_version/GIT_TAG"
@@ -82,7 +82,8 @@ pipeline {
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3> build_version/STAKING_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 > build_version/PORTAL_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 > build_version/WEB_TAG"
-                    sh 'cat end2end/base.sh | grep export'
+                    sh "pwd && ls -la"
+                    //sh 'cat end2end/base.sh | grep export'
                 }
             }
         }        
@@ -136,7 +137,7 @@ pipeline {
                 }
             } 
             steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitNode/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                dir ("/home/massbit/jenkins/workspace/MassbitGateway/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh 'ls -la'
                     sh 'bash -x main_flow.sh'
                 }
