@@ -230,6 +230,8 @@ _execute_apis_testing() {
   gatewayIP=$(nslookup $dApiDomain 172.24.${NETWORK_NUMBER}.2 | awk -F':' '/Address: [0-9]/{sub(/^ /,"",$2);print $2}')
   export DAPI_DOMAIN=$dApiDomain
   dApiUrl="$protocol://$gatewayIP/$dApiAppKey"
+  sed /$DAPI_DOMAIN/d -i /etc/hosts
+  echo "$gatewayIP $DAPI_DOMAIN" >> /etc/hosts
   if [ "x$gatewayIP" == "x" ]; then
     echo "Can not resolve ip of $dApiDomain"
     exit 1

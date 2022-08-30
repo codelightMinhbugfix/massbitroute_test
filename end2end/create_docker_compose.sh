@@ -24,6 +24,7 @@ cat docker-compose.yaml.template |  \
      sed "s/\[\[API_TAG\]\]/$API_TAG/g" | \
      sed "s/\[\[GIT_TAG\]\]/$GIT_TAG/g" | \
      sed "s/\[\[GWMAN_TAG\]\]/$GWMAN_TAG/g" | \
+     sed "s/\[\[SESSION_TAG\]\]/$SESSION_TAG/g" | \
      sed "s/\[\[STAT_TAG\]\]/$STAT_TAG/g" | \
      sed "s/\[\[MONITOR_TAG\]\]/$MONITOR_TAG/g" | \
      #Ips
@@ -42,6 +43,7 @@ cat docker-compose.yaml.template |  \
      sed "s/\[\[REDIS_IP\]\]/$REDIS_IP/g" | \
      sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
      sed "s/\[\[API_IP\]\]/$API_IP/g" | \
+     sed "s/\[\[SESSION_IP\]\]/$SESSION_IP/g" | \
      sed "s/\[\[SCHEDULER_AUTHORIZATION\]\]/$SCHEDULER_AUTHORIZATION/g" | \
      sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
      sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \

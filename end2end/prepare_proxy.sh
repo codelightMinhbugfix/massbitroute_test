@@ -15,6 +15,7 @@ cat $ROOT_DIR/hosts.template | \
   sed "s/\[\[GWMAN_IP\]\]/$GWMAN_IP/g" | \
   sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
   sed "s/\[\[API_IP\]\]/$API_IP/g" | \
+  sed "s/\[\[SESSION_IP\]\]/$SESSION_IP/g" | \
 
   sed "s/\[\[NODE_DOT_STAT_IP\]\]/$NODE_DOT_STAT_IP/g"        | \
   sed "s/\[\[NODE_ETH_STAT_IP\]\]/$NODE_ETH_STAT_IP/g"        | \
@@ -50,10 +51,11 @@ cat $ROOT_DIR/docker-proxy/common.conf | \
   sed "s/\[\[WEB_IP\]\]/$WEB_IP/g" | \
   sed "s/\[\[GWMAN_IP\]\]/$GWMAN_IP/g" | \
   sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
-  sed "s/\[\[API_IP\]\]/$API_IP/g" \
+  sed "s/\[\[API_IP\]\]/$API_IP/g" | \
+  sed "s/\[\[SESSION_IP\]\]/$SESSION_IP/g" \
   > $PROXY_DIR/nginx.conf
 domain=massbitroute.net
-servers=("api" "portal" "admin-api" "dapi" "staking" "hostmaster" "ns1" "ns2")
+servers=("session.mbr" "api" "portal" "admin-api" "dapi" "staking" "hostmaster" "ns1" "ns2")
 for server in ${servers[@]}; do
   server_name=$server.$domain
   echo "Generate server block for $server_name with ip ${hosts[$server_name]}"

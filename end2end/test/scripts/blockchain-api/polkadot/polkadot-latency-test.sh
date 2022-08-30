@@ -13,7 +13,7 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
     body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $params, \"id\": 1}"
 
     massbit_http_code=$(curl $MASSBIT_ROUTE_POLKADOT \
-      --silent \
+      --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
@@ -38,7 +38,7 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
     fi
 
     response=$(curl $MASSBIT_ROUTE_POLKADOT \
-      --silent \
+      --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \

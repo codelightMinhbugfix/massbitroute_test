@@ -13,6 +13,7 @@ portal=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/
 WEB_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 )
 API_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 )
 GWMAN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 )
+SESSION_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_session.git | tail -n1 | cut -d/ -f3 )
 
 export PROXY_TAG=${PROXY_TAG:-v0.1.0}
 export TEST_CLIENT_TAG=${TEST_CLIENT_TAG:-v0.1.0}
@@ -24,6 +25,7 @@ export PORTAL_TAG=${PORTAL_TAG:-v0.1.0-test}
 export WEB_TAG=${WEB_TAG:-v0.1}
 export MASSBIT_CHAIN_TAG=${MASSBIT_CHAIN_TAG:-v0.1}
 
+export SESSION_TAG=${SESSION_TAG:-v0.1.0}
 export API_TAG=${API_TAG:-v0.1.11}
 export GIT_TAG=${GIT_TAG:-v0.1.11}
 export GWMAN_TAG=${GWMAN_TAG:-v0.1.4}
@@ -57,6 +59,7 @@ export FISHERMAN_WORKER02_IP=17
 export GWMAN_IP=2
 export GIT_IP=5
 export API_IP=6
+export SESSION_IP=7
 
 export NODE_DOT_STAT_IP=21
 export NODE_ETH_STAT_IP=22
