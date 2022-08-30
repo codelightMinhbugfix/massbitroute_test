@@ -14,6 +14,7 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
 
     massbit_http_code=$(curl $MASSBIT_ROUTE_ETHEREUM \
       --silent \
+      --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
@@ -38,6 +39,7 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
 
     response=$(curl $MASSBIT_ROUTE_ETHEREUM \
       --silent \
+      --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" | jq -S 'del(.jsonrpc, .id)')

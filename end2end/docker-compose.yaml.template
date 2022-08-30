@@ -18,11 +18,13 @@ services:
       - DATASOURCE=[[PROTOCOL]]:\/\/34.81.232.186:8545
       - DATASOURCE_WS=ws:\/\/34.81.232.186:8546
       - DOMAIN=massbitroute.net
+      - NETWORK_NUMBER=[[NETWORK_NUMBER]]
     volumes:
       - ./proxy/logs:/logs
       - ./proxy/vars:/vars
+      - ./proxy/reports:/reports
       - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./proxy/resolv.conf:/etc/resolv.conf
+      #- ./proxy/resolv.conf:/etc/resolv.conf
       - [[ROOT_DIR]]/test:/test
       #- /etc/letsencrypt:/etc/letsencrypt
     extra_hosts:
@@ -351,6 +353,7 @@ services:
       - API_PORTAL_URL=https://portal.massbitroute.net/
 
       - ENVIRONMENT=shamu
+      - STAT_URL=http://stat.mbr.massbitroute.net
       - GATEWAY_INSTALL_URL=http://portal.massbitroute.net/api/v1/gateway_install
       - NODE_INSTALL_URL=http://portal.massbitroute.net/api/v1/node_install
       - DAPI_PROVIDER_DOMAIN=massbitroute.net

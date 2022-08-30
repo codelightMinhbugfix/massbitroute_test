@@ -10,7 +10,7 @@ export NUMBER_OF_TESTS=2
 # ==============================
 # Directory store report
 # ==============================
-export REPORT_DIR=/test/reports
+export REPORT_DIR=/reports
 # ==============================
 # Your account's private key
 # ==============================
@@ -166,13 +166,15 @@ _create_dapi() {
     }");
   echo $create_dapi_response;
   create_dapi_status=$(echo $create_dapi_response | jq .status)
-  apiId=$(echo $create_dapi_response | jq -r '. | .entrypoints[0].apiId')
-  appKey=$(echo $create_dapi_response | jq -r '. | .appKey')
-  dapiURL="$protocol://$apiId.${blockchain}-$network.$domain/$appKey";
-  echo $dapiURL > /vars/${blockchain}_${network}_DAPI_URL
+  dApiId=$(echo $create_dapi_response | jq -r '. | .entrypoints[0].apiId')
+  dApiAppKey=$(echo $create_dapi_response | jq -r '. | .appKey')
+  dApiURL="$protocol://$dApiId.${blockchain}-$network.$domain/$dApiAppKey";
+  echo "$dApiId.${blockchain}-$network.$domain" > /vars/${blockchain}_${network}_DAPI_DOMAIN
+  echo $dApiAppKey > /vars/${blockchain}_${network}_DAPI_APPKEY
+  echo $dApiURL > /vars/${blockchain}_${network}_DAPI_URL
 
   echo "---------dAPIUrl-----------------"
-  echo "$dapiURL"
+  echo "$dApiURL"
   echo "---------------------------------"
 }
 
@@ -221,15 +223,25 @@ _prepare_dapis() {
 _execute_apis_testing() {
   export blockchain=$1
   export network=$2
-  dapiUrl=$(cat "/vars/${blockchain}_${network}_DAPI_URL")
+  dApiDomain=$(cat "/vars/${blockchain}_${network}_DAPI_DOMAIN")
+  dApiAppKey=$(cat "/vars/${blockchain}_${network}_DAPI_APPKEY")
+  #dApiUrl=$(cat "/vars/${blockchain}_${network}_DAPI_URL")
+  #dApiDomain=$(echo $dApiUrl | cut -d'/' -f3)
+  gatewayIP=$(nslookup $dApiDomain 172.24.${NETWORK_NUMBER}.2 | awk -F':' '/Address: [0-9]/{sub(/^ /,"",$2);print $2}')
+  export DAPI_DOMAIN=$dApiDomain
+  dApiUrl="$protocol://$gatewayIP/$dApiAppKey"
+  if [ "x$gatewayIP" == "x" ]; then
+    echo "Can not resolve ip of $dApiDomain"
+    exit 1
+  fi
   if [ "$blockchain" == "eth" ]; then
-    export MASSBIT_ROUTE_ETHEREUM=$dapiUrl
+    export MASSBIT_ROUTE_ETHEREUM="$dApiUrl"
     echo "Test apis with endpoint: $MASSBIT_ROUTE_ETHEREUM";
     bash -x $SCRIPT_DIR/blockchain-api/ethereum/ethereum-test.sh
     bash -x $SCRIPT_DIR/blockchain-api/ethereum/ethereum-latency-test.sh
     #cd $SCRIPT_DIR/ethereum/flow-test && npm install && node index.js $NUMBER_OF_TESTS $MASSBIT_ROUTE_ETHEREUM $ANOTHER_ETHEREUM_PROVIDER $ETHEREUM_NETWORK $REPORT_DIR $ETHEREUM_PRIVATE_KEY $ETHEREUM_EOA_ADDRESS
   elif [ "$blockchain" == "dot" ]; then
-    export MASSBIT_ROUTE_POLKADOT=$dapiUrl
+    export MASSBIT_ROUTE_POLKADOT="$dApiUrl"
     echo "Test apis with endpoint: $MASSBIT_ROUTE_POLKADOT";
     bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-test.sh
     bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-latency-test.sh

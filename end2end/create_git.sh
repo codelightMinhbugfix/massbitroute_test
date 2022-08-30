@@ -7,8 +7,6 @@ cat $ROOT_DIR/git-docker-compose.yaml.template |  \
      sed "s/\[\[GIT_TAG\]\]/$GIT_TAG/g" | \
      sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" | \
      sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
-     sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
-     sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" | \
      sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g"  \
     > $ENV_DIR/git-docker-compose.yaml
 #cp git-docker-compose.yaml $ENV/git-docker-compose.yaml

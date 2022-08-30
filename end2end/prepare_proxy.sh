@@ -78,4 +78,4 @@ for server in ${servers[@]}; do
   cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/${hosts[$server_name]}/g" >> $PROXY_DIR/nginx.conf
 done
 
-echo "nameserver 172.24.${network_number}.$GWMAN_IP" > $PROXY_DIR/resolv.conf
+#echo "nameserver 172.24.${network_number}.$GWMAN_IP" > $PROXY_DIR/resolv.conf
