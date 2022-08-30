@@ -9,11 +9,12 @@ _destroy_provider() {
   PROVIDER_ID=$3
   if [ "$PROVIDER_TYPE" == "node" ]; then
     docker-compose -f $ENV_DIR/node-docker-compose-${DOCKER_ID}.yaml down
+    docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status node investigate $PROVIDER_ID
   else
     docker-compose -f $ENV_DIR/gateway-docker-compose-${DOCKER_ID}.yaml down
+    docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status gateway investigate $PROVIDER_ID
   fi
-  docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status node investigate $PROVIDER_ID
-  status=$(cat /vars/status/$PROVIDER_ID)
+  status=$(cat $ENV_DIR/proxy/vars/status/$PROVIDER_ID)
   echo status
 }
 

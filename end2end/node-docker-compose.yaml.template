@@ -7,7 +7,7 @@ networks:
       # config:
       #     - subnet: "172.24.[[NETWORK_NUMBER]].0/16"
 services:
-  "node_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[SORT_ID]]":
+  "node_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[DOCKER_ID]]":
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
@@ -21,9 +21,9 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_node_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[SORT_ID]]
+    container_name: mbr_node_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[DOCKER_ID]]
     volumes:
-      - ./node/logs:/massbit/massbitroute/app/src/sites/services/node/logs:rw
+      - ./node/[[DOCKER_ID]]/logs:/massbit/massbitroute/app/src/sites/services/node/logs:rw
     environment:
       - MBR_ENV=[[NODE_TAG]]
       - DOMAIN=massbitroute.net

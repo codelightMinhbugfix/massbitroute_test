@@ -4,8 +4,8 @@ SCENARIO_ID="$(echo $RANDOM | md5sum | head -c 5)"
 echo '-------------------------------------------------------------'
 echo "Run scenario ${BASH_SOURCE[0]} with ID $SCENARIO_ID ---------"
 echo '-------------------------------------------------------------'
-LOOP=10
+LOOP=2
 for (( c=1; c<=$LOOP; c++ ))
 do
-   $ROOT_DIR/003_create_then_remove_eth_node.sh
+   $ROOT_DIR/004_create_then_remove_eth_gateway.sh
 done

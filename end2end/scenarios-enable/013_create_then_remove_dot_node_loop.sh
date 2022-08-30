@@ -1,1 +1,0 @@
-../scenarios/013_create_then_remove_dot_node_loop.sh
