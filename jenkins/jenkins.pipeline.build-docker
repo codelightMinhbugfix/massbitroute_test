@@ -153,7 +153,7 @@ pipeline {
             }
         } 
 
-        stage('Cloning Git') {
+        stage('Build and push Fisherman') {
             steps {
                 dir ("/home/massbit/massbit/massbitroute_fisherman"){
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > FISHERMAN_TAG"                        
