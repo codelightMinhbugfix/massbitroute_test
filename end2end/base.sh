@@ -17,7 +17,7 @@ GWMAN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotoc
 export PROXY_TAG=${PROXY_TAG:-v0.1.0}
 export TEST_CLIENT_TAG=${TEST_CLIENT_TAG:-v0.1.0}
 #export FISHERMAN_TAG=${FISHERMAN_TAG:-v0.1.0}
-export FISHERMAN_TAG=v0.1.0
+export FISHERMAN_TAG=v0.1.0-dev
 export STAKING_TAG=${STAKING_TAG:-v0.1-dev}
 #export PORTAL_TAG=v0.1.0-dev
 export PORTAL_TAG=${PORTAL_TAG:-v0.1.0-test}
@@ -39,7 +39,7 @@ export MASSBIT_ROUTE_SID=403716b0f58a7d6ddec769f8ca6008f2c1c0cea6
 export MASSBIT_ROUTE_PARTNER_ID=fc78b64c5c33f3f270700b0c4d3e7998188035ab
 export GIT_PRIVATE_BRANCH=shamu
 export NETWORK_PREFIX=mbr_test_network
-
+export SCHEDULER_AUTHORIZATION=SCHEDULER_AUTHORIZATION
 #IPs: 30-230: Node and gateway
 #Ips: 1
 export PROXY_IP=254

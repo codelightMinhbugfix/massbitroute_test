@@ -407,6 +407,7 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@db_[[NETWORK_NUMBER]]:5432/massbit-fisherman
       - DOMAIN=massbitroute.net
       - ENVIRONMENT=test
+      - SCHEME=http
       - IS_VERIFY_REPORT=true
       - IS_REGULAR_REPORT=true
       - RUST_LOG=debug
@@ -440,7 +441,7 @@ services:
       - ./fisherman/supervisor.conf:/etc/supervisor/conf.d/fisherman.conf
       - ./fisherman/configs:/usr/local/bin/configs
       - ./fisherman/.env_fisherman:/usr/local/bin/.env_fisherman
-      - ./fisherman/log:/var/log/fisherman
+      - ./fisherman/worker01/log:/var/log/fisherman
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
@@ -493,7 +494,7 @@ services:
       - ./fisherman/supervisor.conf:/etc/supervisor/conf.d/fisherman.conf
       - ./fisherman/configs:/usr/local/bin/configs
       - ./fisherman/.env_fisherman:/usr/local/bin/.env_fisherman
-      - ./fisherman/log:/var/log/fisherman
+      - ./fisherman/worker02/log:/var/log/fisherman
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"

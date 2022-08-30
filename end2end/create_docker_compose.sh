@@ -42,7 +42,7 @@ cat docker-compose.yaml.template |  \
      sed "s/\[\[REDIS_IP\]\]/$REDIS_IP/g" | \
      sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
      sed "s/\[\[API_IP\]\]/$API_IP/g" | \
-
+     sed "s/\[\[SCHEDULER_AUTHORIZATION\]\]/$SCHEDULER_AUTHORIZATION/g" | \
      sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
      sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
     > $ENV_DIR/docker-compose.yaml.template

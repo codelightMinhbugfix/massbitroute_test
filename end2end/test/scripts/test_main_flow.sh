@@ -288,6 +288,11 @@ _check_provider_status() {
   done
   echo "Checking $providerType reported status: $status at $now in ${duration}s"
   echo $status > /vars/status/$providerId
+  if [ "$status" != "$2" ]; then
+    echo "Test failed. Expectation status is $2"
+    exit 1
+  fi
+
 }
 
 $@
