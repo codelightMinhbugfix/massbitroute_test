@@ -14,7 +14,7 @@ bash -x create_docker_compose.sh
 
 bash -x run_component_api_test.sh
 
-bash -x $ENV_DIR/run_test_scenarios.sh
+bash $ENV_DIR/run_test_scenarios.sh
 
 touch $ENV_DIR/.deletable
 #clean up test environment

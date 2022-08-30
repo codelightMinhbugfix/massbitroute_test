@@ -7,7 +7,7 @@ networks:
       # config:
       #     - subnet: "172.24.[[NETWORK_NUMBER]].0/16"
 services:
-  gateway_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[SORT_ID]]:
+  gateway_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[DOCKER_ID]]:
     privileged: true
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
@@ -21,35 +21,35 @@ services:
     #   args:
     #     VERSION: 0.0.1-shamu-dev
     #     BRANCH: shamu
-    container_name: mbr_gateway_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[SORT_ID]]
+    container_name: mbr_gateway_[[NETWORK_NUMBER]]_[[BLOCKCHAIN]]_[[NETWORK]]_[[DOCKER_ID]]
     volumes:
-      - ./gateway/logs:/massbit/massbitroute/app/src/sites/services/gateway/logs:rw
+      - ./gateway/[[DOCKER_ID]]/logs:/massbit/massbitroute/app/src/sites/services/gateway/logs:rw
     environment:
       - MBR_ENV=[[GATEWAY_TAG]]
       - DOMAIN=massbitroute.net
       - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
-      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=eth&network=[[NETWORK]]&zone=[[ZONE]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
+      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/gateway_install?id=[[GATEWAY_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=[[NETWORK]]&zone=[[ZONE]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
 
     extra_hosts:
-      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
+      - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
-      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
-      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
-      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
-      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[MONITOR_IP]]"
-      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
-      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
-      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
-      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[STAT_IP]]"
-      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].254"
-      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].254"
-      - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].254"
+      - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "dapi.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "scheduler.fisherman.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-eth-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-dot-mainnet.monitor.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "node-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-eth-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
+      - "ipv4.icanhazip.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"

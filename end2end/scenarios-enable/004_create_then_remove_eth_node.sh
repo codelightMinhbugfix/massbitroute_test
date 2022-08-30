@@ -1,0 +1,1 @@
+../scenarios/004_create_then_remove_eth_node.sh

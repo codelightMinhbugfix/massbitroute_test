@@ -1,0 +1,48 @@
+[
+  {
+    "date": "Fri Aug 26 06:31:00 UTC 2022",
+    "loopCount": 2,
+    "passed": "0/0",
+    "failed": "0/0",
+    "error": "0/0",
+    "bothError": "0/0",
+    "result": [
+      {
+        "passed": {
+          "ratio": "0/0",
+          "detail": []
+        },
+        "failed": {
+          "ratio": "0/0",
+          "detail": []
+        },
+        "error": {
+          "ratio": "0/0",
+          "detail": []
+        },
+        "bothError": {
+          "ratio": "0/0",
+          "detail": []
+        }
+      },
+      {
+        "passed": {
+          "ratio": "0/0",
+          "detail": []
+        },
+        "failed": {
+          "ratio": "0/0",
+          "detail": []
+        },
+        "error": {
+          "ratio": "0/0",
+          "detail": []
+        },
+        "bothError": {
+          "ratio": "0/0",
+          "detail": []
+        }
+      }
+    ]
+  }
+]

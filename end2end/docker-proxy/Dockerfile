@@ -1,6 +1,6 @@
 FROM openresty/openresty
 #COPY nginx.conf /etc/nginx/conf.d/default.conf
-RUN apt update && apt install curl jq vim nodejs npm python python3-pip -y
+RUN apt update && apt install curl jq vim nodejs npm python python3-pip dnsutils -y
 RUN pip install robotframework
 RUN npm install -g newman
 EXPOSE 80/tcp 443/tcp

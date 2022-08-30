@@ -1,0 +1,137 @@
+[
+  {
+    "method": "web3_clientVersion",
+    "params": [],
+    "expectMatch": false
+  },
+  {
+    "method": "web3_sha3",
+    "params": ["data"],
+    "expectMatch": true
+  },
+  {
+    "method": "net_version",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "net_listening",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "net_peerCount",
+    "params": [],
+    "expectMatch": false
+  },
+  {
+    "method": "eth_protocolVersion",
+    "params": [],
+    "expectMatch": false
+  },
+  {
+    "method": "eth_syncing",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_mining",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_hashrate",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_accounts",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getBalance",
+    "params": ["object.from", "blockNumber"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getTransactionCount",
+    "params": ["object.from", "blockNumber"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getBlockTransactionCountByHash",
+    "params": ["blockHash"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getBlockTransactionCountByNumber",
+    "params": ["blockNumber"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getUncleCountByBlockHash",
+    "params": ["blockHash"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getUncleCountByBlockNumber",
+    "params": ["blockNumber"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getCode",
+    "params": ["object.from", "blockNumber"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_call",
+    "params": ["object", "blockNumber"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_estimateGas",
+    "params": ["object"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getBlockByHash",
+    "params": ["blockHash", "isFullData"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getBlockByNumber",
+    "params": ["blockNumber", "isFullData"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getTransactionByHash",
+    "params": ["object.hash"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getTransactionByBlockHashAndIndex",
+    "params": ["blockHash", "object.transactionIndex"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getTransactionByBlockNumberAndIndex",
+    "params": ["blockNumber", "object.transactionIndex"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getTransactionReceipt",
+    "params": ["object.hash"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getUncleByBlockHashAndIndex",
+    "params": ["blockHash", "object.transactionIndex"],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_getUncleByBlockNumberAndIndex",
+    "params": ["blockNumber", "object.transactionIndex"],
+    "expectMatch": true
+  }
+]

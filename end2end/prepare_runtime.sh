@@ -16,11 +16,9 @@ cat $ROOT_DIR/node-docker-compose.yaml.template | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
 		sed "s/\[\[NODE_TAG\]\]/$NODE_TAG/g" | \
-    sed "s/\[\[DATA_URL\]\]/$NODE_DATASOURCE/g" | \
-    sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" | \
-    sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
     sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
-	 	sed "s/\[\[USER_ID\]\]/$USER_ID/g" > $ENV_DIR/node-docker-compose.yaml.template
+    sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" \
+    > $ENV_DIR/node-docker-compose.yaml.template
 
 
 #Create gateway template
@@ -29,10 +27,9 @@ cat $ROOT_DIR/gateway-docker-compose.yaml.template | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
 		sed "s/\[\[GATEWAY_TAG\]\]/$GATEWAY_TAG/g" | \
-    sed "s/\[\[MONITOR_IP\]\]/$MONITOR_IP/g" | \
-    sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
     sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
-	 	sed "s/\[\[USER_ID\]\]/$USER_ID/g" > $ENV_DIR/gateway-docker-compose.yaml.template
+    sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" \
+	 	> $ENV_DIR/gateway-docker-compose.yaml.template
 
 
 #Prepare runtime start
@@ -53,9 +50,3 @@ cat $ROOT_DIR/run_test_scenarios.sh | \
   sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" \
   > $ENV_DIR/run_test_scenarios.sh
 chmod +x $ENV_DIR/run_test_scenarios.sh
-
-cp $ROOT_DIR/create_node.sh $ENV_DIR/create_node.sh
-chmod +x $ENV_DIR/create_node.sh
-
-cp $ROOT_DIR/create_gateway.sh $ENV_DIR/create_gateway.sh
-chmod +x $ENV_DIR/create_gateway.sh
