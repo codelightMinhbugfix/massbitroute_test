@@ -16,7 +16,8 @@ GWMAN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotoc
 
 export PROXY_TAG=${PROXY_TAG:-v0.1.0}
 export TEST_CLIENT_TAG=${TEST_CLIENT_TAG:-v0.1.0}
-export FISHERMAN_TAG=${FISHERMAN_TAG:-v0.1.0}
+#export FISHERMAN_TAG=${FISHERMAN_TAG:-v0.1.0}
+export FISHERMAN_TAG=v0.1.0
 export STAKING_TAG=${STAKING_TAG:-v0.1-dev}
 #export PORTAL_TAG=v0.1.0-dev
 export PORTAL_TAG=${PORTAL_TAG:-v0.1.0-test}

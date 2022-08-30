@@ -267,8 +267,11 @@ _check_provider_status() {
   status=''
   start=$(date +"%s")
   end=$start
+  duration=$(( $end-$start ))
+  mkdir -p /vars/status
   printf "Start check status of %s at %ds\n" $providerType $start
-  while [[ "$status" != "$2" && (( $end-$start )) <= $PROVIDER_STATUS_TIMEOUT ]]; do
+  #while [ \( "$status" != "$2" \) -a \( $duration <= $PROVIDER_STATUS_TIMEOUT \) ]; do
+  while [[ "$status" != "$2" ]]; do
     echo "Checking $providerType status: In Progress"
     cat /logs/proxy_access.log | grep "$providerId" | grep '.10->api.' | grep 'POST' | grep "$providerType.update"
     #if [ $? -eq 0 ];then break;fi
@@ -277,12 +280,12 @@ _check_provider_status() {
       --header "Authorization: Bearer $bearer" | jq -r ". | .status")
     now=$(date)
     end=$(date +"%s")
+    duration=$(( $end-$start ))
     echo "---------------------------------"
     echo "$providerType status at $now is $status"
     echo "---------------------------------"
     sleep 10
   done
-  duration=$(( $end-$start ))
   echo "Checking $providerType reported status: $2 at $now in ${duration}s"
   echo $status > /vars/status/$providerId
 }

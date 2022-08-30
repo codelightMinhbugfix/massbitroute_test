@@ -24,7 +24,7 @@ cat $ENV_DIR/node-docker-compose.yaml.template | \
     sed "s/\[\[USER_ID\]\]/$USER_ID/g" | \
     sed "s/\[\[APP_KEY\]\]/$NODE_APP_KEY/g" | \
     sed "s/\[\[NODE_ID\]\]/$NODE_ID/g" | \
-    sed "s/\[\[DATA_URL\]\]/$NODE_DATASOURCE/g" | \
+    sed "s|\[\[DATA_URL\]\]|$NODE_DATASOURCE|g" | \
     sed "s/\[\[SORT_ID\]\]/$SORT_ID/g" | \
     sed "s/\[\[BLOCKCHAIN\]\]/$blockchain/g" | \
     sed "s/\[\[NETWORK\]\]/$network/g" | \
