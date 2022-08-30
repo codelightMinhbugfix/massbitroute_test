@@ -17,7 +17,7 @@ NODE_ID=$(cat $ENV_DIR/proxy/vars/${DOCKER_ID}/NODE_ID)
 NODE_APP_KEY=$(cat $ENV_DIR/proxy/vars/${DOCKER_ID}/NODE_APP_KEY)
 NODE_DATASOURCE=$(cat $ENV_DIR/proxy/vars/${DOCKER_ID}/NODE_DATASOURCE)
 USER_ID=$(cat $ENV_DIR/proxy/vars/USER_ID)
-if [ $NODE_ID == "null" ]; then
+if [ "$NODE_ID" == "null" ]; then
   echo 'Test failed'
   exit 1
 fi

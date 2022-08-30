@@ -32,6 +32,7 @@ services:
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GWMAN_IP]]"
       - "ns2.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GWMAN_IP]]"
       - "api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[API_IP]]"
+      - "session.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[SESSION_IP]]"
       - "chain.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
       - "portal.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PORTAL_IP]]"
       - "admin-api.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[WEB_IP]]"
@@ -598,6 +599,30 @@ services:
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
+
+  session_[[NETWORK_NUMBER]]:
+    privileged: true
+    restart: unless-stopped
+    networks:
+      mbr_test_network_[[NETWORK_NUMBER]]:
+        ipv4_address: "172.24.[[NETWORK_NUMBER]].[[SESSION_IP]]"
+
+    image: massbit/massbitroute_session:[[SESSION_TAG]]
+    command: "-n"
+    container_name: mbr_session_[[NETWORK_NUMBER]]
+    # network_mode: "host"
+    # ports:
+    #   - "443:443"
+    volumes:
+      - ./session/logs:/massbit/massbitroute/app/src/sites/services/session/logs:rw
+      - ./session/vars:/massbit/massbitroute/app/src/sites/services/session/vars:rw
+      - ./session/db:/massbit/massbitroute/app/src/sites/services/session/db:rw
+    environment:
+      - MBR_ENV=[[SESSION_TAG]]
+      - MKAGENT_BRANCH=shamu
+      - GIT_PRIVATE_BRANCH=shamu
+      - GIT_PRIVATE_READ_URL=[[PRIVATE_GIT_READ]]
+
 
   gwman_[[NETWORK_NUMBER]]:
     privileged: true

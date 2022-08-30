@@ -13,7 +13,7 @@ docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _create_ga
 GATEWAY_ID=$(cat $ENV_DIR/proxy/vars/${DOCKER_ID}/GATEWAY_ID)
 GATEWAY_APP_KEY=$(cat $ENV_DIR/proxy/vars/${DOCKER_ID}/GATEWAY_APP_KEY)
 USER_ID=$(cat $ENV_DIR/proxy/vars/USER_ID)
-if [ $GATEWAY_ID == "null" ]; then
+if [ "$GATEWAY_ID" == "null" ]; then
   echo 'Test failed'
   exit 1
 fi

@@ -78,7 +78,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     body="{\"id\": 1, \"jsonrpc\": \"2.0\", \"method\": "$method", \"params\": "$new_params"}"
 
     massbit_http_code=$(curl $MASSBIT_ROUTE_POLKADOT \
-      --silent \
+      --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
@@ -103,7 +103,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     fi
 
     response=$(curl $MASSBIT_ROUTE_POLKADOT \
-      --silent \
+      --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \

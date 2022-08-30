@@ -78,7 +78,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": 67}"
 
     massbit_http_code=$(curl $MASSBIT_ROUTE_ETHEREUM \
-      --silent \
+      --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
@@ -103,7 +103,7 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     fi
 
     response=$(curl $MASSBIT_ROUTE_ETHEREUM \
-      --silent \
+      --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
