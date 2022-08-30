@@ -44,6 +44,7 @@ cat $ROOT_DIR/docker-proxy/common.conf | \
   sed "s/\[\[FISHERMAN_SCHEDULER_IP\]\]/$FISHERMAN_SCHEDULER_IP/g" | \
   sed "s/\[\[FISHERMAN_WORKER01_IP\]\]/$FISHERMAN_WORKER01_IP/g" | \
   sed "s/\[\[FISHERMAN_WORKER02_IP\]\]/$FISHERMAN_WORKER02_IP/g" | \
+  sed "s/\[\[SCHEDULER_AUTHORIZATION\]\]/$SCHEDULER_AUTHORIZATION/g" | \
   sed "s/\[\[PORTAL_IP\]\]/$PORTAL_IP/g" | \
   sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
   sed "s/\[\[WEB_IP\]\]/$WEB_IP/g" | \

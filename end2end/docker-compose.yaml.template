@@ -407,12 +407,8 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@db_[[NETWORK_NUMBER]]:5432/massbit-fisherman
       - DOMAIN=massbitroute.net
       - ENVIRONMENT=test
-      - SCHEME=http
       - IS_VERIFY_REPORT=true
       - IS_REGULAR_REPORT=true
-      - RUST_LOG=debug
-      - RUST_LOG_TYPE=console
-      - URL_PORTAL=[[PROTOCOL]]://portal.massbitroute.net
       - PORTAL_AUTHORIZATION=VERIFICATION_SERVICE_SECRET
       - PATH_GATEWAYS_LIST=mbr/gateway/list/verify
       - PATH_NODES_LIST=mbr/node/list/verify
@@ -420,9 +416,13 @@ services:
       - PATH_PORTAL_PROVIDER_VERIFY=mbr/verify
       - REPORT_CALLBACK=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/report
       - ROOT=/massbit/massbitroute/app/src/sites/services/gateway/
+      - RUST_LOG=debug
+      - RUST_LOG_TYPE=console
       - SCHEDULER_AUTHORIZATION=[[SCHEDULER_AUTHORIZATION]]
       - SCHEDULER_CONFIG=/usr/local/bin/configs/scheduler.json
       - SCHEDULER_ENDPOINT=0.0.0.0:80
+      - SCHEME=http
+      - URL_PORTAL=[[PROTOCOL]]://portal.massbitroute.net
       - ZONE=AS
 
   fisherman_worker_1_[[NETWORK_NUMBER]]:
@@ -471,6 +471,7 @@ services:
       - ENVIRONMENT=test
       - ROOT=/massbit/massbitroute/app/src/sites/services/gateway/
       - RUST_LOG=debug
+      - SCHEDULER_AUTHORIZATION=[[SCHEDULER_AUTHORIZATION]]
       - SCHEDULER_ENDPOINT=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net:80
       - WORKER_SERVICE_ENDPOINT=0.0.0.0:4040
       - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER01_IP]]
@@ -524,6 +525,7 @@ services:
       - ENVIRONMENT=test
       - ROOT=/massbit/massbitroute/app/src/sites/services/gateway/
       - RUST_LOG=debug
+      - SCHEDULER_AUTHORIZATION=[[SCHEDULER_AUTHORIZATION]]
       - SCHEDULER_ENDPOINT=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net:80
       - WORKER_SERVICE_ENDPOINT=0.0.0.0:4040
       - WORKER_ID=default_worker_172.24.[[NETWORK_NUMBER]].[[FISHERMAN_WORKER02_IP]]
