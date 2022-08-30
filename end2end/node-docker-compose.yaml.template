@@ -28,7 +28,7 @@ services:
       - MBR_ENV=[[NODE_TAG]]
       - DOMAIN=massbitroute.net
       - PORTAL_URL=[[PROTOCOL]]://portal.massbitroute.net
-      - INSTALL_CMD="[[PROTOCOL]]://portal.massbitroute.net/api/v1/node_install?id=[[NODE_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=[[NETWORK]]&zone=[[ZONE]]&data_url=[[DATA_URL]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]"
+      - INSTALL_CMD=[[PROTOCOL]]://portal.massbitroute.net/api/v1/node_install?id=[[NODE_ID]]&user_id=[[USER_ID]]&blockchain=[[BLOCKCHAIN]]&network=[[NETWORK]]&zone=[[ZONE]]&data_url=[[DATA_URL]]&app_key=[[APP_KEY]]&portal_url=[[PROTOCOL]]://portal.massbitroute.net&env=[[GIT_PRIVATE_BRANCH]]
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"

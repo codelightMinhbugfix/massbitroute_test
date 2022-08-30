@@ -16,7 +16,6 @@ cat $ROOT_DIR/node-docker-compose.yaml.template | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
 		sed "s/\[\[NODE_TAG\]\]/$NODE_TAG/g" | \
-    sed "s/\[\[DATA_URL\]\]/$NODE_DATASOURCE/g" | \
     sed "s/\[\[CHAIN_IP\]\]/$CHAIN_IP/g" | \
     sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" \
     > $ENV_DIR/node-docker-compose.yaml.template

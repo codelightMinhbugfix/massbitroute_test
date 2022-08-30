@@ -36,3 +36,13 @@ docker-compose -f $ENV_DIR/node-docker-compose-${SORT_ID}.yaml up -d --force-rec
 docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status node approved $NODE_ID
 #State4: Stake node
 docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _stake_provider node $NODE_ID
+
+#Remove node and check if node status chane to investigate
+docker-compose -f $ENV_DIR/node-docker-compose-${SORT_ID}.yaml down
+docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status node investigate $NODE_ID
+status=$(cat /vars/status/$NODE_ID)
+
+if [ "$status" != "investigate" ]; then
+  echo "Status of Gateway $NODE_ID is not change to investigate. Test failed";
+  exit 1
+fi
