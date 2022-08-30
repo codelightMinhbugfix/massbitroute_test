@@ -1,7 +1,7 @@
 # http://[[SERVER_NAME]]
 server {
   #listen       443 ssl;
-  listen        80;
+  listen        [[PORT]];
   #ssl_certificate /etc/letsencrypt/live/[[DOMAIN]]/fullchain.pem;
   #ssl_certificate_key /etc/letsencrypt/live/[[DOMAIN]]/privkey.pem;
   server_name [[SERVER_NAME]];

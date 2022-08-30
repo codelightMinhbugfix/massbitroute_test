@@ -101,8 +101,8 @@ _stake_provider() {
   now=$(date)
   echo "Wait a minute for staking provider..."
   echo "$now"
-  providerType=$1
-  if [ "$providerType" == "Gateway" ]; then
+  providerType="${1,,}"
+  if [ "$providerType" == "gateway" ]; then
     providerId=$(cat /vars/GATEWAY_ID)
   else
     providerId=$(cat /vars/NODE_ID)
@@ -119,7 +119,7 @@ _stake_provider() {
       \"amount\": \"100\"
   }")
   echo "Staking response $staking_response";
-  staking_status= $(echo $staking_response | jq -r ". | .status");
+  staking_status=$(echo $staking_response | jq -r ". | .status");
 
   if [[ "$staking_status" != "success" ]]; then
     echo "$providerType staking status: Failed "
@@ -149,13 +149,15 @@ _stake_provider() {
 #-------------------------------------------
 _check_provider_status() {
   bearer=$(cat /vars/BEARER)
-  providerType=$1
+  providerType="${1,,}"
   if [ "$providerType" == "gateway" ]; then
     providerId=$(cat /vars/GATEWAY_ID)
   else
     providerId=$(cat /vars/NODE_ID)
   fi
   status=''
+  start=$(date +"%s")
+  printf "Start check status of %s at %ds\n" $providerType $start
   while [[ "$status" != "$2" ]]; do
     echo "Checking $providerType status: In Progress"
 
@@ -167,8 +169,10 @@ _check_provider_status() {
     echo "---------------------------------"
     sleep 10
   done
+  end=$(date +"%s")
+  duration=$(( $end-$start ))
   now=$(date)
-  echo "Checking $providerType reported status: $2 at $now"
+  echo "Checking $providerType reported status: $2 at $now in ${duration}s"
 }
 
 $@

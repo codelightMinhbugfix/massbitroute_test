@@ -1,0 +1,167 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build base docker image') {    
+            steps {
+                dir ("/massbit/massbitroute/app/src"){
+                    sh 'git stash; git checkout jenkins; git pull origin jenkins'
+                }
+                dir ("/massbit/massbitroute/app/src/install"){
+                    sh 'mkdir -p build_version'
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 > build_version/API_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 > build_version/NODE_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gateway.git | tail -n1 | cut -d/ -f3 > build_version/GATEWAY_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 > build_version/STAT_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 > build_version/MONITOR_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 > build_version/GIT_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 > build_version/GWMAN_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3> build_version/MASSBIT_CHAIN_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > build_version/FISHERMAN_TAG"
+                    // sh 'git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3> build_version/STAKING_TAG'
+                    // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 > build_version/PORTAL_TAG'
+                    // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 > build_version/WEB_TAG'
+
+                    sh 'docker rmi -f bare:latest'
+                    sh 'docker rmi -f basenode:latest'
+                    sh 'docker rmi -f base:latest'
+
+                    sh './docker.sh latest build bare'
+                    sh './docker.sh latest build basenode'
+                    sh './docker.sh latest build base'   
+                } 
+            }
+        }
+        stage('Build new core docker image') {                
+            parallel {
+
+                stage ('Build gw image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/GATEWAY_TAG);./docker.sh ${BUILD_BRANCH} build gateway'
+                        }
+                    }
+
+                }
+                stage ('Build node image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/NODE_TAG);./docker.sh ${BUILD_BRANCH} build node'
+                        }
+                    }
+
+                }
+                stage ('Build api image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/API_TAG);./docker.sh ${BUILD_BRANCH} build api'
+                        }
+                    }
+
+                }
+                stage ('Build stat image') {
+                    steps { 
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/STAT_TAG);./docker.sh ${BUILD_BRANCH} build stat'
+                        }
+                    }
+
+                }
+                stage ('Build monitor image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/MONITOR_TAG);./docker.sh ${BUILD_BRANCH} build monitor'
+                        }
+                    }
+
+                }
+                stage ('Build git image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/GIT_TAG);./docker.sh ${BUILD_BRANCH} build git'
+                        }
+                    }
+
+                }       
+                stage ('Build gwman image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/GWMAN_TAG);./docker.sh ${BUILD_BRANCH} build gwman'
+                        }
+                    }
+                }                                                  
+            }
+        }
+        stage('Push new core docker image') {                
+            parallel {
+
+                stage ('Push gw image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/GATEWAY_TAG);docker push massbit/massbitroute_gateway:${BUILD_BRANCH}'
+                        }
+                    }
+
+                }
+                stage ('Push node image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/NODE_TAG);docker push massbit/massbitroute_node:${BUILD_BRANCH}'
+                        }
+                    }
+
+                }
+                stage ('Push api image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/API_TAG);docker push massbit/massbitroute_api:${BUILD_BRANCH}'
+                        }
+                    }
+
+                }
+                stage ('Push stat image') {
+                    steps { 
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/STAT_TAG);docker push massbit/massbitroute_stat:${BUILD_BRANCH}'
+                        }
+                    }
+
+                }
+                stage ('Push monitor image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/MONITOR_TAG);docker push massbit/massbitroute_monitor:${BUILD_BRANCH}'
+                        }
+                    }
+
+                }
+                stage ('Push git image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/GIT_TAG);docker push massbit/massbitroute_git:${BUILD_BRANCH}'
+                        }
+                    }
+
+                }       
+                stage ('Push gwman image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/GWMAN_TAG);docker push massbit/massbitroute_gwman:${BUILD_BRANCH}'
+                        }
+                    }
+                }                                                  
+            }
+        } 
+
+        stage('Build and push Fisherman') {
+            steps {
+                dir ("/home/massbit/massbit/massbitroute_fisherman"){
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > FISHERMAN_TAG"                        
+                    sh 'TAG=$(cat FISHERMAN_TAG);git reset --hard ;git checkout tags/${TAG}'
+                    sh 'TAG=$(cat FISHERMAN_TAG); docker build -t  massbit/massbitroute_fisherman:${TAG} . && docker push massbit/massbitroute_fisherman:${TAG}'
+                }
+            }
+        }                 
+           
+    }
+}
