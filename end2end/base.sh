@@ -15,6 +15,7 @@ API_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol
 GWMAN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 )
 SESSION_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_session.git | tail -n1 | cut -d/ -f3 )
 
+export GIT_PRIVATE_BRANCH=shamu
 export PROXY_TAG=${PROXY_TAG:-v0.1.0}
 export TEST_CLIENT_TAG=${TEST_CLIENT_TAG:-v0.1.0}
 #export FISHERMAN_TAG=${FISHERMAN_TAG:-v0.1.0}

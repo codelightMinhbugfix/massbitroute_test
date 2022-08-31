@@ -11,7 +11,7 @@ bash -x prepare_proxy.sh
 bash -x create_git.sh
 #create other dockers: core + portal + admin
 bash -x create_docker_compose.sh
-
+bash -x create_stat_docker_compose.sh
 bash -x run_component_api_test.sh
 
 bash $ENV_DIR/run_test_scenarios.sh
