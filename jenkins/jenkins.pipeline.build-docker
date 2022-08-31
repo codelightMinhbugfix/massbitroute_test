@@ -176,6 +176,14 @@ pipeline {
                     sh 'TAG=$(cat FISHERMAN_TAG); docker build -t  massbit/massbitroute_fisherman:${TAG} . && docker push massbit/massbitroute_fisherman:${TAG}'
                 }
             }
-        }                 
+        }
+        stage('Build and push Portal') {
+            steps {
+                dir ("/home/massbit/massbit/user-management"){
+                    sh 'git reset --hard ;git checkout feature/test-e2e;git pull origin feature/test-e2e '
+                    sh 'TAG="v0.1.0-test"; docker build -t  massbit/massbitroute_fisherman:${TAG} . && docker push massbit/massbitroute_fisherman:${TAG}'
+                }
+            }
+        }                    
     }
 }
