@@ -2,15 +2,13 @@
 TEST_USERNAME=demo
 TEST_PASSWORD=Codelight123
 protocol=http
-blockchain=eth
-network=mainnet
 dataSource=$DATASOURCE
 dataSourceWs=$DATASOURCE_WS
 domain=${DOMAIN:-massbitroute.net}
 nodePrefix="$(echo $RANDOM | md5sum | head -c 5)"
 projectPrefix="$(echo $RANDOM | md5sum | head -c 5)"
 MEMONIC="bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice"
-
+PROVIDER_STATUS_TIMEOUT=300
 declare -A blockchains=()
 blockchains["eth"]="mainnet rinkerby"
 blockchains["dot"]="mainnet"

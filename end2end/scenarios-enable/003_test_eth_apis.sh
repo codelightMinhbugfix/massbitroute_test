@@ -1,0 +1,1 @@
+../scenarios/003_test_eth_apis.sh

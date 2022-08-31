@@ -33,3 +33,7 @@ terraforms/verifications/.env
 terraforms/verifications/init_*
 terraforms/verifications/verification.plan
 terraforms/verifications/verification.tf
+
+**/ethereum-testcase.json
+**/polkadot-testcase.json
+**/node_modules

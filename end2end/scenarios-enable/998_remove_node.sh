@@ -1,0 +1,1 @@
+../scenarios/998_remove_node.sh

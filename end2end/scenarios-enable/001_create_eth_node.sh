@@ -1,0 +1,1 @@
+../scenarios/001_create_eth_node.sh

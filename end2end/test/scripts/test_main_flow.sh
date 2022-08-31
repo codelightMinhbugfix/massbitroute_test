@@ -266,24 +266,33 @@ _check_provider_status() {
   fi
   status=''
   start=$(date +"%s")
+  end=$start
+  duration=$(( $end-$start ))
+  mkdir -p /vars/status/
   printf "Start check status of %s at %ds\n" $providerType $start
-  while [[ "$status" != "$2" ]]; do
+  while [ \( "$status" != "$2" \) -a \( $duration -le $PROVIDER_STATUS_TIMEOUT \) ]; do
+  #while [[ "$status" != "$2" ]]; do
     echo "Checking $providerType status: In Progress"
     cat /logs/proxy_access.log | grep "$providerId" | grep '.10->api.' | grep 'POST' | grep "$providerType.update"
-    if [ $? -eq 0 ];then break;fi
+    #if [ $? -eq 0 ];then break;fi
 
     status=$(curl -k --location --request GET "https://portal.$DOMAIN/mbr/$providerType/$providerId" \
       --header "Authorization: Bearer $bearer" | jq -r ". | .status")
     now=$(date)
+    end=$(date +"%s")
+    duration=$(( $end-$start ))
     echo "---------------------------------"
     echo "$providerType status at $now is $status"
     echo "---------------------------------"
     sleep 10
   done
-  end=$(date +"%s")
-  duration=$(( $end-$start ))
-  now=$(date)
-  echo "Checking $providerType reported status: $2 at $now in ${duration}s"
+  echo "Checking $providerType reported status: $status at $now in ${duration}s"
+  echo $status > /vars/status/$providerId
+  if [ "$status" != "$2" ]; then
+    echo "Test failed. Expectation status is $2"
+    exit 1
+  fi
+
 }
 
 $@

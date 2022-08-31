@@ -2,7 +2,7 @@
   "name": "http_request",
   "active": true,
   "phases": ["verification", "regular"],
-  "url_template": "",
+  "url_template": "http://{{provider.ip}}/",
   "http_method": "get",
   "request_type": "http",
   "provider_types": ["*"],

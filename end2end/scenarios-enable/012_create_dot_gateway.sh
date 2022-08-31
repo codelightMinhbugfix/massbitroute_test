@@ -1,0 +1,1 @@
+../scenarios/012_create_dot_gateway.sh
