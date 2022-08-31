@@ -18,6 +18,7 @@ pipeline {
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 > build_version/GWMAN_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3> build_version/MASSBIT_CHAIN_TAG"
                     sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 > build_version/FISHERMAN_TAG"
+                    sh "git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_session.git| tail -n1 | cut -d/ -f3 > build_version/SESSION_TAG"
                     // sh 'git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3> build_version/STAKING_TAG'
                     // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 > build_version/PORTAL_TAG'
                     // sh 'git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 > build_version/WEB_TAG'
@@ -89,6 +90,13 @@ pipeline {
                             sh 'BUILD_BRANCH=$(cat build_version/GWMAN_TAG);./docker.sh ${BUILD_BRANCH} build gwman'
                         }
                     }
+                }
+                stage ('Build session image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/SESSION_TAG);./docker.sh ${BUILD_BRANCH} build session'
+                        }
+                    }
                 }                                                  
             }
         }
@@ -149,7 +157,14 @@ pipeline {
                             sh 'BUILD_BRANCH=$(cat build_version/GWMAN_TAG);docker push massbit/massbitroute_gwman:${BUILD_BRANCH}'
                         }
                     }
-                }                                                  
+                }
+                stage ('Push session image') {
+                    steps {
+                        dir ("/massbit/massbitroute/app/src/install"){
+                            sh 'BUILD_BRANCH=$(cat build_version/SESSION_TAG);docker push massbit/massbitroute_session:${BUILD_BRANCH}'
+                        }
+                    }
+                }                                                       
             }
         } 
 
@@ -162,6 +177,5 @@ pipeline {
                 }
             }
         }                 
-           
     }
 }
