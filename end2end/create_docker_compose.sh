@@ -1,13 +1,13 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-
+source $ROOT_DIR/base.sh
 #Get PRIVATE_GIT_READ
 #PRIVATE_GIT_READ=$(docker exec -it mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g" | sed "s|http://||g")
 PRIVATE_GIT_READ=$(docker exec mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g")
 echo $PRIVATE_GIT_READ
 echo SCHEDULER_AUTHORIZATION=$SCHEDULER_AUTHORIZATION > $ENV_DIR/fisherman/.env_fisherman
 #cp docker-compose.yaml $ENV/docker-compose.yaml
-cat docker-compose.yaml.template |  \
+cat templates/docker-compose.yaml.template |  \
      sed "s|\[\[ENV_DIR\]\]|$ENV_DIR|g" | \
      sed "s|\[\[ROOT_DIR\]\]|$ROOT_DIR|g" | \
      sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
@@ -49,6 +49,8 @@ cat docker-compose.yaml.template |  \
      sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
     > $ENV_DIR/docker-compose.yaml.template
 cat $ENV_DIR/docker-compose.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/docker-compose.yaml
+#create portal docker-compose
+
 docker-compose -f $ENV_DIR/docker-compose.yaml up -d --force-recreate
 
 sleep 30

@@ -1,6 +1,7 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 LOOP=${1:-1}
+
 #NETWORK defined in base
 source $ROOT_DIR/base.sh
 

@@ -1,41 +1,39 @@
 #!/bin/bash
 export RUNTIME_DIR=/massbit/test_runtime
 #random=$(echo $RANDOM | md5sum | head -c 5)
-GATEWAY_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gateway.git | tail -n1 | cut -d/ -f3 )
-NODE_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 )
-STAT_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 )
-MONITOR_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 )
-GIT_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 )
-MASSBIT_CHAIN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3 )
-FISHERMAN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 )
-STAKING_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3 )
+gateway=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gateway.git | tail -n1 | cut -d/ -f3 )
+node=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_node.git | tail -n1 | cut -d/ -f3 )
+stat=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_stat.git | tail -n1 | cut -d/ -f3 )
+monitor=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_monitor.git | tail -n1 | cut -d/ -f3 )
+git=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_git.git | tail -n1 | cut -d/ -f3 )
+chain=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitchain.git | tail -n1 | cut -d/ -f3 )
+fisherman=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_fisherman.git| tail -n1 | cut -d/ -f3 )
+staking=$(git ls-remote --tags --sort='v:refname' git@github.com:mison201/test-massbit-staking.git | tail -n1 | cut -d/ -f3 )
 portal=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/user-management.git | tail -n1 | cut -d/ -f3 )
-WEB_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 )
-API_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 )
-GWMAN_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 )
-SESSION_TAG=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_session.git | tail -n1 | cut -d/ -f3 )
+web=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/mbr-app.git | tail -n1 | cut -d/ -f3 )
+api=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute.git | tail -n1 | cut -d/ -f3 )
+gwman=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gwman.git | tail -n1 | cut -d/ -f3 )
+session=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_session.git | tail -n1 | cut -d/ -f3 )
 
-export GIT_PRIVATE_BRANCH=shamu
-export PROXY_TAG=${PROXY_TAG:-v0.1.0}
-export TEST_CLIENT_TAG=${TEST_CLIENT_TAG:-v0.1.0}
-#export FISHERMAN_TAG=${FISHERMAN_TAG:-v0.1.0}
+export PROXY_TAG=${proxy:-v0.1.0}
+export TEST_CLIENT_TAG=${test_client:-v0.1.0}
+#export FISHERMAN_TAG=${fisherman:-v0.1.0}
 export FISHERMAN_TAG=v0.1.0-dev
 export STAKING_TAG=${STAKING_TAG:-v0.1-dev}
-#export PORTAL_TAG=v0.1.0-dev
-export PORTAL_TAG=${PORTAL_TAG:-v0.1.0-test}
-export WEB_TAG=${WEB_TAG:-v0.1}
-export MASSBIT_CHAIN_TAG=${MASSBIT_CHAIN_TAG:-v0.1}
+#export PORTAL_TAG=v0.1.0-test
+export PORTAL_TAG=${portal:-v0.1.0-test}
+export WEB_TAG=${web:-v0.1}
+export MASSBIT_CHAIN_TAG=${chain:-v0.1}
+export SESSION_TAG=${session:-v0.1.0}
+export API_TAG=${api:-v0.1.11}
+export GIT_TAG=${git:-v0.1.11}
+export GWMAN_TAG=${gwman:-v0.1.4}
+export STAT_TAG=${stat:-v0.1.2}
+export MONITOR_TAG=${monitor:-v0.1.0}
+export NODE_TAG=${node:-v0.1.3}
+export GATEWAY_TAG=${gateway:-v0.1.4}
 
-export SESSION_TAG=${SESSION_TAG:-v0.1.0}
-export API_TAG=${API_TAG:-v0.1.11}
-export GIT_TAG=${GIT_TAG:-v0.1.11}
-export GWMAN_TAG=${GWMAN_TAG:-v0.1.4}
-export STAT_TAG=${STAT_TAG:-v0.1.2}
-export MONITOR_TAG=${MONITOR_TAG:-v0.1.0}
-
-export NODE_TAG=${NODE_TAG:-v0.1.3}
-export GATEWAY_TAG=${GATEWAY_TAG:-v0.1.4}
-
+export GIT_PRIVATE_BRANCH=shamu
 export PROTOCOL=http
 export SCHEDULER_AUTHORIZATION=SomeSecretString
 export MASSBIT_ROUTE_SID=403716b0f58a7d6ddec769f8ca6008f2c1c0cea6
@@ -43,7 +41,7 @@ export MASSBIT_ROUTE_PARTNER_ID=fc78b64c5c33f3f270700b0c4d3e7998188035ab
 export GIT_PRIVATE_BRANCH=shamu
 export NETWORK_PREFIX=mbr_test_network
 #IPs: 30-230: Node and gateway
-#Ips: 1
+
 export PROXY_IP=254
 export TEST_CLIENT_IP=253
 export CHAIN_IP=20
@@ -62,6 +60,9 @@ export GIT_IP=5
 export API_IP=6
 export SESSION_IP=7
 
+export START_IP=20
+
+export MONITOR_IP=50
 export NODE_DOT_STAT_IP=21
 export NODE_ETH_STAT_IP=22
 export NODE_DOT_MONITOR_IP=23
@@ -98,3 +99,9 @@ if [ -f "$PROXY_LOGS/proxy_error.log" ]; then
   truncate -s 0 "$PROXY_LOGS/proxy_error.log"
 fi
 export network_number=$network_number
+
+declare -A blockchains=()
+blockchains["eth"]="mainnet rinkerby"
+blockchains["dot"]="mainnet"
+export blockchains
+export domain=massbitroute.net

@@ -1,34 +1,31 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-
+source $ROOT_DIR/base.sh
 #Get PRIVATE_GIT_READ
 #PRIVATE_GIT_READ=$(docker exec -it mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g" | sed "s|http://||g")
-#PRIVATE_GIT_READ=$(docker exec mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g")
-#echo $PRIVATE_GIT_READ
+PRIVATE_GIT_READ=$(docker exec mbr_git_$network_number cat /massbit/massbitroute/app/src/sites/services/git/data/env/git.env  | grep GIT_PRIVATE_READ_URL  | cut -d "=" -f 2 | sed "s/'//g")
+echo $PRIVATE_GIT_READ
 
 mkdir -p $ENV_DIR/stat/docker-compose/
 mkdir -p $ENV_DIR/stat/tpl/
-cat network-docker-compose.yaml.template | \
+cat templates/network-docker-compose.yaml.template | \
   sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" > $ENV_DIR/stat/docker-compose/network.yaml
-declare -A blockchains=()
-blockchains["eth"]="mainnet rinkerby"
-blockchains["dot"]="mainnet"
-STAT_IP=20
+
 docker_compose_files=" -f $ENV_DIR/stat/docker-compose/network.yaml"
 types="gateway node"
 for PROVIDER_TYPE in $types
 do
-  for BLOCKCHAIN in ${!blockchains[@]}
+  for chain in ${!blockchains[@]}
   do
-     networks=(${blockchains[$BLOCKCHAIN]});
+     networks=(${blockchains[$chain]});
      for NETWORK in ${networks[@]}
      do
-       STAT_IP=$(( $STAT_IP + 1 ))
-       cat stat-docker-compose.yaml.template |  \
+       START_IP=$(( $START_IP + 1 ))
+       cat templates/stat-docker-compose.yaml.template |  \
             sed "s|\[\[ENV_DIR\]\]|$ENV_DIR|g" | \
             sed "s|\[\[ROOT_DIR\]\]|$ROOT_DIR|g" | \
             sed "s|\[\[PROVIDER_TYPE\]\]|$PROVIDER_TYPE|g" | \
-            sed "s|\[\[BLOCKCHAIN\]\]|$BLOCKCHAIN|g" | \
+            sed "s|\[\[BLOCKCHAIN\]\]|$chain|g" | \
             sed "s|\[\[NETWORK\]\]|$NETWORK|g" | \
             sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
             sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
@@ -53,13 +50,13 @@ do
             sed "s/\[\[GIT_IP\]\]/$GIT_IP/g" | \
             sed "s/\[\[API_IP\]\]/$API_IP/g" | \
 
-            sed "s/\[\[STAT_IP\]\]/$STAT_IP/g" | \
+            sed "s/\[\[IP\]\]/$START_IP/g" | \
 
             sed "s|\[\[MASSBIT_ROUTE_SID\]\]|$MASSBIT_ROUTE_SID|g" | \
             sed "s|\[\[MASSBIT_ROUTE_PARTNER_ID\]\]|$MASSBIT_ROUTE_PARTNER_ID|g" \
-           > $ENV_DIR/stat/tpl/${PROVIDER_TYPE}_${BLOCKCHAIN}_${NETWORK}.yaml.template
-           cat $ENV_DIR/stat/tpl/${PROVIDER_TYPE}_${BLOCKCHAIN}_${NETWORK}.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/stat/docker-compose/${PROVIDER_TYPE}_${BLOCKCHAIN}_${NETWORK}.yaml
-           docker_compose_files="$docker_compose_files -f $ENV_DIR/stat/docker-compose/${PROVIDER_TYPE}_${BLOCKCHAIN}_${NETWORK}.yaml"
+           > $ENV_DIR/stat/tpl/${PROVIDER_TYPE}_${chain}_${NETWORK}.yaml.template
+           cat $ENV_DIR/stat/tpl/${PROVIDER_TYPE}_${chain}_${NETWORK}.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/stat/docker-compose/${PROVIDER_TYPE}_${chain}_${NETWORK}.yaml
+           docker_compose_files="$docker_compose_files -f $ENV_DIR/stat/docker-compose/${PROVIDER_TYPE}_${chain}_${NETWORK}.yaml"
      done
      #echo ${networks[@]}
      #echo "["$key"]:["${blockchains[$key]}"]"
