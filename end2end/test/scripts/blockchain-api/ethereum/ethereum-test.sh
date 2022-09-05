@@ -43,6 +43,35 @@ _generate_test_case() {
 
 _generate_test_case
 
+#
+# $1 - testcase index
+# $2 - api index
+#
+# _check_test_case() {
+#   test_case=$(jq .[$1] <<<$all_test_case)
+#   apiInd=$2
+#   method=$(echo $ethereum_api | jq .[$apiInd].method)
+#   params=$(echo $ethereum_api | jq .[$apiInd].params)
+#   expect=$(echo $ethereum_api | jq .[$apiInd].expectMatch)
+#   mode=$(echo $ethereum_api | jq -r .[$apiInd].mode)
+#   if [[ "$TEST_MODE" == "debug" && "$mode" != "$TEST_MODE" ]]; then
+#     continue
+#   fi
+#   new_params="[]"
+#
+#   for j in $(seq 0 $(($(jq length <<<$params) - 1))); do
+#     key=$(echo $params | jq -r .[$j])
+#     data=$(echo $test_case | jq .$key)
+#     new_params=$(echo "$new_params" | jq ". += [$data]")
+#   done
+#   body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": $apiInd}"
+#   massbit_http_code=$(curl $MASSBIT_ROUTE_ETHEREUM --silent -L \
+#     --header "Host: $DAPI_DOMAIN" \
+#     --header "Content-Type: application/json" \
+#     --request POST \
+#     --data "$body" \
+#     -o massbit.out -s -w "%{http_code}")
+# }
 echo $all_test_case | jq '.' >$ROOT_DIR/input/ethereum-testcase.json
 
 report="[]"
@@ -62,12 +91,13 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
   failed_report="[]"
   passed_report="[]"
   test_case=$(jq .[$k] <<<$all_test_case)
-
+  echo "Test case: $test_case";
   for i in $(seq 0 $(($(jq length <<<$ethereum_api) - 1))); do
+    #_check_test_case $k $i
     method=$(echo $ethereum_api | jq .[$i].method)
     params=$(echo $ethereum_api | jq .[$i].params)
     expect=$(echo $ethereum_api | jq .[$i].expectMatch)
-    mode=$(echo $ethereum_api | jq .[$i].mode)
+    mode=$(echo $ethereum_api | jq -r .[$i].mode)
     if [[ "$TEST_MODE" == "debug" && "$mode" != "$TEST_MODE" ]]; then
       continue
     fi
@@ -79,21 +109,20 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
       new_params=$(echo "$new_params" | jq ". += [$data]")
     done
 
-    body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": 67}"
-
+    body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": $i}"
     massbit_http_code=$(curl $MASSBIT_ROUTE_ETHEREUM \
       --silent -L \
       --header "Host: $DAPI_DOMAIN" \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
-      -o /dev/null -s -w "%{http_code}\n")
+      -o massbit.out -s -w "%{http_code}\n")
     another_provider_http_code=$(curl $ANOTHER_ETHEREUM_PROVIDER \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
-      -o /dev/null -s -w "%{http_code}\n")
+      -o expected.out -s -w "%{http_code}\n")
 
     if ! [[ "$massbit_http_code" =~ ^20[01]$ && "$another_provider_http_code" =~ ^20[01]$ ]]; then
       error=$((error + 1))
@@ -106,18 +135,20 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
       continue
     fi
 
-    response=$(curl $MASSBIT_ROUTE_ETHEREUM \
-      --silent -L \
-      --header "Host: $DAPI_DOMAIN" \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" | jq -S 'del(.jsonrpc, .id)')
-    expected_response=$(curl $ANOTHER_ETHEREUM_PROVIDER \
-      --silent \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" | jq -S 'del(.jsonrpc, .id)')
+    # response=$(curl $MASSBIT_ROUTE_ETHEREUM \
+    #   --silent -L \
+    #   --header "Host: $DAPI_DOMAIN" \
+    #   --header "Content-Type: application/json" \
+    #   --request POST \
+    #   --data "$body" | jq -S 'del(.jsonrpc, .id)')
+    # expected_response=$(curl $ANOTHER_ETHEREUM_PROVIDER \
+    #   --silent \
+    #   --header "Content-Type: application/json" \
+    #   --request POST \
+    #   --data "$body" | jq -S 'del(.jsonrpc, .id)')
 
+    response=$(cat massbit.out | jq -S 'del(.jsonrpc, .id)')
+    expected_response=$(cat expected.out | jq -S 'del(.jsonrpc, .id)')
     if [[ $response != *"result"* && $expected_response != *"result"* ]]; then
       both_error=$((both_error + 1))
       both_error_report=$(echo $both_error_report | jq ". += [{\"method\":$method, \"response\":$response, \"expectedResponse\":$expected_response}]")
@@ -191,6 +222,8 @@ report="{
 
 if ! [[ -f "$REPORT_DIR/ethereum-report.json" ]]; then
   touch "$REPORT_DIR/ethereum-report.json"
+else
+  cat /dev/null > "$REPORT_DIR/ethereum-report.json"
 fi
 
 echo "[ $report ]" >temp.json
