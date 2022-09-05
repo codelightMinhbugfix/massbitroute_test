@@ -1,8 +1,11 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-cat $ROOT_DIR/git-docker-compose.yaml.template |  \
+source $ROOT_DIR/base.sh
+echo "Git tag: $GIT_TAG"
+cat $ROOT_DIR/templates/git-docker-compose.yaml.template |  \
      #sed "s/\[\[RUN_ID\]\]/$network_number/g" | \
      sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
+     sed "s|\[\[STAT_PROMETHEUS_SCHEME\]\]|$PROTOCOL|g" | \
      sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
      sed "s/\[\[GIT_TAG\]\]/$GIT_TAG/g" | \
      sed "s/\[\[PROXY_IP\]\]/$PROXY_IP/g" | \

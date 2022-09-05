@@ -211,6 +211,7 @@ services:
       - MASSBIT_ROUTE_API_URL=[[PROTOCOL]]://api.massbitroute.net/_internal_api/v2
       - MASSBIT_CHAIN_URL=ws://chain.massbitroute.net:9944
       - VERIFICATION_SERVICE_DOMAIN=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/provider/verify
+      - SCHEDULER_URL=[[PROTOCOL]]://scheduler.fisherman.massbitroute.net/provider/verify
       - VERIFICATION_SERVICE_SECRET=VERIFICATION_SERVICE_SECRET
       - WHITELIST_DOMAIN=http://localhost:8080|http://localhost:3000|https://dapi.massbitroute.net|https://mbr-app-git-dev-massbit-team.vercel.app|https://route-staging.massbit.io|http://dapi.massbitroute.net
 

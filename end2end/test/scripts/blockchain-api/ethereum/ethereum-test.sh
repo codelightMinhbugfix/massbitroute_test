@@ -67,6 +67,10 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
     method=$(echo $ethereum_api | jq .[$i].method)
     params=$(echo $ethereum_api | jq .[$i].params)
     expect=$(echo $ethereum_api | jq .[$i].expectMatch)
+    mode=$(echo $ethereum_api | jq .[$i].mode)
+    if [[ "$TEST_MODE" == "debug" && "$mode" != "$TEST_MODE" ]]; then
+      continue
+    fi
     new_params="[]"
 
     for j in $(seq 0 $(($(jq length <<<$params) - 1))); do

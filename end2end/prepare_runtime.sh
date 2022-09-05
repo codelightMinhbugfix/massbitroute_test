@@ -1,6 +1,6 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-
+source $ROOT_DIR/base.sh
 echo "--------------------------------------------"
 echo "Creating network 172.24.$network_number.0/24"
 echo "--------------------------------------------"
@@ -11,7 +11,7 @@ rsync -avz scheduler $ENV_DIR/
 rsync -avz fisherman $ENV_DIR/
 
 #Create node template
-cat $ROOT_DIR/node-docker-compose.yaml.template | \
+cat $ROOT_DIR/templates/node-docker-compose.yaml.template | \
     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \
@@ -22,7 +22,7 @@ cat $ROOT_DIR/node-docker-compose.yaml.template | \
 
 
 #Create gateway template
-cat $ROOT_DIR/gateway-docker-compose.yaml.template | \
+cat $ROOT_DIR/templates/gateway-docker-compose.yaml.template | \
     sed "s|\[\[PROTOCOL\]\]|$PROTOCOL|g" | \
     sed "s|\[\[GIT_PRIVATE_BRANCH\]\]|$GIT_PRIVATE_BRANCH|g" | \
     sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" | \

@@ -36,7 +36,7 @@ services:
       - DOMAIN=massbitroute.net
       - MKAGENT_BRANCH=shamu
       - GIT_PRIVATE_BRANCH=shamu
-
+      - STAT_PROMETHEUS_SCHEME=[[STAT_PROMETHEUS_SCHEME]]
     extra_hosts:
       - "hostmaster.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "ns1.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
