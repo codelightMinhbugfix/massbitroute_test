@@ -4,7 +4,7 @@ source $ROOT_DIR/base.sh
 
 if [ ! -d "/vars" ]
 then
-  mkdir /vars
+  mkdir -p /vars/status/
 fi
 #-------------------------------------------
 # Docker build
