@@ -1,6 +1,6 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-
+source $ROOT_DIR/base.sh
 echo "--------------------------------------------"
 echo "Creating network 172.24.$network_number.0/24"
 echo "--------------------------------------------"

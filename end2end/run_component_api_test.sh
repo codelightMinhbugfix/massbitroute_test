@@ -1,7 +1,7 @@
 #!/bin/bash
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-
+source $ROOT_DIR/base.sh
 DOCKER_ENV=/test/postman/docker.postman_environment.json
 collections=( "Portal-Node" "Portal-Gateway" )
 for collection in ${collections[@]}; do
