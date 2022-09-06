@@ -37,7 +37,9 @@ pipeline {
             steps {
                 sh 'rm -rf pr_${PR_NUMBER}'
                 sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b {{ vars.TEST_BRANCH }} pr_${PR_NUMBER}/massbitroute_test'
-                sh 'echo ${PR_NUMBER} > .vars/{{ comps.component_name }}'
+                dir("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end") {
+                  sh 'mkdir .vars && echo ${PR_NUMBER} > .vars/{{ comps.component_name }}'
+                }
             }
         }
 
@@ -63,26 +65,27 @@ pipeline {
         }
         {% endfor %}
 
-
-        {% for scenario in scenarios %}
-        stage('{{ scenario }}') {
-            when {
-                allOf {
-                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
+        stage("Execute test scenarios"){
+          parallel {
+            {% for scenario in scenarios %}
+            stage('{{ scenario }}') {
+                when {
+                    allOf {
+                        environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                        anyOf {
+                            environment(name: "PR_ACTION", value: "opened")
+                            environment(name: "PR_ACTION", value: "reopened")
+                        }
+                    }
+                }
+                steps {
+                    dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                        sh ' bash -x scenarios-enable/{{ scenario }}'
                     }
                 }
             }
-            steps {
-                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/{{ scenario }}'
-                }
-            }
+            {% endfor %}
+          }
         }
-        {% endfor %}
-
-
     }
 }

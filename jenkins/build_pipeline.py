@@ -20,7 +20,7 @@ setup_stages = [
     {'name': 'Create git docker',           'steps': ['bash -x create_git.sh'] },
     {'name': 'Start docker compose',        'steps': ['bash -x create_docker_compose.sh'] },
     {'name': 'Start stat docker compose',   'steps': ['bash -x create_stat_docker_compose.sh'] },
-    {'name': 'Run API test',                'steps': ['bash -x run_component_api_test.sh'] },
+    #{'name': 'Run API test',                'steps': ['bash -x run_component_api_test.sh'] },
 ]
 
 scenarios = os.listdir('../end2end/scenarios-enable/')
