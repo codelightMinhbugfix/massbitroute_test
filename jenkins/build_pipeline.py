@@ -24,7 +24,7 @@ setup_stages = [
 ]
 
 scenarios = os.listdir('../end2end/scenarios-enable/')
-
+scenarios.remove("000_init.sh")
 file_loader = FileSystemLoader('templates')
 env = Environment(loader=file_loader)
 
