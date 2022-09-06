@@ -3,7 +3,7 @@ pipeline {
 
     stages {
         stage('Build new docker image for Massbit api') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -11,10 +11,10 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            }         
+            }
             steps {
                 dir ("/massbit/massbitroute/app/src"){
-                    sh 'git stash; git checkout dev; git pull origin jenkins'
+                    sh 'git stash; git checkout jenkins; git pull origin jenkins'
                 }
                 dir ("/massbit/massbitroute/app/src/install"){
                     sh './docker.sh latest build bare'
@@ -22,10 +22,10 @@ pipeline {
                     sh './docker.sh latest build base'
                     sh './docker.sh ${PR_NUMBER} build api'
                 }
-            }    
+            }
         }
         stage('Create isolated docker environment') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -33,33 +33,37 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            }             
+            }
             steps {
                 sh 'rm -rf pr_${PR_NUMBER}'
                 sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b dev pr_${PR_NUMBER}/massbitroute_test'
+                sh 'sed -i "s|export api=$(cat $RUNTIME_DIR/${network_number}/tags/API)|export api=${PR_NUMBER}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
             }
-        }       
-        stage('Update stable tags') {
-            when { 
+        }
+
+
+        
+        stage('Create docker network') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
-
                     }
                 }
             }
             steps {
-                sh 'sed -i "s|export api=$(cat $RUNTIME_DIR/tags/API)|export api=${PR_NUMBER}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    
+                        sh 'bash ./create_docker_network.sh'
+                    
+                }
             }
-        }      
-
-
-
+        }
         
         stage('Get latest git tag') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -67,7 +71,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     
@@ -78,7 +82,7 @@ pipeline {
         }
         
         stage('Prepare runtime environment') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -86,7 +90,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     
@@ -97,7 +101,7 @@ pipeline {
         }
         
         stage('Prepare proxy') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -105,7 +109,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     
@@ -116,7 +120,7 @@ pipeline {
         }
         
         stage('Create git docker') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -124,7 +128,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     
@@ -135,7 +139,7 @@ pipeline {
         }
         
         stage('Start docker compose') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -143,7 +147,26 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    
+                        sh 'bash -x create_docker_compose.sh'
+                    
+                }
+            }
+        }
+        
+        stage('Start stat docker compose') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     
@@ -154,7 +177,7 @@ pipeline {
         }
         
         stage('Run API test') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -162,7 +185,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     
@@ -175,59 +198,8 @@ pipeline {
 
 
         
-        stage('000_init.sh') {
-            when { 
-                allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
-                    }
-                }
-            } 
-            steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/000_init.sh'
-                }
-            }
-        }
-        
-        stage('001_create_eth_node.sh') {
-            when { 
-                allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
-                    }
-                }
-            } 
-            steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/001_create_eth_node.sh'
-                }
-            }
-        }
-        
-        stage('001_create_rinkeby_node.sh') {
-            when { 
-                allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
-                    }
-                }
-            } 
-            steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/001_create_rinkeby_node.sh'
-                }
-            }
-        }
-        
         stage('002_create_eth_gateway.sh') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -235,7 +207,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/002_create_eth_gateway.sh'
@@ -243,33 +215,16 @@ pipeline {
             }
         }
         
-        stage('003_test_eth_apis.sh') {
-            when { 
+        stage('004_create_then_remove_eth_gateway.sh') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
                     }
-                }
-            } 
-            steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/003_test_eth_apis.sh'
                 }
             }
-        }
-        
-        stage('004_create_then_remove_eth_gateway.sh') {
-            when { 
-                allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
-                    }
-                }
-            } 
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/004_create_then_remove_eth_gateway.sh'
@@ -277,42 +232,8 @@ pipeline {
             }
         }
         
-        stage('004_create_then_remove_eth_node.sh') {
-            when { 
-                allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
-                    }
-                }
-            } 
-            steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/004_create_then_remove_eth_node.sh'
-                }
-            }
-        }
-        
-        stage('005_create_then_remove_eth_gateway_loop.sh') {
-            when { 
-                allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
-                    anyOf {
-                        environment(name: "PR_ACTION", value: "opened")
-                        environment(name: "PR_ACTION", value: "reopened")
-                    }
-                }
-            } 
-            steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/005_create_then_remove_eth_gateway_loop.sh'
-                }
-            }
-        }
-        
         stage('005_create_then_remove_eth_node_loop.sh') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -320,7 +241,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/005_create_then_remove_eth_node_loop.sh'
@@ -329,7 +250,7 @@ pipeline {
         }
         
         stage('010_create_dot_node.sh') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -337,7 +258,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/010_create_dot_node.sh'
@@ -345,8 +266,8 @@ pipeline {
             }
         }
         
-        stage('012_create_dot_gateway.sh') {
-            when { 
+        stage('003_test_eth_apis.sh') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -354,16 +275,16 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/012_create_dot_gateway.sh'
+                    sh ' bash -x scenarios-enable/003_test_eth_apis.sh'
                 }
             }
         }
         
-        stage('013_test_dot_apis.sh') {
-            when { 
+        stage('999_remove_gateway.sh') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -371,16 +292,33 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/013_test_dot_apis.sh'
+                    sh ' bash -x scenarios-enable/999_remove_gateway.sh'
+                }
+            }
+        }
+        
+        stage('004_create_then_remove_eth_node.sh') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/004_create_then_remove_eth_node.sh'
                 }
             }
         }
         
         stage('015_create_then_remove_dot_gateway_loop.sh') {
-            when { 
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -388,7 +326,7 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/015_create_then_remove_dot_gateway_loop.sh'
@@ -396,8 +334,8 @@ pipeline {
             }
         }
         
-        stage('015_create_then_remove_dot_node_loop.sh') {
-            when { 
+        stage('012_create_dot_gateway.sh') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -405,7 +343,92 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/012_create_dot_gateway.sh'
+                }
+            }
+        }
+        
+        stage('000_init.sh') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/000_init.sh'
+                }
+            }
+        }
+        
+        stage('013_test_dot_apis.sh') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/013_test_dot_apis.sh'
+                }
+            }
+        }
+        
+        stage('001_create_eth_node.sh') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/001_create_eth_node.sh'
+                }
+            }
+        }
+        
+        stage('005_create_then_remove_eth_gateway_loop.sh') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/005_create_then_remove_eth_gateway_loop.sh'
+                }
+            }
+        }
+        
+        stage('015_create_then_remove_dot_node_loop.sh') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/015_create_then_remove_dot_node_loop.sh'
@@ -413,8 +436,8 @@ pipeline {
             }
         }
         
-        stage('998_remove_node.sh') {
-            when { 
+        stage('001_create_rinkeby_node.sh') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -422,16 +445,16 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/998_remove_node.sh'
+                    sh ' bash -x scenarios-enable/001_create_rinkeby_node.sh'
                 }
             }
         }
         
-        stage('999_remove_gateway.sh') {
-            when { 
+        stage('998_remove_node.sh') {
+            when {
                 allOf {
                     environment(name: "REPO_NAME", value: "massbitroute")
                     anyOf {
@@ -439,10 +462,10 @@ pipeline {
                         environment(name: "PR_ACTION", value: "reopened")
                     }
                 }
-            } 
+            }
             steps {
                 dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
-                    sh ' bash -x scenarios-enable/999_remove_gateway.sh'
+                    sh ' bash -x scenarios-enable/998_remove_node.sh'
                 }
             }
         }

@@ -11,6 +11,7 @@
 .mtj.tmp/
 .idea
 .env
+.vars
 # Package Files #
 *.jar
 *.war

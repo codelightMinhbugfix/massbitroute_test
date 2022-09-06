@@ -1,18 +1,18 @@
 #!/bin/bash
 export RUNTIME_DIR=/massbit/test_runtime
-#random=$(echo $RANDOM | md5sum | head -c 5)
-export gateway=$(cat $RUNTIME_DIR/${network_number}/tags/GATEWAY)
-export node=$(cat $RUNTIME_DIR/${network_number}/tags/NODE)
-export stat=$(cat $RUNTIME_DIR/${network_number}/tags/STAT)
-export git=$(cat $RUNTIME_DIR/${network_number}/tags/GIT)
-export chain=$(cat $RUNTIME_DIR/${network_number}/tags/CHAIN)
-export fisherman=$(cat $RUNTIME_DIR/${network_number}/tags/FISHERMAN)
-export staking=$(cat $RUNTIME_DIR/${network_number}/tags/STAKING)
-export portal=$(cat $RUNTIME_DIR/${network_number}/tags/PORTAL)
-export web=$(cat $RUNTIME_DIR/${network_number}/tags/WEB)
-export api=$(cat $RUNTIME_DIR/${network_number}/tags/API)
-export gwman=$(cat $RUNTIME_DIR/${network_number}/tags/GWMAN)
-export session=$(cat $RUNTIME_DIR/${network_number}/tags/SESSION)
+export network_number=$(cat .envs/NETWORK_NUMBER)
+export gateway=$(cat .vars/GATEWAY)
+export node=$(cat .vars/NODE)
+export stat=$(cat .vars/STAT)
+export git=$(cat .vars/GIT)
+export chain=$(cat .vars/CHAIN)
+export fisherman=$(cat .vars/FISHERMAN)
+export staking=$(cat .vars/STAKING)
+export portal=$(cat .vars/PORTAL)
+export web=$(cat .vars/WEB)
+export api=$(cat .vars/API)
+export gwman=$(cat .vars/GWMAN)
+export session=$(cat .vars/SESSION)
 
 export PROXY_TAG=${proxy:-v0.1.0}
 export TEST_CLIENT_TAG=${test_client:-v0.1.0}
