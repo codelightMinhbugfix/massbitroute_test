@@ -35,4 +35,4 @@ docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_pro
 docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _stake_provider Gateway $GATEWAY_ID
 
 #Destroy gateway
-$ROOT_DIR/ocmmon.sh _destroy_provider $DOCKER_ID gateway $GATEWAY_ID
+$ROOT_DIR/common.sh _destroy_provider $DOCKER_ID gateway $GATEWAY_ID
