@@ -83,13 +83,13 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
-      -o /dev/null -s -w "%{http_code}\n")
+      -o massbit.out -s -w "%{http_code}\n")
     another_provider_http_code=$(curl $ANOTHER_POLKADOT_PROVIDER \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
-      -o /dev/null -s -w "%{http_code}\n")
+      -o expected.out -s -w "%{http_code}\n")
 
     if ! [[ "$massbit_http_code" =~ ^20[01]$ && "$another_provider_http_code" =~ ^20[01]$ ]]; then
       error=$((error + 1))
@@ -102,17 +102,8 @@ for k in $(seq 0 $(($(jq length <<<$all_test_case) - 1))); do
       continue
     fi
 
-    response=$(curl $MASSBIT_ROUTE_POLKADOT \
-      --silent -L \
-      --header "Host: $DAPI_DOMAIN" \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" | jq -S 'del(.jsonrpc, .id)')
-    expected_response=$(curl $ANOTHER_POLKADOT_PROVIDER \
-      --silent \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" | jq -S 'del(.jsonrpc, .id)')
+    response=$(cat massbit.out | jq -S 'del(.jsonrpc, .id)')
+    expected_response=$(cat expected.out | jq -S 'del(.jsonrpc, .id)')
 
     if [[ $response != *"result"* && $expected_response != *"result"* ]]; then
       both_error=$((both_error + 1))

@@ -6,7 +6,7 @@ dapi_counter=10
 # ==============================
 # Limit test run
 # ==============================
-export NUMBER_OF_TESTS=2
+export NUMBER_OF_TESTS=1
 # ==============================
 # Directory store report
 # ==============================
@@ -22,7 +22,8 @@ export ETHEREUM_EOA_ADDRESS="ETHEREUM_EOA_ADDRESS (eg. 0x80143CBe15fbC4ff9CaDaD3
 # ==============================
 # Infura provider url
 # ==============================
-export ANOTHER_ETHEREUM_PROVIDER="https://rinkeby.infura.io/v3/2b9f6488f50f4e3b95d8aa375ce146d1"
+#export ANOTHER_ETHEREUM_PROVIDER="https://rinkeby.infura.io/v3/2b9f6488f50f4e3b95d8aa375ce146d1"
+export ANOTHER_ETHEREUM_PROVIDER="https://main-light.eth.linkpool.io"
 # ==============================
 # Polkadot provider url
 # ==============================
@@ -223,6 +224,7 @@ _prepare_dapis() {
 _execute_apis_testing() {
   export blockchain=$1
   export network=$2
+  export PUBLIC_API=$3
   dApiDomain=$(cat "/vars/${blockchain}_${network}_DAPI_DOMAIN")
   dApiAppKey=$(cat "/vars/${blockchain}_${network}_DAPI_APPKEY")
   #dApiUrl=$(cat "/vars/${blockchain}_${network}_DAPI_URL")
@@ -238,12 +240,14 @@ _execute_apis_testing() {
   fi
   if [ "$blockchain" == "eth" ]; then
     export MASSBIT_ROUTE_ETHEREUM="$dApiUrl"
+    export ANOTHER_ETHEREUM_PROVIDER=${ANOTHER_ETHEREUM_PROVIDER:-$PUBLIC_API}
     echo "Test apis with endpoint: $MASSBIT_ROUTE_ETHEREUM";
     bash -x $SCRIPT_DIR/blockchain-api/ethereum/ethereum-test.sh
     bash -x $SCRIPT_DIR/blockchain-api/ethereum/ethereum-latency-test.sh
     #cd $SCRIPT_DIR/ethereum/flow-test && npm install && node index.js $NUMBER_OF_TESTS $MASSBIT_ROUTE_ETHEREUM $ANOTHER_ETHEREUM_PROVIDER $ETHEREUM_NETWORK $REPORT_DIR $ETHEREUM_PRIVATE_KEY $ETHEREUM_EOA_ADDRESS
   elif [ "$blockchain" == "dot" ]; then
     export MASSBIT_ROUTE_POLKADOT="$dApiUrl"
+    export ANOTHER_POLKADOT_PROVIDER=${ANOTHER_POLKADOT_PROVIDER:-$PUBLIC_API}
     echo "Test apis with endpoint: $MASSBIT_ROUTE_POLKADOT";
     bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-test.sh
     bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-latency-test.sh

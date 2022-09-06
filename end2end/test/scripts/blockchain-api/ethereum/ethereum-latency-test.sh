@@ -10,7 +10,7 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
     method=$(echo $ethereum_api | jq .[$j].method)
     params=$(echo $ethereum_api | jq .[$j].params)
 
-    body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $params, \"id\": 67}"
+    body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $params, \"id\": j}"
 
     massbit_http_code=$(curl $MASSBIT_ROUTE_ETHEREUM \
       --silent -L \
@@ -18,13 +18,13 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
-      -o /dev/null -s -w "%{http_code}\n")
+      -o masbit.out -s -w "%{http_code}\n")
     another_provider_http_code=$(curl $ANOTHER_ETHEREUM_PROVIDER \
       --silent \
       --header "Content-Type: application/json" \
       --request POST \
       --data "$body" \
-      -o /dev/null -s -w "%{http_code}\n")
+      -o expected.out -s -w "%{http_code}\n")
 
     if ! [[ "$massbit_http_code" =~ ^20[01]$ && "$another_provider_http_code" =~ ^20[01]$ ]]; then
       error=$((error + 1))
@@ -37,17 +37,8 @@ for i in $(seq 1 $NUMBER_OF_TESTS); do
       continue
     fi
 
-    response=$(curl $MASSBIT_ROUTE_ETHEREUM \
-      --silent -L \
-      --header "Host: $DAPI_DOMAIN" \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" | jq -S 'del(.jsonrpc, .id)')
-    expected_response=$(curl $ANOTHER_ETHEREUM_PROVIDER \
-      --silent \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" | jq -S 'del(.jsonrpc, .id)')
+    response=$(cat massbit.out | jq -S 'del(.jsonrpc, .id)')
+    expected_response=$(cat expected.out | jq -S 'del(.jsonrpc, .id)')
 
     if [[ "$response" != "$expected_response" ]]; then
       failed=$(($failed + 1))

@@ -1,5 +1,7 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
+source $ROOT_DIR/create_docker_network.sh
+
 bash ./check_latest_tag.sh _read_latest_git_tags
 #NETWORK defined in base
 source $ROOT_DIR/base.sh

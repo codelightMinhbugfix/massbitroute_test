@@ -29,4 +29,5 @@ dataSources["dot"]="https://34.87.134.109 wss://34.87.134.109/websocket"
 
 export blockchains
 export dataSources
-export TEST_MODE=debug
+#export TEST_MODE=${TEST_MODE:-debug}
+export TEST_MODE=test

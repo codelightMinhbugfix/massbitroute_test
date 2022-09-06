@@ -19,6 +19,7 @@ services:
       - DATASOURCE_WS=ws:\/\/34.81.232.186:8546
       - DOMAIN=massbitroute.net
       - NETWORK_NUMBER=[[NETWORK_NUMBER]]
+      - TEST_MODE=test
     volumes:
       - ./proxy/logs:/logs
       - ./proxy/vars:/vars

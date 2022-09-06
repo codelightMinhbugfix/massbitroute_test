@@ -15,7 +15,10 @@ _destroy_provider() {
     docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_provider_status gateway investigate $PROVIDER_ID
   fi
   status=$(cat $ENV_DIR/proxy/vars/status/$PROVIDER_ID)
-  echo status
+  if [ "$status" != "investigate" ]; then
+    echo "Status of $PROVIDER_TYPE $PROVIDER_ID is not changed to investigate. Test failed";
+    exit 1
+  fi
 }
 
 $@

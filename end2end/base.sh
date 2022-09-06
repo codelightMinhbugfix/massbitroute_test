@@ -1,26 +1,26 @@
 #!/bin/bash
 export RUNTIME_DIR=/massbit/test_runtime
 #random=$(echo $RANDOM | md5sum | head -c 5)
-export gateway=$(cat $RUNTIME_DIR/tags/GATEWAY)
-export node=$(cat $RUNTIME_DIR/tags/NODE)
-export stat=$(cat $RUNTIME_DIR/tags/STAT)
-export git=$(cat $RUNTIME_DIR/tags/GIT)
-export chain=$(cat $RUNTIME_DIR/tags/CHAIN)
-export fisherman=$(cat $RUNTIME_DIR/tags/FISHERMAN)
-export staking=$(cat $RUNTIME_DIR/tags/STAKING)
-export portal=$(cat $RUNTIME_DIR/tags/PORTAL)
-export web=$(cat $RUNTIME_DIR/tags/WEB)
-export api=$(cat $RUNTIME_DIR/tags/API)
-export gwman=$(cat $RUNTIME_DIR/tags/GWMAN)
-export session=$(cat $RUNTIME_DIR/tags/SESSION)
+export gateway=$(cat $RUNTIME_DIR/${network_number}/tags/GATEWAY)
+export node=$(cat $RUNTIME_DIR/${network_number}/tags/NODE)
+export stat=$(cat $RUNTIME_DIR/${network_number}/tags/STAT)
+export git=$(cat $RUNTIME_DIR/${network_number}/tags/GIT)
+export chain=$(cat $RUNTIME_DIR/${network_number}/tags/CHAIN)
+export fisherman=$(cat $RUNTIME_DIR/${network_number}/tags/FISHERMAN)
+export staking=$(cat $RUNTIME_DIR/${network_number}/tags/STAKING)
+export portal=$(cat $RUNTIME_DIR/${network_number}/tags/PORTAL)
+export web=$(cat $RUNTIME_DIR/${network_number}/tags/WEB)
+export api=$(cat $RUNTIME_DIR/${network_number}/tags/API)
+export gwman=$(cat $RUNTIME_DIR/${network_number}/tags/GWMAN)
+export session=$(cat $RUNTIME_DIR/${network_number}/tags/SESSION)
 
 export PROXY_TAG=${proxy:-v0.1.0}
 export TEST_CLIENT_TAG=${test_client:-v0.1.0}
 #export FISHERMAN_TAG=${fisherman:-v0.1.0}
 export FISHERMAN_TAG=v0.1.0-dev
 export STAKING_TAG=${STAKING_TAG:-v0.1-dev}
-export PORTAL_TAG=v0.1.0-test
-#export PORTAL_TAG=${portal:-v0.1.0-test}
+#export PORTAL_TAG=v0.1.0-test
+export PORTAL_TAG=${portal:-v0.1.0-test}
 export WEB_TAG=${web:-v0.1}
 export MASSBIT_CHAIN_TAG=${chain:-v0.1}
 export SESSION_TAG=${session:-v0.1.0}
@@ -72,14 +72,14 @@ export GATEWAY_DOT_MONITOR_IP=27
 export GATEWAY_ETH_MONITOR_IP=28
 
 
-if [ "x$network_number" == "x" ]; then
-  while docker network ls | grep "$find_string"
-  do
-      network_number=$(shuf -i 0-255 -n 1)
-      find_string="\"Subnet\": \"172.24.$network_number.0/24\","
-      echo $find_string
-  done
-fi
+# if [ "x$network_number" == "x" ]; then
+#   while docker network ls | grep "$find_string"
+#   do
+#       network_number=$(shuf -i 0-255 -n 1)
+#       find_string="\"Subnet\": \"172.24.$network_number.0/24\","
+#       echo $find_string
+#   done
+# fi
 ENV=$network_number
 export ENV_DIR=$RUNTIME_DIR/$ENV
 export PROXY_LOGS=$ENV_DIR/proxy/logs
