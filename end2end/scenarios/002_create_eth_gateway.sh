@@ -1,6 +1,6 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-source ../base.sh
+source $ROOT_DIR/../base.sh
 echo '-------------------------------------------'
 echo "Run scenario ${BASH_SOURCE[0]}---------"
 echo '-------------------------------------------'
