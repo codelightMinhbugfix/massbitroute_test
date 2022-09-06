@@ -2,7 +2,13 @@
 
 from jinja2 import Environment, FileSystemLoader
 import os
-components = {'component_name': 'api', 'repo_name': 'massbitroute', 'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat $RUNTIME_DIR/${network_number}/tags/API)', 'PR_COMPONENT_TAG_IN_BASE': 'export api=${PR_NUMBER}', 'jenkins_name': 'MassbitAPI'}
+components = {
+    'component_name': 'api',
+    'repo_name': 'massbitroute',
+    'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/API)',
+    'PR_COMPONENT_TAG_IN_BASE': 'export api=${PR_NUMBER}',
+    'jenkins_name': 'MassbitAPI'
+}
 vars = {
     'TEST_BRANCH': 'feature/jenkins-template'
 }

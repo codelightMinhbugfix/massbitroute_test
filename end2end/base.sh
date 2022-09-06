@@ -1,18 +1,18 @@
 #!/bin/bash
 export RUNTIME_DIR=/massbit/test_runtime
-export network_number=$(cat .vars/NETWORK_NUMBER)
-export gateway=$(cat .vars/GATEWAY)
-export node=$(cat .vars/NODE)
-export stat=$(cat .vars/STAT)
-export git=$(cat .vars/GIT)
-export chain=$(cat .vars/CHAIN)
-export fisherman=$(cat .vars/FISHERMAN)
-export staking=$(cat .vars/STAKING)
-export portal=$(cat .vars/PORTAL)
-export web=$(cat .vars/WEB)
-export api=$(cat .vars/API)
-export gwman=$(cat .vars/GWMAN)
-export session=$(cat .vars/SESSION)
+export network_number=$(cat .vars/network_number)
+export gateway=$(cat .vars/gateway)
+export node=$(cat .vars/node)
+export stat=$(cat .vars/stat)
+export git=$(cat .vars/git)
+export chain=$(cat .vars/chain)
+export fisherman=$(cat .vars/fisherman)
+export staking=$(cat .vars/staking)
+export portal=$(cat .vars/portal)
+export web=$(cat .vars/web)
+export api=$(cat .vars/api)
+export gwman=$(cat .vars/gwman)
+export session=$(cat .vars/session)
 
 export PROXY_TAG=${proxy:-v0.1.0}
 export TEST_CLIENT_TAG=${test_client:-v0.1.0}

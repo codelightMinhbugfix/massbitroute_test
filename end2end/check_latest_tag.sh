@@ -29,18 +29,18 @@ _read_latest_git_tags(){
   echo "Portal - $portal"
   echo "Web - $web"
 
-  echo $gateway > .vars/GATEWAY
-  echo $node > .vars/NODE
-  echo $stat >  .vars/STAT
-  echo $git > .vars/GIT
-  echo $chain > .vars/CHAIN
-  echo $fisherman >  .vars/FISHERMAN
-  echo $staking > .vars/STAKING
-  echo $portal > .vars/PORTAL
-  echo $web >  .vars/WEB
-  echo $api > .vars/API
-  echo $gwman > .vars/GWMAN
-  echo $session >  .vars/SESSION
+  echo $gateway > .vars/gateway
+  echo $node > .vars/node
+  echo $stat >  .vars/stat
+  echo $git > .vars/git
+  echo $chain > .vars/chain
+  echo $fisherman >  .vars/fisherman
+  echo $staking > .vars/staking
+  echo $portal > .vars/portal
+  echo $web >  .vars/web
+  echo $api > .vars/api
+  echo $gwman > .vars/gwman
+  echo $session >  .vars/session
 }
 
 $@

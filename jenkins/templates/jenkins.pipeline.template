@@ -37,7 +37,7 @@ pipeline {
             steps {
                 sh 'rm -rf pr_${PR_NUMBER}'
                 sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b {{ vars.TEST_BRANCH }} pr_${PR_NUMBER}/massbitroute_test'
-                sh 'sed -i "s|{{ comps.DEFAULT_COMPONENT_TAG_IN_BASE }}|{{ comps.PR_COMPONENT_TAG_IN_BASE }}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+                sh 'echo ${PR_NUMBER} > .vars/{{ comps.component_name }}'
             }
         }
 
