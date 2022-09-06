@@ -1,6 +1,6 @@
 #!/bin/bash
 export RUNTIME_DIR=/massbit/test_runtime
-export network_number=$(cat .envs/NETWORK_NUMBER)
+export network_number=$(cat .vars/NETWORK_NUMBER)
 export gateway=$(cat .vars/GATEWAY)
 export node=$(cat .vars/NODE)
 export stat=$(cat .vars/STAT)
