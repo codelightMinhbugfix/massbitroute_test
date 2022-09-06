@@ -2,13 +2,64 @@
 
 from jinja2 import Environment, FileSystemLoader
 import os
-components = {
-    'component_name': 'api',
-    'repo_name': 'massbitroute',
-    'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/API)',
-    'PR_COMPONENT_TAG_IN_BASE': 'export api=${PR_NUMBER}',
-    'jenkins_name': 'MassbitAPI'
-}
+components = [
+    {
+        'component_name': 'api',
+        'repo_name': 'massbitroute',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/api)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export api=${PR_NUMBER}',
+        'jenkins_name': 'MassbitAPI'
+    },
+    {
+        'component_name': 'gwman',
+        'repo_name': 'massbitroute_gwman',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export gwman=$(cat .vars/gwman)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export gwman=${PR_NUMBER}',
+        'jenkins_name': 'MassbitGwMan'
+    },
+    {
+        'component_name': 'session',
+        'repo_name': 'massbitroute_session',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export session=$(cat .vars/session)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export session=${PR_NUMBER}',
+        'jenkins_name': 'MassbitSession'
+    },
+    {
+        'component_name': 'git',
+        'repo_name': 'massbitroute_git',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/git)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export git=${PR_NUMBER}',
+        'jenkins_name': 'MassbitGit'
+    },
+    {
+        'component_name': 'monitor',
+        'repo_name': 'massbitroute_monitor',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export monitor=$(cat .vars/monitor)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export monitor=${PR_NUMBER}',
+        'jenkins_name': 'MassbitMonitor'
+    },
+    {
+        'component_name': 'stat',
+        'repo_name': 'massbitroute_stat',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/stat)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export stat=${PR_NUMBER}',
+        'jenkins_name': 'MassbitStat'
+    },
+    {
+        'component_name': 'node',
+        'repo_name': 'massbitroute_node',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/node)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export node=${PR_NUMBER}',
+        'jenkins_name': 'MassbitNode'
+    },
+    {
+        'component_name': 'gateway',
+        'repo_name': 'massbitroute_gateway',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export api=$(cat .vars/gateway)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export gateway=${PR_NUMBER}',
+        'jenkins_name': 'MassbitGateway'
+    },
+]
 vars = {
     'TEST_BRANCH': 'feature/jenkins-template'
 }
@@ -30,5 +81,9 @@ env = Environment(loader=file_loader)
 
 template = env.get_template('./jenkins.pipeline.template')
 
-output = template.render(comps=components, stages=setup_stages, scenarios=scenarios, vars=vars )
-print(output)
+for component in components:
+    print(component)
+    output = template.render(comps=component, stages=setup_stages, scenarios=scenarios, vars=vars )
+    f = open(component["component_name"]+'.pipeline', "w")
+    f.write(output)
+    f.close()

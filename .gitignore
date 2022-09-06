@@ -38,3 +38,5 @@ terraforms/verifications/verification.tf
 **/ethereum-testcase.json
 **/polkadot-testcase.json
 **/node_modules
+
+jenkins/*.pipeline
