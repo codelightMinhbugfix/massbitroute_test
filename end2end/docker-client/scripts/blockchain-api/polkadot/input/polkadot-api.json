@@ -1,5 +1,45 @@
 [
   {
+    "method": "author_pendingExtrinsics",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "author_removeExtrinsic",
+    "params": ["extrinsic"],
+    "expect": true
+  },
+  {
+    "method": "author_rotateKeys",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "author_submitAndWatchExtrinsic",
+    "params": ["extrinsic"],
+    "expect": true
+  },
+  {
+    "method": "author_submitExtrinsic",
+    "params": ["extrinsic"],
+    "expect": true
+  },
+  {
+    "method": "babe_epochAuthorship",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "beefy_getFinalizedHead",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "beefy_subscribeJustifications",
+    "params": [],
+    "expect": true
+  },
+  {
     "method": "chain_getBlock",
     "params": ["blockHash"],
     "expect": true
@@ -30,7 +70,32 @@
     "expect": true
   },
   {
+    "method": "chain_subscribeAllHeads",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "chain_subscribeFinalizedHeads",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "chain_subscribeNewHeads",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "grandpa_proveFinality",
+    "params": ["blockNumber"],
+    "expect": true
+  },
+  {
     "method": "grandpa_roundState",
+    "params": [],
+    "expect": true
+  },
+  {
+    "method": "grandpa_subscribeJustifications",
     "params": [],
     "expect": true
   },

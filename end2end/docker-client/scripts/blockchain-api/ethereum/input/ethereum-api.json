@@ -35,6 +35,11 @@
     "expectMatch": true
   },
   {
+    "method": "eth_coinbase",
+    "params": [],
+    "expectMatch": true
+  },
+  {
     "method": "eth_mining",
     "params": [],
     "expectMatch": true
@@ -133,5 +138,25 @@
     "method": "eth_getUncleByBlockNumberAndIndex",
     "params": ["blockNumber", "object.transactionIndex"],
     "expectMatch": true
+  },
+  {
+    "method": "eth_getCompilers",
+    "params": [],
+    "expectMatch": true
+  },
+  {
+    "method": "eth_newFilter",
+    "params": [],
+    "expectMatch": false
+  },
+  {
+    "method": "eth_newBlockFilter",
+    "params": [],
+    "expectMatch": false
+  },
+  {
+    "method": "eth_newPendingTransactionFilter",
+    "params": [],
+    "expectMatch": false
   }
 ]
