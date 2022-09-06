@@ -1,0 +1,103 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build new docker image for Massbit {{ comps.component_name }}') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }         
+            steps {
+                dir ("/massbit/massbitroute/app/src"){
+                    sh 'git stash; git checkout jenkins; git pull origin jenkins'
+                }
+                dir ("/massbit/massbitroute/app/src/install"){
+                    sh './docker.sh latest build bare'
+                    sh './docker.sh latest build basenode'
+                    sh './docker.sh latest build base'
+                    sh './docker.sh ${PR_NUMBER} build {{ comps.component_name }}'
+                }
+            }    
+        }
+        stage('Create isolated docker environment') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }             
+            steps {
+                sh 'rm -rf pr_${PR_NUMBER}'
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b dev pr_${PR_NUMBER}/massbitroute_test'
+            }
+        }       
+        stage('Update stable tags') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+
+                    }
+                }
+            }
+            steps {
+                sh 'sed -i "s|{{ comps.DEFAULT_COMPONENT_TAG_IN_BASE }}|{{ comps.PR_COMPONENT_TAG_IN_BASE }}|g" pr_${PR_NUMBER}/massbitroute_test/end2end/base.sh'
+            }
+        }      
+
+
+
+        {% for stage in stages %}
+        stage('{{ stage.name }}') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            } 
+            steps {
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    {% for step in stage.steps %}
+                        sh '{{ step }}'
+                    {% endfor %}
+                }
+            }
+        }
+        {% endfor %}
+
+
+        {% for scenario in scenarios %}
+        stage('{{ scenario }}') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            } 
+            steps {
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/{{ scenario }}'
+                }
+            }
+        }
+        {% endfor %}
+
+
+    }
+}
