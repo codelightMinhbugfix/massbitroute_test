@@ -166,6 +166,11 @@ _create_dapi() {
       \"projectId\": \"$projectId\"
     }");
   echo $create_dapi_response;
+  status_code=$(echo $create_dapi_response | jq .statusCode)
+  if [[ $statusCode -ne 200 ]]; then
+    echo "Can not create dapi. Test failed"
+    exit 1
+  fi
   create_dapi_status=$(echo $create_dapi_response | jq .status)
   dApiId=$(echo $create_dapi_response | jq -r '. | .entrypoints[0].apiId')
   dApiAppKey=$(echo $create_dapi_response | jq -r '. | .appKey')
