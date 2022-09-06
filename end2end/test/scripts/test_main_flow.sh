@@ -276,7 +276,7 @@ _check_provider_status() {
     cat /logs/proxy_access.log | grep "$providerId" | grep '.10->api.' | grep 'POST' | grep "$providerType.update"
     #if [ $? -eq 0 ];then break;fi
 
-    status=$(curl -k --location --request GET "https://portal.$DOMAIN/mbr/$providerType/$providerId" \
+    status=$(curl -k --silent --location --request GET "https://portal.$DOMAIN/mbr/$providerType/$providerId" \
       --header "Authorization: Bearer $bearer" | jq -r ". | .status")
     now=$(date)
     end=$(date +"%s")
