@@ -92,7 +92,7 @@ pipeline {
         stage('Init scenarios testing') {
             when {
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
@@ -100,7 +100,7 @@ pipeline {
                 }
             }
             steps {
-                dir ("/home/massbit/jenkins/workspace/MassbitAPI/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
                     sh ' bash -x scenarios-enable/000_init.sh'
                 }
             }
