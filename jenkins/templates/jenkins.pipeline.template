@@ -92,7 +92,7 @@ pipeline {
         stage('Init scenarios testing') {
             when {
                 allOf {
-                    environment(name: "REPO_NAME", value: "massbitroute")
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
                     anyOf {
                         environment(name: "PR_ACTION", value: "opened")
                         environment(name: "PR_ACTION", value: "reopened")
