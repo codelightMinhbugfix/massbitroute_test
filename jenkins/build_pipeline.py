@@ -2,6 +2,8 @@
 
 from jinja2 import Environment, FileSystemLoader
 import os
+#CONFIG_PATH = '/var/jenkins_home/jobs'
+CONFIG_PATH = './jobs'
 components = [
     {
         'component_name': 'api',
@@ -86,11 +88,17 @@ scenarios.remove("000_init.sh")
 file_loader = FileSystemLoader('templates')
 env = Environment(loader=file_loader)
 
-template = env.get_template('./jenkins.pipeline.template')
+config_template = env.get_template('./jenkins.config.template')
+pipeline_template = env.get_template('./jenkins.pipeline.template')
 
 for component in components:
     print(component)
-    output = template.render(comps=component, stages=setup_stages, scenarios=scenarios, vars=vars )
-    f = open(component["component_name"]+'.pipeline', "w")
-    f.write(output)
+    pipeline = pipeline_template.render(comps=component, stages=setup_stages, scenarios=scenarios, vars=vars )
+    config = config_template.render(PIPELINE=pipeline)
+
+    config_path = os.path.join(CONFIG_PATH, component["jenkins_name"])
+    # Create config directory
+    os.makedirs(config_path)
+    f = open(config_path + '/config.xml', "w")
+    f.write(config)
     f.close()
