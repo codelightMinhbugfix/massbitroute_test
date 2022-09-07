@@ -18,7 +18,7 @@ _backup_configs() {
 _generate_configs() {
   CONFIG_DIR=$1
   python3 ./build_pipeline.py
-  java -jar /home/massbit/jenkins/workspace/jenkins-cli.jar -s $JENKINS_URL -auth ${AUTH_CLI} reload-configuration
+  java -jar /home/massbit/jenkins/jenkins-cli.jar -s $JENKINS_URL -auth ${AUTH_CLI} reload-configuration
 }
 
 #
@@ -26,6 +26,6 @@ _generate_configs() {
 #
 _restore_configs() {
   cp -r $BACKUP_DIR/* $CONFIG_DIR/
-  java -jar /home/massbit/jenkins/workspace/jenkins-cli.jar -s $JENKINS_URL -auth ${AUTH_CLI} reload-configuration
+  java -jar /home/massbit/jenkins/jenkins-cli.jar -s $JENKINS_URL -auth ${AUTH_CLI} reload-configuration
 }
 $@
