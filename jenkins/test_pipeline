@@ -1,94 +1,92 @@
 pipeline {
-  agent any
-  environment {
-      CONFIG_PATH = '/var/jenkins_home/jobs'
-  }
-  stages {
-    stage('Cloning Git and build testing docker') {
-      when {
-          allOf {
-              environment(name: "REPO_NAME", value: "massbitroute_test")
-              anyOf {
-                  environment(name: "PR_ACTION", value: "opened")
-                  environment(name: "PR_ACTION", value: "reopened")
-
-              }
-          }
-      }
-      steps {
-          sh 'echo Triggered for $REPO_NAME on branch $BUILD_BRANCH'
-          sh 'rm -rf pr_${PR_NUMBER}'
-          sh 'mkdir -p pr_${PR_NUMBER}/configs'
-          sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b $BUILD_BRANCH pr_${PR_NUMBER}/massbitroute_test'
-          dir ("/home/massbit/jenkins/workspace/MassbitTest/pr_${PR_NUMBER}/massbitroute_test/end2end/docker-proxy"){
-              sh 'docker build -t  massbit/massbitroute_test_proxy:${PR_NUMBER} .'
-          }
-      }
+    agent any
+    environment {
+        CONFIG_PATH = '/var/jenkins_home/jobs'
     }
-    stage('Backup current configuration') {
-      when {
-          allOf {
-              environment(name: "REPO_NAME", value: "massbitroute_test")
-              anyOf {
-                  environment(name: "PR_ACTION", value: "opened")
-                  environment(name: "PR_ACTION", value: "reopened")
-              }
-          }
-      }
-      steps {
-          dir ("pr_${PR_NUMBER}/massbitroute_test/jenkins"){
-              sh './config.sh _backup_configs ${CONFIG_PATH}'
-          }
-      }
-    }
-    stage('Generate new job configuration') {
-      when {
-          allOf {
-              environment(name: "REPO_NAME", value: "massbitroute_test")
-              anyOf {
-                  environment(name: "PR_ACTION", value: "opened")
-                  environment(name: "PR_ACTION", value: "reopened")
-              }
-          }
-      }
-      steps {
-        dir ("pr_${PR_NUMBER}/massbitroute_test/jenkins"){
-            sh './config.sh _generate_configs ${CONFIG_PATH}'
+    stages {
+        stage('Cloning Git and build testing docker') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_test")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                sh 'echo Triggered for $REPO_NAME on branch $BUILD_BRANCH'
+                sh 'rm -rf pr_${PR_NUMBER}'
+                sh 'mkdir -p pr_${PR_NUMBER}/configs'
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b $BUILD_BRANCH pr_${PR_NUMBER}/massbitroute_test'
+                dir ("/home/massbit/jenkins/workspace/MassbitTest/pr_${PR_NUMBER}/massbitroute_test/end2end/docker-proxy"){
+                    sh 'docker build -t  massbit/massbitroute_test_proxy:${PR_NUMBER} .'
+                }
+            }
         }
-      }
-    }
-    stage('Execute test base on new configuration') {
-      when {
-          allOf {
-              environment(name: "REPO_NAME", value: "massbitroute_test")
-              anyOf {
-                  environment(name: "PR_ACTION", value: "opened")
-                  environment(name: "PR_ACTION", value: "reopened")
-              }
-          }
-      }
-      steps {
-        dir ("pr_${PR_NUMBER}/massbitroute_test/end2end"){
-            sh './main_flow.sh'
+        stage('Backup current configuration') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_test")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("pr_${PR_NUMBER}/massbitroute_test/jenkins"){
+                    sh './config.sh _backup_configs ${CONFIG_PATH}'
+                }
+            }
         }
-      }
-    }
-    stage('Restore backuped configuration') {
-      when {
-          allOf {
-              environment(name: "REPO_NAME", value: "massbitroute_test")
-              anyOf {
-                  environment(name: "PR_ACTION", value: "opened")
-                  environment(name: "PR_ACTION", value: "reopened")
-              }
-          }
-      }
-      steps {
-          dir ("pr_${PR_NUMBER}/massbitroute_test/jenkins"){
-              sh './config.sh _restore_configs ${CONFIG_PATH}'
-          }
+        stage('Generate new job configuration') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_test")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("pr_${PR_NUMBER}/massbitroute_test/jenkins"){
+                    sh './config.sh _generate_configs ${CONFIG_PATH}'
+                }
+            }
         }
-      }
+        stage('Execute test base on new configuration') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_test")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh './main_flow.sh'
+                }
+            }
+        }
+        stage('Restore backuped configuration') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_test")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("pr_${PR_NUMBER}/massbitroute_test/jenkins"){
+                    sh './config.sh _restore_configs ${CONFIG_PATH}'
+                }
+            }
+        }
     }
-  }
 }
