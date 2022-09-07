@@ -101,7 +101,8 @@ for component in components:
         config = config_template.render(PIPELINE=pipeline)
         config_path = os.path.join(CONFIG_PATH, component["jenkins_name"])
         # Create config directory
-        os.makedirs(config_path)
+        if not os.path.isdir(config_path):
+            os.makedirs(config_path)
         f = open(config_path + '/config.xml', "w")
         f.write(config)
         f.close()
