@@ -9,7 +9,7 @@ _backup_configs() {
   echo "Backup config from dir $CONFIG_DIR to $BACKUP_DIR"
   rm -rf $BACKUP_DIR/*
   mkdir -p $BACKUP_DIR
-  cp $CONFIG_DIR/* $BACKUP_DIR
+  cp -r $CONFIG_DIR/* $BACKUP_DIR
 }
 
 #
@@ -25,7 +25,7 @@ _generate_configs() {
 # $1 - config dir
 #
 _restore_configs() {
-  cp $BACKUP_DIR/* $CONFIG_DIR/
+  cp -r $BACKUP_DIR/* $CONFIG_DIR/
   java -jar /home/massbit/jenkins/workspace/jenkins-cli.jar -s $JENKINS_URL -auth ${AUTH_CLI} reload-configuration
 }
 $@
