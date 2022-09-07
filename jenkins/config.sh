@@ -1,5 +1,5 @@
 #!/bin/bash
-BACKUP_DIR=./configs
+BACKUP_DIR=./configs/
 JENKINS_URL=http://localhost:8080/
 #
 # $1 - config dir
@@ -8,7 +8,8 @@ _backup_configs() {
   CONFIG_DIR=$1
   echo "Backup config from dir $CONFIG_DIR to $BACKUP_DIR"
   rm -rf $BACKUP_DIR/*
-  cp $CONFIG_DIR/* $BACKUP_DIR/
+  mkdir -p $BACKUP_DIR
+  cp $CONFIG_DIR/* $BACKUP_DIR
 }
 
 #
