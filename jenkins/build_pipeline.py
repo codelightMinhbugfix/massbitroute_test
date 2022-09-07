@@ -59,6 +59,13 @@ components = [
         'PR_COMPONENT_TAG_IN_BASE': 'export gateway=${PR_NUMBER}',
         'jenkins_name': 'MassbitGateway'
     },
+    {
+        'component_name': 'fisherman',
+        'repo_name': 'massbitroute_fisherman',
+        'DEFAULT_COMPONENT_TAG_IN_BASE': 'export fisherman=$(cat .vars/fisherman)',
+        'PR_COMPONENT_TAG_IN_BASE': 'export fisherman=${PR_NUMBER}',
+        'jenkins_name': 'Fisherman'
+    },
 ]
 vars = {
     'TEST_BRANCH': 'feature/jenkins-template'
