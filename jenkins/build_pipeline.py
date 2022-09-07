@@ -95,12 +95,13 @@ for component in components:
     print(component)
     pipeline = pipeline_template.render(comps=component, stages=setup_stages, scenarios=scenarios, vars=vars )
     f = open(component["component_name"] + '.pipeline', "w")
-    f.write(config)
+    f.write(pipeline)
     f.close()
-    config = config_template.render(PIPELINE=pipeline)
-    config_path = os.path.join(CONFIG_PATH, component["jenkins_name"])
-    # Create config directory
-    os.makedirs(config_path)
-    f = open(config_path + '/config.xml', "w")
-    f.write(config)
-    f.close()
+    if os.path.isdir(CONFIG_PATH):
+        config = config_template.render(PIPELINE=pipeline)
+        config_path = os.path.join(CONFIG_PATH, component["jenkins_name"])
+        # Create config directory
+        os.makedirs(config_path)
+        f = open(config_path + '/config.xml', "w")
+        f.write(config)
+        f.close()
