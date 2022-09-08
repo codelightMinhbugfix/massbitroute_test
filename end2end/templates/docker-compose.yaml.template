@@ -525,7 +525,7 @@ services:
       - "gateway-dot-mainnet.stat.mbr.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
-    env_files:
+    env_file:
       - ./.secret
     environment:
       - BENCHMARK_WRK_PATH=benchmark
