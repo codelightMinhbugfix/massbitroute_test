@@ -404,6 +404,8 @@ services:
       - "api.ipapi.com:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "staking.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[PROXY_IP]]"
       - "git.massbitroute.net:172.24.[[NETWORK_NUMBER]].[[GIT_IP]]"
+    env_file:
+      - ./.secret
     environment:
       - CONFIG_DIR=/usr/local/bin/configs/tasks
       - COMMON_CONFIG_FILE=/usr/local/bin/configs/common.json
@@ -427,7 +429,7 @@ services:
       - SCHEME=http
       - URL_PORTAL=[[PROTOCOL]]://portal.massbitroute.net
       - ZONE=AS
-      - SIGNER_PHRASE=${SIGNER_PHRASE}
+      # - SIGNER_PHRASE=${SIGNER_PHRASE}
 
   fisherman_worker_1_[[NETWORK_NUMBER]]:
     container_name: mbr_fisherman_worker_1_[[NETWORK_NUMBER]]
