@@ -16,8 +16,8 @@ export session=$(cat $RUNTIME_DIR/${network_number}/tags/SESSION)
 
 export PROXY_TAG=${proxy:-v0.1.0}
 export TEST_CLIENT_TAG=${test_client:-v0.1.0}
-#export FISHERMAN_TAG=${fisherman:-v0.1.0}
-export FISHERMAN_TAG=v0.1.0-dev
+export FISHERMAN_TAG=${fisherman:-v0.1.0}
+#export FISHERMAN_TAG=v0.1.0-dev
 export STAKING_TAG=${STAKING_TAG:-v0.1-dev}
 #export PORTAL_TAG=v0.1.0-test
 export PORTAL_TAG=${portal:-v0.1.0-test}
