@@ -427,6 +427,7 @@ services:
       - SCHEME=http
       - URL_PORTAL=[[PROTOCOL]]://portal.massbitroute.net
       - ZONE=AS
+      - SIGNER_PHRASE=${SIGNER_PHRASE}
 
   fisherman_worker_1_[[NETWORK_NUMBER]]:
     container_name: mbr_fisherman_worker_1_[[NETWORK_NUMBER]]
