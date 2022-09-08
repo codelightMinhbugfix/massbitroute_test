@@ -40,3 +40,4 @@ terraforms/verifications/verification.tf
 **/node_modules
 
 jenkins/*.pipeline
+end2end/.secret

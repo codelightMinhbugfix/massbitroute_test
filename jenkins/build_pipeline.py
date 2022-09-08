@@ -75,7 +75,7 @@ vars = {
 }
 setup_stages = [
     {'name': 'Create docker network',       'steps': ['bash ./create_docker_network.sh'] },
-    {'name': 'Get latest git tag',          'steps': ['bash ./check_latest_tag.sh _read_latest_git_tags'] },
+    #{'name': 'Get latest git tag',          'steps': ['bash ./check_latest_tag.sh _read_latest_git_tags'] },
     {'name': 'Prepare runtime environment', 'steps': ['bash -x prepare_runtime.sh'] },
     {'name': 'Prepare proxy',               'steps': ['bash -x prepare_proxy.sh'] },
     {'name': 'Create git docker',           'steps': ['bash -x create_git.sh'] },
