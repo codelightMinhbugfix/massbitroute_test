@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
 from jinja2 import Environment, FileSystemLoader
-import os
+import os, re
+
 #CONFIG_PATH = '/var/jenkins_home/jobs'
-CONFIG_PATH = '/var/lib/docker/volumes/jenkins_home/_data/jobs'
+#CONFIG_PATH = '/var/lib/docker/volumes/jenkins_home/_data/jobs'
 components = [
     {
         'component_name': 'api',
@@ -90,16 +91,20 @@ env = Environment(loader=file_loader)
 
 config_template = env.get_template('./jenkins.config.template')
 pipeline_template = env.get_template('./jenkins.pipeline.template')
-
+CONFIG_DIR = os.getenv('CONFIG_DIR')
 for component in components:
     print(component)
     pipeline = pipeline_template.render(comps=component, stages=setup_stages, scenarios=scenarios, vars=vars )
     f = open(component["component_name"] + '.pipeline', "w")
     f.write(pipeline)
     f.close()
-    if os.path.isdir(CONFIG_PATH):
+    if os.path.isdir(CONFIG_DIR):
+        pipeline = re.sub(r'&','&amp;',pipeline)
+        pipeline = re.sub(r'\'','&apos;',pipeline)
+        pipeline = re.sub(r'"','&quot;',pipeline)
+        pipeline = re.sub(r'>','&gt;',pipeline)
         config = config_template.render(PIPELINE=pipeline)
-        config_path = os.path.join(CONFIG_PATH, component["jenkins_name"])
+        config_path = os.path.join(CONFIG_DIR, component["jenkins_name"])
         # Create config directory
         if not os.path.isdir(config_path):
             os.makedirs(config_path)
