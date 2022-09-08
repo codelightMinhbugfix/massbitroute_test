@@ -69,7 +69,25 @@ pipeline {
             }
         }
 
-
+        stage('Get latest git tag') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh 'bash ./check_latest_tag.sh _read_latest_git_tags'
+                    sh 'echo ${PR_NUMBER} > .vars/{{ comps.component_name }}'
+                    
+                }
+            }
+        }
+        
         {% for stage in stages %}
         stage('{{ stage.name }}') {
             when {
