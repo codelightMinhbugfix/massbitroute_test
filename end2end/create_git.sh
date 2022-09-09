@@ -16,8 +16,8 @@ cat $ROOT_DIR/templates/git-docker-compose.yaml.template |  \
 #Init docker
 docker-compose -f $ENV_DIR/git-docker-compose.yaml up -d --force-recreate
 sleep 10
-docker exec mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/data
-docker exec mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/vars
+docker exec mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/data/*
+docker exec mbr_git_$network_number rm -rf /massbit/massbitroute/app/src/sites/services/git/vars/*
 docker exec mbr_git_$network_number /massbit/massbitroute/app/src/sites/services/git/scripts/run _repo_init
 echo "export SID=$MASSBIT_ROUTE_SID" > $ENV_DIR/git/data/env/api.env
 echo "export PARTNER_ID=$MASSBIT_ROUTE_PARTNER_ID" >> $ENV_DIR/git/data/env/api.env
