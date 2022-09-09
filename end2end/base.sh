@@ -14,7 +14,7 @@ export api=$(cat .vars/api)
 export gwman=$(cat .vars/gwman)
 export session=$(cat .vars/session)
 
-source .env.${TEST_ENV:-dev}
+source .env.${TEST_ENV:-local}
 
 export GIT_PRIVATE_BRANCH=shamu
 export PROTOCOL=http
