@@ -1,5 +1,6 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
+source $ROOT_DIR/../base.sh
 SCENARIO_ID="$(echo $RANDOM | md5sum | head -c 5)"
 echo '-------------------------------------------------------'
 echo "Run scenario ${BASH_SOURCE[0]} with ID $SCENARIO_ID----";
@@ -39,4 +40,4 @@ docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _check_pro
 docker exec mbr_proxy_$network_number /test/scripts/test_main_flow.sh _stake_provider node $NODE_ID
 
 #Destroy node
-$ROOT_DIR/base.sh _destroy_provider $DOCKER_ID node $NODE_ID
+$ROOT_DIR/common.sh _destroy_provider $DOCKER_ID node $NODE_ID

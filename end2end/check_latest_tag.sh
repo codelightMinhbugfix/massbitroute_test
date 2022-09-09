@@ -1,6 +1,6 @@
 #!/bin/bash
 export RUNTIME_DIR=/massbit/test_runtime
-mkdir -p ${RUNTIME_DIR}/${network_number}/tags/
+mkdir -p .vars/
 #random=$(echo $RANDOM | md5sum | head -c 5)
 _read_latest_git_tags(){
   gateway=$(git ls-remote --tags --sort='v:refname' git@github.com:massbitprotocol/massbitroute_gateway.git | tail -n1 | cut -d/ -f3 )
@@ -29,18 +29,18 @@ _read_latest_git_tags(){
   echo "Portal - $portal"
   echo "Web - $web"
 
-  echo $gateway > $RUNTIME_DIR/${network_number}/tags/GATEWAY
-  echo $node > $RUNTIME_DIR/${network_number}/tags/NODE
-  echo $stat >  $RUNTIME_DIR/${network_number}/tags/STAT
-  echo $git > $RUNTIME_DIR/${network_number}/tags/GIT
-  echo $chain > $RUNTIME_DIR/${network_number}/tags/CHAIN
-  echo $fisherman >  $RUNTIME_DIR/${network_number}/tags/FISHERMAN
-  echo $staking > $RUNTIME_DIR/${network_number}/tags/STAKING
-  echo $portal > $RUNTIME_DIR/${network_number}/tags/PORTAL
-  echo $web >  $RUNTIME_DIR/${network_number}/tags/WEB
-  echo $api > $RUNTIME_DIR/${network_number}/tags/API
-  echo $gwman > $RUNTIME_DIR/${network_number}/tags/GWMAN
-  echo $session >  $RUNTIME_DIR/${network_number}/tags/SESSION
+  echo $gateway > .vars/gateway
+  echo $node > .vars/node
+  echo $stat >  .vars/stat
+  echo $git > .vars/git
+  echo $chain > .vars/chain
+  echo $fisherman >  .vars/fisherman
+  echo $staking > .vars/staking
+  echo $portal > .vars/portal
+  echo $web >  .vars/web
+  echo $api > .vars/api
+  echo $gwman > .vars/gwman
+  echo $session >  .vars/session
 }
 
 $@

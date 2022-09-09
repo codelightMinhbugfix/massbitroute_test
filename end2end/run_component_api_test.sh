@@ -3,7 +3,7 @@
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 source $ROOT_DIR/base.sh
 DOCKER_ENV=/test/postman/docker.postman_environment.json
-collections=( "Portal-Node" "Portal-Gateway" )
+collections=( "Portal-Node" )
 for collection in ${collections[@]}; do
   echo "Run newman test for collection $collection"
   COLLECTION_PATH="/test/postman/$collection.postman_collection.json";

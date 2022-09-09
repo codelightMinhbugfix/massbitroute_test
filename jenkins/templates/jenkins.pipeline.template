@@ -1,0 +1,151 @@
+pipeline {
+    agent any
+
+    stages {
+        {% if comps.component_name == 'fisherman' %}
+        stage('Cloning Git') {
+            when { 
+                allOf {
+                    environment(name: "REPO_NAME", value: "massbitroute_fisherman")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+
+                    }
+                }
+            } 
+            steps {
+                sh 'echo Triggered for $REPO_NAME on branch $BUILD_BRANCH'
+                sh 'rm -rf pr_${PR_NUMBER}'
+                sh 'mkdir -p pr_${PR_NUMBER}'
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_fisherman.git -b $BUILD_BRANCH pr_${PR_NUMBER}/massbitroute_fisherman'
+                dir ("/home/massbit/jenkins/workspace/Fisherman/pr_${PR_NUMBER}/massbitroute_fisherman"){
+                    sh 'docker build -t  massbit/massbitroute_fisherman:${PR_NUMBER} .'
+                }
+            }
+        }
+        {% else %}
+        stage('Build new docker image for Massbit {{ comps.component_name }}') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/massbit/massbitroute/app/src"){
+                    sh 'git stash; git checkout jenkins; git pull origin jenkins'
+                }
+                dir ("/massbit/massbitroute/app/src/install"){
+                    sh './docker.sh latest build bare'
+                    sh './docker.sh latest build basenode'
+                    sh './docker.sh latest build base'
+                    sh './docker.sh ${PR_NUMBER} build {{ comps.component_name }}'
+                }
+            }
+        }
+        {% endif %}
+
+        stage('Create isolated docker environment') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                sh 'rm -rf pr_${PR_NUMBER}'
+                sh 'git clone git@github.com:massbitprotocol/massbitroute_test.git -b {{ vars.TEST_BRANCH }} pr_${PR_NUMBER}/massbitroute_test'
+                dir("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end") {
+                  sh 'mkdir .vars && echo ${PR_NUMBER} > .vars/{{ comps.component_name }}'
+                  sh 'echo $SIGNER_PHRASE > .secret' 
+                }
+            }
+        }
+
+        stage('Get latest git tag') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh 'bash ./check_latest_tag.sh _read_latest_git_tags'
+                    sh 'echo ${PR_NUMBER} > .vars/{{ comps.component_name }}'
+                    
+                }
+            }
+        }
+        
+        {% for stage in stages %}
+        stage('{{ stage.name }}') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    {% for step in stage.steps %}
+                        sh '{{ step }}'
+                    {% endfor %}
+                }
+            }
+        }
+        {% endfor %}
+        stage('Init scenarios testing') {
+            when {
+                allOf {
+                    environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                    anyOf {
+                        environment(name: "PR_ACTION", value: "opened")
+                        environment(name: "PR_ACTION", value: "reopened")
+                    }
+                }
+            }
+            steps {
+                dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                    sh ' bash -x scenarios-enable/000_init.sh'
+                }
+            }
+        }
+        stage("Execute test scenarios"){
+          parallel {
+            {% for scenario in scenarios %}
+            stage('{{ scenario }}') {
+                when {
+                    allOf {
+                        environment(name: "REPO_NAME", value: "{{ comps.repo_name }}")
+                        anyOf {
+                            environment(name: "PR_ACTION", value: "opened")
+                            environment(name: "PR_ACTION", value: "reopened")
+                        }
+                    }
+                }
+                steps {
+                    dir ("/home/massbit/jenkins/workspace/{{ comps.jenkins_name }}/pr_${PR_NUMBER}/massbitroute_test/end2end"){
+                        sh ' bash -x scenarios-enable/{{ scenario }}'
+                    }
+                }
+            }
+            {% endfor %}
+          }
+        }
+    }
+}
+
