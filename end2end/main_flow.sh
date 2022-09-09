@@ -3,7 +3,7 @@ ROOT_DIR=$(realpath $(dirname $(realpath $0)))
 export TEST_ENV=${1:-dev}
 source $ROOT_DIR/create_docker_network.sh
 
-#bash ./check_latest_tag.sh _read_latest_git_tags
+bash ./check_latest_tag.sh _read_latest_git_tags
 #NETWORK defined in base
 source $ROOT_DIR/base.sh
 
