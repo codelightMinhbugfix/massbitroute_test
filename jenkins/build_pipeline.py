@@ -3,7 +3,7 @@
 from jinja2 import Environment, FileSystemLoader
 import os, re
 
-#CONFIG_PATH = '/var/jenkins_home/jobs'
+CONFIG_DIR = '/var/jenkins_home/jobs'
 #CONFIG_PATH = '/var/lib/docker/volumes/jenkins_home/_data/jobs'
 components = [
     {
@@ -91,7 +91,7 @@ env = Environment(loader=file_loader)
 
 config_template = env.get_template('./jenkins.config.template')
 pipeline_template = env.get_template('./jenkins.pipeline.template')
-CONFIG_DIR = os.getenv('CONFIG_DIR')
+# CONFIG_DIR = os.getenv('CONFIG_DIR')
 for component in components:
     print(component)
     pipeline = pipeline_template.render(comps=component, stages=setup_stages, scenarios=scenarios, vars=vars )
