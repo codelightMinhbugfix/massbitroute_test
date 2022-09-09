@@ -1,6 +1,6 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0)))
-export TEST_ENV=${1:-dev}
+export TEST_ENV=${1:-local}
 source $ROOT_DIR/create_docker_network.sh
 
 bash ./check_latest_tag.sh _read_latest_git_tags
