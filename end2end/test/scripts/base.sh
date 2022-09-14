@@ -15,6 +15,7 @@ blockchains["dot"]="mainnet"
 declare -A dataSources=()
 dataSources["eth"]="http://34.81.232.186:8545 ws://34.81.232.186:8546"
 dataSources["dot"]="https://34.87.134.109 wss://34.87.134.109/websocket"
+STAKING_AMOUNT_PROJECT=1
 #echo "All blockchains : ${blockchains[*]}"
 #for key in ${!blockchains[@]}
 #do

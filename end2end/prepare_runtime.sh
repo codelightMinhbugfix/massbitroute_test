@@ -50,3 +50,7 @@ cat $ROOT_DIR/run_test_scenarios.sh | \
   sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" \
   > $ENV_DIR/run_test_scenarios.sh
 chmod +x $ENV_DIR/run_test_scenarios.sh
+
+cp base.sh $ENV_DIR/
+cp -r scenarios $ENV_DIR/
+cp -r scenarios-enable $ENV_DIR/

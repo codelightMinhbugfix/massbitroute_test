@@ -132,7 +132,7 @@ _stake_project() {
       \"projectId\": \"$projectId\",
       \"blockchain\": \"$blockchain\",
       \"network\": \"$network\",
-      \"amount\": \"100\"
+      \"amount\": \"$STAKING_AMOUNT_PROJECT\"
   }")
   echo "Staking response $staking_response";
   staking_status=$(echo $staking_response | jq -r ". | .status");
