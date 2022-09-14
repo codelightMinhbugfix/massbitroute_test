@@ -46,15 +46,6 @@ export SESSION_IP=7
 export START_IP=20
 
 export MONITOR_IP=50
-export NODE_DOT_STAT_IP=21
-export NODE_ETH_STAT_IP=22
-export NODE_DOT_MONITOR_IP=23
-export NODE_ETH_MONITOR_IP=24
-export GATEWAY_DOT_STAT_IP=25
-export GATEWAY_ETH_STAT_IP=26
-export GATEWAY_DOT_MONITOR_IP=27
-export GATEWAY_ETH_MONITOR_IP=28
-
 
 # if [ "x$network_number" == "x" ]; then
 #   while docker network ls | grep "$find_string"
