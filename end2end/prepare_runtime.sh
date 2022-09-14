@@ -51,6 +51,7 @@ cat $ROOT_DIR/run_test_scenarios.sh | \
   > $ENV_DIR/run_test_scenarios.sh
 chmod +x $ENV_DIR/run_test_scenarios.sh
 
+cp .env.local $ENV_DIR/
 cp base.sh $ENV_DIR/
 cp -r scenarios $ENV_DIR/
 cp -r scenarios-enable $ENV_DIR/

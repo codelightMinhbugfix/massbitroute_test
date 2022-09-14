@@ -120,8 +120,8 @@ services:
     networks:
       mbr_test_network_[[NETWORK_NUMBER]]:
         ipv4_address: "172.24.[[NETWORK_NUMBER]].[[CHAIN_IP]]"
-    #ports:
-    #    - '9944:9944'
+    ports:
+      - '60[[NETWORK_NUMBER]]:9944'
 
   api_[[NETWORK_NUMBER]]:
     privileged: true

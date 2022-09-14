@@ -166,18 +166,18 @@ _create_dapi() {
       \"projectId\": \"$projectId\"
     }");
   echo $create_dapi_response;
-  status_code=$(echo $create_dapi_response | jq .statusCode)
-  if [[ $statusCode -ne 200 ]]; then
-    echo "Can not create dapi. Test failed"
-    exit 1
-  fi
+  # status=$(echo $create_dapi_response | jq .status)
+  # if [[ $status -ne 1 ]]; then
+  #   echo "Can not create dapi. Test failed"
+  #   exit 1
+  # fi
   create_dapi_status=$(echo $create_dapi_response | jq .status)
   dApiId=$(echo $create_dapi_response | jq -r '. | .entrypoints[0].apiId')
   dApiAppKey=$(echo $create_dapi_response | jq -r '. | .appKey')
   dApiURL="$protocol://$dApiId.${blockchain}-$network.$domain/$dApiAppKey";
-  echo "$dApiId.${blockchain}-$network.$domain" > /vars/${blockchain}_${network}_DAPI_DOMAIN
-  echo $dApiAppKey > /vars/${blockchain}_${network}_DAPI_APPKEY
-  echo $dApiURL > /vars/${blockchain}_${network}_DAPI_URL
+  echo "$dApiId.${blockchain}-$network.$domain" > "/vars/${blockchain}_${network}_DAPI_DOMAIN"
+  echo $dApiAppKey > "/vars/${blockchain}_${network}_DAPI_APPKEY"
+  echo $dApiURL > "/vars/${blockchain}_${network}_DAPI_URL"
 
   echo "---------dAPIUrl-----------------"
   echo "$dApiURL"
