@@ -65,43 +65,31 @@ for server in ${servers[@]}; do
 done
 
 #stat & monitor
-for chain in ${!blockchains[@]}
+roles="stat monitor"
+for role in $roles
 do
-   networks=(${blockchains[$chain]});
-   for net in ${networks[@]}
-   do
-     #node stat
-     START_IP=$(( $START_IP + 1 ))
-     IP=172.24.$network_number.$START_IP
-     server_name=node-${chain}-${net}.stat.mbr.$domain
-     echo "Generate server block for $server_name with ip $IP"
-     #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
-     cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/$IP/g" >> $PROXY_DIR/nginx.conf
-     #gateway stat
-     START_IP=$(( $START_IP + 1 ))
-     IP=172.24.$network_number.$START_IP
-     server_name=gateway-${chain}-${net}.stat.mbr.$domain
-     echo "Generate server block for $server_name with ip $IP"
-     #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
-     cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/$IP/g" >> $PROXY_DIR/nginx.conf
+  for chain in ${!blockchains[@]}
+  do
+     networks=(${blockchains[$chain]});
+     for net in ${networks[@]}
+     do
+       #node stat
+       START_IP=$(( $START_IP + 1 ))
+       IP=172.24.$network_number.$START_IP
+       server_name=node-${chain}-${net}.${role}.mbr.$domain
+       echo "Generate server block for $server_name with ip $IP"
+       #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
+       cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/$IP/g" >> $PROXY_DIR/nginx.conf
+       #gateway stat
+       START_IP=$(( $START_IP + 1 ))
+       IP=172.24.$network_number.$START_IP
+       server_name=gateway-${chain}-${net}.${role}.mbr.$domain
+       echo "Generate server block for $server_name with ip $IP"
+       #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
+       cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/$IP/g" >> $PROXY_DIR/nginx.conf
 
-     #node monitor
-     START_IP=$(( $START_IP + 1 ))
-     IP=172.24.$network_number.$START_IP
-     server_name=node-${chain}-${net}.stat.mbr.$domain
-     echo "Generate server block for $server_name with ip $IP"
-     #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
-     cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/$IP/g" >> $PROXY_DIR/nginx.conf
-
-     #gateway monitor
-     START_IP=$(( $START_IP + 1 ))
-     IP=172.24.$network_number.$START_IP
-     server_name=node-${chain}-${net}.stat.mbr.$domain
-     echo "Generate server block for $server_name with ip $IP"
-     #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -subj "/C=PE/ST=Lima/L=Lima/O=Acme Inc. /OU=IT Department/CN=$server_name" -keyout $ROOT/docker-proxy/ssl/selfsigned/${server_name}.key -out $ROOT/docker-proxy/ssl/selfsigned/${server_name}.cert
-     cat $ROOT_DIR/docker-proxy/server.template | sed "s/\[\[SERVER_NAME\]\]/$server_name/g" | sed "s/\[\[DOMAIN\]\]/$domain/g" |  sed "s/\[\[IP\]\]/$IP/g" >> $PROXY_DIR/nginx.conf
-
-   done
+     done
+  done
 done
 
 #echo "nameserver 172.24.${network_number}.$GWMAN_IP" > $PROXY_DIR/resolv.conf

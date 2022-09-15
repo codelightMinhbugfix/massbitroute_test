@@ -12,13 +12,14 @@ cat templates/network-docker-compose.yaml.template | \
   sed "s/\[\[NETWORK_NUMBER\]\]/$network_number/g" > $ENV_DIR/stat/docker-compose/network.yaml
 
 docker_compose_files=" -f $ENV_DIR/stat/docker-compose/network.yaml"
-types="gateway node"
-for PROVIDER_TYPE in $types
+types="node gateway"
+#stat
+for chain in ${!blockchains[@]}
 do
-  for chain in ${!blockchains[@]}
-  do
-     networks=(${blockchains[$chain]});
-     for NETWORK in ${networks[@]}
+   networks=(${blockchains[$chain]});
+   for NETWORK in ${networks[@]}
+   do
+     for PROVIDER_TYPE in $types
      do
        START_IP=$(( $START_IP + 1 ))
        cat templates/stat-docker-compose.yaml.template |  \
@@ -62,5 +63,5 @@ do
      #echo "["$key"]:["${blockchains[$key]}"]"
   done
 done
-
+#monitor
 docker-compose $docker_compose_files up -d --force-recreate

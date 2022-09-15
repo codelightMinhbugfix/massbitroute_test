@@ -55,8 +55,29 @@ do
   cat $ENV_DIR/${file}.yaml.template | sed "s|\[\[PRIVATE_GIT_READ\]\]|$PRIVATE_GIT_READ|g" > $ENV_DIR/${file}.yaml
   docker_compose_files="$docker_compose_files -f $ENV_DIR/${file}.yaml"
 done
-#create portal docker-compose
-
+#add extra host file for fisherman scheduler
+#stat & monitor
+roles="stat monitor"
+for role in $roles
+do
+  for chain in ${!blockchains[@]}
+  do
+     networks=(${blockchains[$chain]});
+     for net in ${networks[@]}
+     do
+       #node stat
+       START_IP=$(( $START_IP + 1 ))
+       IP=172.24.$network_number.$START_IP
+       server_name=node-${chain}-${net}.${role}.mbr.$domain
+       #echo "      - ${server_name}:${IP}" >> $ENV_DIR/fisherman-docker-compose.yaml
+       #gateway stat
+       START_IP=$(( $START_IP + 1 ))
+       IP=172.24.$network_number.$START_IP
+       server_name=gateway-${chain}-${net}.${role}.mbr.$domain
+       #echo "      - ${server_name}:${IP}" >> $ENV_DIR/fisherman-docker-compose.yaml
+     done
+  done
+done
 #docker-compose -f $ENV_DIR/docker-compose.yaml up -d --force-recreate
 docker-compose $docker_compose_files up -d --force-recreate
 sleep 30
