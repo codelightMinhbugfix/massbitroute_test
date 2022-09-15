@@ -107,7 +107,7 @@ _create_project() {
       \"projectId\": \"$projectId\",
       \"blockchain\": \"$blockchain\",
       \"network\": \"$network\",
-      \"amount\": \"100\"
+      \"amount\": \"${STAKING_AMOUNT_PROJECT}\"
   }")
   echo "Staking response $staking_response";
   staking_status=$(echo $staking_response | jq -r ". | .status");
@@ -287,6 +287,42 @@ _call_apis() {
   elif [ "$blockchain" == "dot" ]; then
     echo "Test apis with endpoint: $MASSBIT_ROUTE_API";
     bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-api-call.sh
+  fi
+}
+
+#
+# $1 - blockchain, $2 - network
+#
+_execute_performance_testing() {
+  export blockchain=$1
+  export network=$2
+  export PUBLIC_API=$3
+  dApiDomain=$(cat "/vars/${blockchain}_${network}_DAPI_DOMAIN")
+  dApiAppKey=$(cat "/vars/${blockchain}_${network}_DAPI_APPKEY")
+  #dApiUrl=$(cat "/vars/${blockchain}_${network}_DAPI_URL")
+  #dApiDomain=$(echo $dApiUrl | cut -d'/' -f3)
+  gatewayIP=$(nslookup $dApiDomain 172.24.${NETWORK_NUMBER}.2 | awk -F':' '/Address: [0-9]/{sub(/^ /,"",$2);print $2}')
+  export DAPI_DOMAIN=$dApiDomain
+  dApiUrl="$protocol://$gatewayIP/$dApiAppKey"
+  sed /$DAPI_DOMAIN/d -i /etc/hosts
+  echo "$gatewayIP $DAPI_DOMAIN" >> /etc/hosts
+  if [ "x$gatewayIP" == "x" ]; then
+    echo "Can not resolve ip of $dApiDomain"
+    exit 1
+  fi
+  if [ "$blockchain" == "eth" ]; then
+    export MASSBIT_ROUTE_ETHEREUM="$dApiUrl"
+    export ANOTHER_ETHEREUM_PROVIDER=${ANOTHER_ETHEREUM_PROVIDER:-$PUBLIC_API}
+    echo "Test apis with endpoint: $MASSBIT_ROUTE_ETHEREUM";
+    bash -x $SCRIPT_DIR/blockchain-api/ethereum/ethereum-test.sh
+    bash -x $SCRIPT_DIR/blockchain-api/ethereum/ethereum-latency-test.sh
+    #cd $SCRIPT_DIR/ethereum/flow-test && npm install && node index.js $NUMBER_OF_TESTS $MASSBIT_ROUTE_ETHEREUM $ANOTHER_ETHEREUM_PROVIDER $ETHEREUM_NETWORK $REPORT_DIR $ETHEREUM_PRIVATE_KEY $ETHEREUM_EOA_ADDRESS
+  elif [ "$blockchain" == "dot" ]; then
+    export MASSBIT_ROUTE_POLKADOT="$dApiUrl"
+    export ANOTHER_POLKADOT_PROVIDER=${ANOTHER_POLKADOT_PROVIDER:-$PUBLIC_API}
+    echo "Test apis with endpoint: $MASSBIT_ROUTE_POLKADOT";
+    bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-test.sh
+    bash -x $SCRIPT_DIR/blockchain-api/polkadot/polkadot-latency-test.sh
   fi
 }
 $@

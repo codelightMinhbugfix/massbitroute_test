@@ -58,49 +58,47 @@ for (( k = 0; k<$LOOP; k++ )); do
     params=$(echo $ethereum_api | jq .[$i].params)
     expect=$(echo $ethereum_api | jq .[$i].expectMatch)
     mode=$(echo $ethereum_api | jq -r .[$i].mode)
-    if [[ "$TEST_MODE" == "debug" && "$mode" != "$TEST_MODE" ]]; then
-      continue
-    fi
-    new_params="[]"
+    if [[ "$TEST_MODE" != "debug" || "$mode" == "$TEST_MODE" ]]; then  
+      new_params="[]"
 
-    for j in $(seq 0 $(($(jq length <<<$params) - 1))); do
-      key=$(echo $params | jq -r .[$j])
-      data=$(echo $TEST_CASE | jq .$key)
-      new_params=$(echo "$new_params" | jq ". += [$data]")
-    done
+      for j in $(seq 0 $(($(jq length <<<$params) - 1))); do
+        key=$(echo $params | jq -r .[$j])
+        data=$(echo $TEST_CASE | jq .$key)
+        new_params=$(echo "$new_params" | jq ". += [$data]")
+      done
 
-    body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": $i}"
-    http_code=$(curl $MASSBIT_ROUTE_API \
-      --silent -L \
-      --header "Host: $DAPI_DOMAIN" \
-      --header "Content-Type: application/json" \
-      --request POST \
-      --data "$body" \
-      -o api.out -s -w "%{http_code}\n")
+      body="{\"jsonrpc\": \"2.0\", \"method\": $method, \"params\": $new_params, \"id\": $i}"
+      http_code=$(curl $MASSBIT_ROUTE_API -L \
+        --header "Host: $DAPI_DOMAIN" \
+        --header "Content-Type: application/json" \
+        --request POST \
+        --data "$body" \
+        -o $REPORT_DIR/api.out -s -w "%{http_code}\n")
 
 
-    if ! [[ "$http_code" =~ ^20[01]$ ]]; then
-      error=$((error + 1))
-      error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\": \"Http code: $http_code\"}]")
+      if ! [[ "$http_code" =~ ^20[01]$ ]]; then
+        error=$((error + 1))
+        error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\": \"Http code: $http_code\"}]")
 
-      echo "==================== ERROR ==================="
-      echo "method : $method"
-      echo "Http code: $http_code"
-      continue
-    fi
+        echo "==================== ERROR ==================="
+        echo "method : $method"
+        echo "Http code: $http_code"
+        continue
+      fi
+      cat $REPORT_DIR/api.out
+      response=$(cat $REPORT_DIR/api.out | jq -S 'del(.jsonrpc, .id)')
+      if [[ $response != *"result"* ]]; then
+        error=$((error + 1))
+        error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\":$response}]")
 
-    response=$(cat api.out | jq -S 'del(.jsonrpc, .id)')
-    if [[ $response != *"result"* ]]; then
-      error=$((error + 1))
-      error_report=$(echo $error_report | jq ". += [{\"method\":$method, \"response\":$response}]")
+        echo "==================== ERROR ===================="
+        echo "method : $method"
+        echo "response : $response"
 
-      echo "==================== ERROR ===================="
-      echo "method : $method"
-      echo "response : $response"
-
-    else
-      passed=$((passed + 1))
-      passed_report=$(echo $passed_report | jq ". += [$method]")
+      else
+        passed=$((passed + 1))
+        passed_report=$(echo $passed_report | jq ". += [$method]")
+      fi
     fi
   done
 
